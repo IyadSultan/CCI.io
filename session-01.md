@@ -470,6 +470,9 @@ permalink: /session-01/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/extras/session1_lesson3_prompt_compare.html" target="_blank">
         <span class="s1-btn-icon">&#9878;</span> Prompt Comparison
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://www.youtube.com/watch?v=izbifbq3-eI" target="_blank" style="background:#FFEBEE;border-color:#EF9A9A;color:#C62828 !important;">
+        <span class="s1-btn-icon">&#9654;</span> Video: How LLMs Work
+      </a>
     </div>
   </div>
 </div>
@@ -483,7 +486,7 @@ permalink: /session-01/
   <p style="color:#90A4AE;font-size:0.8rem;line-height:1.5;margin-bottom:1rem;">
     <strong style="color:#FFC107;">Grading:</strong> Completeness (30%) &middot; Accuracy (30%) &middot; JSON Structure (20%) &middot; Prompt Quality (20%)
   </p>
-  <a href="https://academy.cci.khcc.jo" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
+  <a href="https://academy.khcc.jo/course/view.php?id=208" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
     Open Assignment on CCI Academy &#8594;
   </a>
 </div>
