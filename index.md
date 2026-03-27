@@ -4,6 +4,9 @@ title: CCI.io
 ---
 
 <style>
+  .site-nav { display: none !important; }
+  .site-header { border-top: 5px solid #00897B !important; min-height: 46px !important; }
+  .site-title, .site-title:visited { color: #00897B !important; font-weight: 800 !important; }
   .page-content { padding-top: 0 !important; }
 
   .cci-hero {
