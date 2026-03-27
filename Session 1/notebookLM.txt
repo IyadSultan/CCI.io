@@ -1,0 +1,18 @@
+The LLM Revolution in medcine
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=9b46dbcd-14f6-476e-be2f-856510779a55
+
+Hallucinations and sensitivity
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=4641aae7-6ea6-40b2-8d24-e4bfe2e80751
+
+Prompting patterns
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=b14d58bd-f8e5-49ff-a530-e7a70b0ad9c4
+
+
+JSON Mode & structured output
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=2654187c-889b-493c-9538-15ff72e5bcaf
+
+The Roles Framework
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=b15e8b42-8bf1-4d79-bd89-26dfa1f3290b
+
+AI: prompting revolutin
+https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=d526af63-7c6d-4af0-b630-7db8dff9eef3

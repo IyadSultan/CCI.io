@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2 Quiz — ROLES Framework</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+
+const QUIZ_TITLE = "ROLES Framework";
+const LESSON_NUMBER = 2;
+
+const questions = [
+  {
+    id: 1,
+    question: "You ask an LLM: 'Summarize this note.' The output is vague and unhelpful. Which ROLES component would most directly fix this?",
+    options: [
+      "Role — assign the model a clinical persona",
+      "Objective — specify exactly what to extract and what to exclude",
+      "Language — define the output vocabulary",
+      "Examples — add few-shot demonstrations",
+    ],
+    correct: 1,
+    explanation: "The Objective component defines the precise task. Replacing 'summarize' with a specific extraction instruction (e.g., 'Extract: diagnosis, stage, treatment plan') directly eliminates vagueness.",
+  },
+  {
+    id: 2,
+    question: "A pathology informaticist writes: 'Read this pathology report and tell me what you find.' What is the BIGGEST problem with this prompt?",
+    options: [
+      "It is too short — the model needs longer prompts to perform well",
+      "It lacks all five ROLES components — it's an unstructured, vague request",
+      "It should specify the model name and version to use",
+      "It needs to be written in a formal medical style",
+    ],
+    correct: 1,
+    explanation: "The prompt lacks Role, Objective, Language, Examples, and Structure. Without these components, the LLM has no guidance on what to extract, how to format it, or what clinical context applies.",
+  },
+  {
+    id: 3,
+    question: "You add this to your prompt: 'You are a clinical pharmacist reviewing outpatient oncology notes for medication reconciliation.' This is which ROLES component?",
+    options: [
+      "Objective",
+      "Language",
+      "Role",
+      "Structure",
+    ],
+    correct: 2,
+    explanation: "The Role component sets the persona and domain context. Assigning a clinical pharmacist role primes the model to apply pharmacology-focused reasoning and vocabulary.",
+  },
+  {
+    id: 4,
+    question: "Prompt A gives the LLM an unstructured free-text request. Prompt B uses the full ROLES framework with all five components. Which statement is TRUE?",
+    options: [
+      "Prompt A may outperform Prompt B if the task is simple enough",
+      "Both prompts will produce equivalent output for experienced models like GPT-4",
+      "Prompt B will be slower but more accurate due to token overhead",
+      "Prompt B will consistently produce more accurate, structured, and clinically useful output",
+    ],
+    correct: 3,
+    explanation: "Structured prompts using ROLES consistently outperform unstructured requests because they constrain the model's output space, reduce ambiguity, and anchor the response to clinical requirements.",
+  },
+  {
+    id: 5,
+    question: "You include this in your prompt: 'Return the output as a JSON object with keys: diagnosis, stage, treatment, medications.' This is which ROLES component?",
+    options: [
+      "Objective",
+      "Language",
+      "Examples",
+      "Structure",
+    ],
+    correct: 3,
+    explanation: "The Structure component defines the output format. Specifying JSON with exact keys ensures the response is machine-parseable and consistent across runs.",
+  },
+];
+
+function ProgressBar({ current, total }) {
+  const pct = Math.round((current / total) * 100);
+  return (
+    <div className="w-full mb-6">
+      <div className="flex justify-between text-sm text-gray-500 mb-1">
+        <span>Question {current} of {total}</span>
+        <span>{pct}% complete</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5">
+        <div
+          className="h-2.5 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, backgroundColor: "#1a1a2e" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function OptionButton({ label, text, selected, correct, revealed, onClick }) {
+  let base = "w-full text-left px-4 py-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex items-start gap-3 ";
+  if (!revealed) {
+    base += selected
+      ? "border-blue-500 bg-blue-50 text-blue-900"
+      : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50 cursor-pointer";
+  } else {
+    if (correct) base += "border-green-500 bg-green-50 text-green-900";
+    else if (selected) base += "border-red-500 bg-red-50 text-red-900";
+    else base += "border-gray-200 bg-white text-gray-400";
+  }
+  return (
+    <button className={base} onClick={onClick} disabled={revealed} aria-pressed={selected}>
+      <span className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold
+        ${revealed && correct ? "border-green-500 bg-green-500 text-white" :
+          revealed && selected ? "border-red-500 bg-red-500 text-white" :
+          selected ? "border-blue-500 bg-blue-500 text-white" :
+          "border-gray-300 text-gray-500"}`}>
+        {label}
+      </span>
+      <span className="flex-1">{text}</span>
+    </button>
+  );
+}
+
+function QuizQuestion({ q, index, total, onAnswer }) {
+  const [selected, setSelected] = React.useState(null);
+  const [revealed, setRevealed] = React.useState(false);
+  const labels = ["A", "B", "C", "D"];
+
+  const handleSelect = (i) => { if (!revealed) setSelected(i); };
+  const handleSubmit = () => { if (selected !== null) setRevealed(true); };
+  const handleNext = () => onAnswer(selected === q.correct);
+  const isCorrect = selected === q.correct;
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={index + 1} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#1a1a2e" }}>
+          Question {index + 1}
+        </p>
+        <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-5 leading-snug">{q.question}</h2>
+        <div className="flex flex-col gap-3 mb-5">
+          {q.options.map((opt, i) => (
+            <OptionButton
+              key={i} label={labels[i]} text={opt}
+              selected={selected === i} correct={revealed && i === q.correct}
+              revealed={revealed} onClick={() => handleSelect(i)}
+            />
+          ))}
+        </div>
+        {revealed && (
+          <div className={`fade-in rounded-lg p-4 mb-4 ${isCorrect ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
+            <p className={`font-semibold text-sm mb-1 ${isCorrect ? "text-green-800" : "text-red-800"}`}>
+              {isCorrect ? "Correct!" : `Incorrect — the correct answer is ${labels[q.correct]}`}
+            </p>
+            <p className="text-sm text-gray-700">{q.explanation}</p>
+          </div>
+        )}
+        <div className="flex justify-end gap-3">
+          {!revealed ? (
+            <button onClick={handleSubmit} disabled={selected === null}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "#1a1a2e" }}>
+              Submit Answer
+            </button>
+          ) : (
+            <button onClick={handleNext}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+              style={{ backgroundColor: "#1a1a2e" }}>
+              {index + 1 < total ? "Next Question →" : "See Results →"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreScreen({ score, total, onRetry }) {
+  const pct = Math.round((score / total) * 100);
+  const grade = pct >= 80 ? { label: "Excellent", color: "text-green-600", bg: "bg-green-50 border-green-200" }
+    : pct >= 60 ? { label: "Good", color: "text-yellow-600", bg: "bg-yellow-50 border-yellow-200" }
+    : { label: "Keep Practicing", color: "text-red-600", bg: "bg-red-50 border-red-200" };
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={total} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4"
+          style={{ borderColor: "#1a1a2e", backgroundColor: "#f0f0f8" }}>
+          <span className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>{pct}%</span>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Quiz Complete!</h2>
+        <p className="text-gray-500 mb-4">You scored {score} out of {total} questions correctly</p>
+        <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${grade.bg} ${grade.color} mb-6`}>
+          {grade.label}
+        </div>
+        <div className="flex justify-center">
+          <button onClick={onRetry} className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+            style={{ backgroundColor: "#1a1a2e" }}>
+            Retake Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [answers, setAnswers] = React.useState([]);
+  const [finished, setFinished] = React.useState(false);
+
+  const handleAnswer = (correct) => {
+    const newAnswers = [...answers, correct];
+    setAnswers(newAnswers);
+    if (currentIndex + 1 >= questions.length) setFinished(true);
+    else setCurrentIndex(currentIndex + 1);
+  };
+
+  const handleRetry = () => { setCurrentIndex(0); setAnswers([]); setFinished(false); };
+  const score = answers.filter(Boolean).length;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="text-white py-5 px-4 shadow-md" style={{ backgroundColor: "#1a1a2e" }}>
+        <div className="max-w-2xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-60 mb-1">CCI — Lesson {LESSON_NUMBER}</p>
+          <h1 className="text-xl md:text-2xl font-bold">{QUIZ_TITLE}</h1>
+          <p className="text-sm opacity-70 mt-1">Knowledge Check · {questions.length} Questions</p>
+        </div>
+      </header>
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        {!finished ? (
+          <QuizQuestion key={currentIndex} q={questions[currentIndex]} index={currentIndex}
+            total={questions.length} onAnswer={handleAnswer} />
+        ) : (
+          <ScoreScreen score={score} total={questions.length} onRetry={handleRetry} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

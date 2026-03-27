@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1 Quiz — What Are LLMs? Transformers</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+
+const QUIZ_TITLE = "What Are LLMs? Transformers";
+const LESSON_NUMBER = 1;
+
+const questions = [
+  {
+    id: 1,
+    question: "A radiologist wants to use an LLM to help draft radiology reports. What is the fundamental mechanism that allows the model to connect findings mentioned early in the report with the impression at the end?",
+    options: [
+      "A recurrent memory cell that stores previous sentences",
+      "The attention mechanism in the Transformer architecture",
+      "A lookup table that maps medical terms to their definitions",
+      "A rule-based parser that tracks named entities across text",
+    ],
+    correct: 1,
+    explanation: "The attention mechanism allows Transformers to look at all parts of the text simultaneously and learn which words relate to each other, regardless of distance.",
+  },
+  {
+    id: 2,
+    question: "An oncology fellow asks: 'If the LLM correctly extracted the cancer stage from 50 discharge summaries in a row, does that mean it understands oncology staging?'",
+    options: [
+      "Yes — repeated correct performance proves clinical understanding",
+      "Yes — large models develop genuine domain expertise through training",
+      "No — LLMs are statistical pattern-matchers that predict likely text, not medical reasoners",
+      "No — LLMs can only extract text, not interpret clinical meaning",
+    ],
+    correct: 2,
+    explanation: "LLMs predict the most probable next token based on patterns in training data. They do not have genuine medical understanding.",
+  },
+  {
+    id: 3,
+    question: "A nurse informaticist is told that GPT-4 and Claude are both 'Transformer-based models.' What does this mean?",
+    options: [
+      "They use identical training data and produce identical outputs",
+      "They share the same underlying architecture (attention, tokens, embeddings) but differ in training and fine-tuning",
+      "They are interchangeable tools with no meaningful clinical differences",
+      "They were both developed by the same research team",
+    ],
+    correct: 1,
+    explanation: "Both are built on the Transformer architecture but differ significantly in training data, model size, fine-tuning approach, and safety alignment.",
+  },
+  {
+    id: 4,
+    question: "A clinical data analyst notices an LLM generated a discharge summary with a medication that was never prescribed. What explains this?",
+    options: [
+      "The model accessed an external drug database and made an error",
+      "The input note was too long and caused context overflow",
+      "The model confused the patient with another in its training data",
+      "The model is statistically predicting likely text — hallucination",
+    ],
+    correct: 3,
+    explanation: "Hallucination occurs because LLMs generate statistically probable text, not verified facts.",
+  },
+  {
+    id: 5,
+    question: "When an LLM processes 'The patient was started on pembrolizumab for metastatic melanoma,' what is the first step?",
+    options: [
+      "Breaking the sentence into tokens and converting them to numerical embeddings",
+      "Looking up 'pembrolizumab' in a medical knowledge base",
+      "Running a named entity recognition pass to tag drug names",
+      "Applying grammar rules to parse the sentence structure",
+    ],
+    correct: 0,
+    explanation: "Tokenization is always the first step. The model processes numbers, not words directly.",
+  },
+];
+
+function ProgressBar({ current, total }) {
+  const pct = Math.round((current / total) * 100);
+  return (
+    <div className="w-full mb-6">
+      <div className="flex justify-between text-sm text-gray-500 mb-1">
+        <span>Question {current} of {total}</span>
+        <span>{pct}% complete</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5">
+        <div
+          className="h-2.5 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, backgroundColor: "#1a1a2e" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function OptionButton({ label, text, selected, correct, revealed, onClick }) {
+  let base = "w-full text-left px-4 py-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex items-start gap-3 ";
+  if (!revealed) {
+    base += selected
+      ? "border-blue-500 bg-blue-50 text-blue-900"
+      : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50 cursor-pointer";
+  } else {
+    if (correct) base += "border-green-500 bg-green-50 text-green-900";
+    else if (selected) base += "border-red-500 bg-red-50 text-red-900";
+    else base += "border-gray-200 bg-white text-gray-400";
+  }
+  return (
+    <button className={base} onClick={onClick} disabled={revealed} aria-pressed={selected}>
+      <span className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold
+        ${revealed && correct ? "border-green-500 bg-green-500 text-white" :
+          revealed && selected ? "border-red-500 bg-red-500 text-white" :
+          selected ? "border-blue-500 bg-blue-500 text-white" :
+          "border-gray-300 text-gray-500"}`}>
+        {label}
+      </span>
+      <span className="flex-1">{text}</span>
+    </button>
+  );
+}
+
+function QuizQuestion({ q, index, total, onAnswer }) {
+  const [selected, setSelected] = React.useState(null);
+  const [revealed, setRevealed] = React.useState(false);
+  const labels = ["A", "B", "C", "D"];
+
+  const handleSelect = (i) => {
+    if (revealed) return;
+    setSelected(i);
+  };
+
+  const handleSubmit = () => {
+    if (selected === null) return;
+    setRevealed(true);
+  };
+
+  const handleNext = () => {
+    onAnswer(selected === q.correct);
+  };
+
+  const isCorrect = selected === q.correct;
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={index + 1} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#1a1a2e" }}>
+          Question {index + 1}
+        </p>
+        <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-5 leading-snug">{q.question}</h2>
+        <div className="flex flex-col gap-3 mb-5">
+          {q.options.map((opt, i) => (
+            <OptionButton
+              key={i}
+              label={labels[i]}
+              text={opt}
+              selected={selected === i}
+              correct={revealed && i === q.correct}
+              revealed={revealed}
+              onClick={() => handleSelect(i)}
+            />
+          ))}
+        </div>
+
+        {revealed && (
+          <div className={`fade-in rounded-lg p-4 mb-4 ${isCorrect ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
+            <p className={`font-semibold text-sm mb-1 ${isCorrect ? "text-green-800" : "text-red-800"}`}>
+              {isCorrect ? "Correct!" : `Incorrect — the correct answer is ${labels[q.correct]}`}
+            </p>
+            <p className="text-sm text-gray-700">{q.explanation}</p>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-3">
+          {!revealed ? (
+            <button
+              onClick={handleSubmit}
+              disabled={selected === null}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ backgroundColor: selected !== null ? "#1a1a2e" : undefined, background: selected === null ? undefined : "#1a1a2e" }}
+            >
+              Submit Answer
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+              style={{ backgroundColor: "#1a1a2e" }}
+            >
+              {index + 1 < total ? "Next Question →" : "See Results →"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreScreen({ score, total, onRetry }) {
+  const pct = Math.round((score / total) * 100);
+  const grade = pct >= 80 ? { label: "Excellent", color: "text-green-600", bg: "bg-green-50 border-green-200" }
+    : pct >= 60 ? { label: "Good", color: "text-yellow-600", bg: "bg-yellow-50 border-yellow-200" }
+    : { label: "Keep Practicing", color: "text-red-600", bg: "bg-red-50 border-red-200" };
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={total} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4"
+          style={{ borderColor: "#1a1a2e", backgroundColor: "#f0f0f8" }}>
+          <span className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>{pct}%</span>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Quiz Complete!</h2>
+        <p className="text-gray-500 mb-4">You scored {score} out of {total} questions correctly</p>
+        <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${grade.bg} ${grade.color} mb-6`}>
+          {grade.label}
+        </div>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={onRetry}
+            className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+            style={{ backgroundColor: "#1a1a2e" }}
+          >
+            Retake Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [answers, setAnswers] = React.useState([]);
+  const [finished, setFinished] = React.useState(false);
+
+  const handleAnswer = (correct) => {
+    const newAnswers = [...answers, correct];
+    setAnswers(newAnswers);
+    if (currentIndex + 1 >= questions.length) {
+      setFinished(true);
+    } else {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handleRetry = () => {
+    setCurrentIndex(0);
+    setAnswers([]);
+    setFinished(false);
+  };
+
+  const score = answers.filter(Boolean).length;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="text-white py-5 px-4 shadow-md" style={{ backgroundColor: "#1a1a2e" }}>
+        <div className="max-w-2xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-60 mb-1">CCI — Lesson {LESSON_NUMBER}</p>
+          <h1 className="text-xl md:text-2xl font-bold">{QUIZ_TITLE}</h1>
+          <p className="text-sm opacity-70 mt-1">Knowledge Check · {questions.length} Questions</p>
+        </div>
+      </header>
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        {!finished ? (
+          <QuizQuestion
+            key={currentIndex}
+            q={questions[currentIndex]}
+            index={currentIndex}
+            total={questions.length}
+            onAnswer={handleAnswer}
+          />
+        ) : (
+          <ScoreScreen score={score} total={questions.length} onRetry={handleRetry} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

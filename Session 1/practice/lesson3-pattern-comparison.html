@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3 — Prompting Pattern Comparison Tool</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #1a1a2e; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.35s ease forwards; }
+    .code-block {
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const CLINICAL_NOTE = `DISCHARGE SUMMARY: 62-year-old female with newly diagnosed left breast invasive ductal carcinoma. Pathology: ER+/PR+/HER2-negative, Ki-67 22%. Sentinel lymph node biopsy: 1/3 positive. MRI showed a 2.8cm mass in the upper outer quadrant. PET/CT negative for distant metastases. Patient underwent left partial mastectomy with sentinel lymph node dissection. She was started on anastrozole 1mg daily and referred to radiation oncology. Oncotype DX score pending.`;
+
+const PATTERNS = [
+  {
+    id: "zero-shot",
+    label: "Zero-Shot",
+    badge: { label: "Basic", color: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
+    tabColor: "text-amber-300 border-amber-400",
+    activeTab: "bg-amber-500/10 border-b-2 border-amber-400 text-amber-300",
+    inactiveTab: "text-gray-500 hover:text-amber-300/70",
+    prompt: `Extract the key oncology data from the following discharge summary.
+
+DISCHARGE SUMMARY:
+${CLINICAL_NOTE}
+
+Provide: diagnosis, stage, treatment, medications, and any pending items.`,
+    output: `Diagnosis: Invasive ductal carcinoma, left breast
+Treatment: Partial mastectomy, sentinel lymph node dissection
+Medications: Anastrozole 1mg daily
+Referred to: Radiation oncology
+Pending: Oncotype DX score
+
+Note: ER+/PR+/HER2- status noted. Ki-67 22%.`,
+    outputLabel: "Typical LLM Output",
+    assessment: {
+      color: "bg-amber-500/10 border-amber-500/30",
+      badge: "bg-amber-500/20 text-amber-300 border border-amber-500/40",
+      label: "Basic",
+      points: [
+        { ok: false, text: "Misses formal AJCC staging (e.g., Stage IIA, T2N1M0)" },
+        { ok: false, text: "Inconsistent output format — plain prose, not structured" },
+        { ok: false, text: "No ICD-10 code attempted" },
+        { ok: true,  text: "Captures core treatment and medication correctly" },
+        { ok: true,  text: "Identifies pending Oncotype DX" },
+      ],
+    },
+  },
+  {
+    id: "few-shot",
+    label: "Few-Shot",
+    badge: { label: "Strong", color: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
+    tabColor: "text-blue-300 border-blue-400",
+    activeTab: "bg-blue-500/10 border-b-2 border-blue-400 text-blue-300",
+    inactiveTab: "text-gray-500 hover:text-blue-300/70",
+    prompt: `You are an oncology data abstractor. Extract structured data from discharge summaries.
+
+EXAMPLE INPUT:
+"58M with stage IIIA NSCLC. Started carboplatin/paclitaxel. PET/CT: mediastinal LN involvement. Radiation pending."
+
+EXAMPLE OUTPUT:
+{
+  "diagnosis": "Non-small cell lung cancer",
+  "icd10_code": "C34.10",
+  "stage": "IIIA",
+  "tnm": "T2bN2M0",
+  "treatment": ["Carboplatin", "Paclitaxel"],
+  "pending": ["Radiation therapy"]
+}
+
+NOW EXTRACT FROM:
+${CLINICAL_NOTE}`,
+    output: `{
+  "diagnosis": "Invasive ductal carcinoma, left breast",
+  "icd10_code": "C50.912",
+  "stage": "Stage IIA",
+  "tnm": "T2N1M0",
+  "receptor_status": {
+    "ER": "positive",
+    "PR": "positive",
+    "HER2": "negative"
+  },
+  "ki67": "22%",
+  "treatment": [
+    "Left partial mastectomy",
+    "Sentinel lymph node dissection",
+    "Anastrozole 1mg daily"
+  ],
+  "referrals": ["Radiation oncology"],
+  "pending": ["Oncotype DX score"]
+}`,
+    outputLabel: "Typical LLM Output",
+    assessment: {
+      color: "bg-blue-500/10 border-blue-500/30",
+      badge: "bg-blue-500/20 text-blue-300 border border-blue-500/40",
+      label: "Strong",
+      points: [
+        { ok: true,  text: "Consistent JSON format matching the example" },
+        { ok: true,  text: "Attempts and correctly derives staging (IIA)" },
+        { ok: true,  text: "Captures receptor status and Ki-67" },
+        { ok: true,  text: "Correctly captures pending Oncotype DX" },
+        { ok: false, text: "T2N1M0 staging may vary — no explicit reasoning shown" },
+      ],
+    },
+  },
+  {
+    id: "cot",
+    label: "Chain-of-Thought",
+    badge: { label: "Excellent", color: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
+    tabColor: "text-emerald-300 border-emerald-400",
+    activeTab: "bg-emerald-500/10 border-b-2 border-emerald-400 text-emerald-300",
+    inactiveTab: "text-gray-500 hover:text-emerald-300/70",
+    prompt: `You are an expert oncology data abstractor. Before extracting data, reason through each field step by step.
+
+For staging, use AJCC 8th edition criteria:
+- T stage: based on tumor size (T1 ≤2cm, T2 2–5cm, T3 >5cm)
+- N stage: based on lymph node involvement (N0=none, N1=1-3 ipsilateral axillary LN)
+- M stage: based on distant metastasis (M0=none, M1=present)
+
+Think through each field, then output your final JSON.
+
+DISCHARGE SUMMARY:
+${CLINICAL_NOTE}
+
+Step through: T stage → N stage → M stage → Overall stage → Then extract all fields.`,
+    output: `REASONING:
+T stage: Tumor is 2.8cm → falls in 2-5cm range → T2
+N stage: Sentinel lymph node biopsy 1/3 positive → 1 regional LN involved → N1
+M stage: PET/CT negative for distant metastases → M0
+Overall stage: T2N1M0 → Stage IIA (AJCC 8th Ed.)
+
+EXTRACTION:
+{
+  "diagnosis": "Invasive ductal carcinoma, left breast",
+  "icd10_code": "C50.912",
+  "stage": "IIA",
+  "tnm": {
+    "T": "T2",
+    "N": "N1",
+    "M": "M0",
+    "rationale": "2.8cm mass (T2), 1/3 SLN positive (N1), PET/CT M0"
+  },
+  "receptor_status": { "ER": "+", "PR": "+", "HER2": "-" },
+  "ki67": "22%",
+  "tumor_size_cm": 2.8,
+  "location": "Left breast, upper outer quadrant",
+  "surgery": "Left partial mastectomy + SLND",
+  "systemic_therapy": "Anastrozole 1mg daily",
+  "referrals": ["Radiation oncology"],
+  "pending": ["Oncotype DX score"],
+  "confidence": "HIGH"
+}`,
+    outputLabel: "Typical LLM Output",
+    assessment: {
+      color: "bg-emerald-500/10 border-emerald-500/30",
+      badge: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
+      label: "Excellent",
+      points: [
+        { ok: true, text: "Step-by-step T/N/M reasoning is explicit and auditable" },
+        { ok: true, text: "Correct AJCC 8th Ed. staging: T2N1M0 = Stage IIA" },
+        { ok: true, text: "Rationale field documents why each stage was assigned" },
+        { ok: true, text: "Comprehensive extraction including tumor size and location" },
+        { ok: true, text: "Confidence flag helps downstream reviewers prioritize QA" },
+      ],
+    },
+  },
+];
+
+function App() {
+  const [activeTab, setActiveTab] = useState("zero-shot");
+  const pattern = PATTERNS.find(p => p.id === activeTab);
+
+  return (
+    <div className="min-h-screen" style={{ background: "#1a1a2e" }}>
+      {/* Header */}
+      <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+        <div className="max-w-4xl mx-auto px-6 py-5">
+          <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 3</span>
+          <h1 className="text-white font-bold text-xl mt-0.5">Prompting Pattern Comparison Tool</h1>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        {/* Clinical Note */}
+        <div className="mb-7 bg-[#0f0f23] border border-white/10 rounded-2xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-white/10 bg-black/20 flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-400" />
+            <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">Source Clinical Note</span>
+          </div>
+          <div className="p-5">
+            <p className="text-gray-300 text-sm leading-relaxed">{CLINICAL_NOTE}</p>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 bg-[#0f0f23] rounded-xl p-1 border border-white/10">
+          {PATTERNS.map(p => (
+            <button
+              key={p.id}
+              onClick={() => setActiveTab(p.id)}
+              className={`flex-1 py-2.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                activeTab === p.id
+                  ? p.id === "zero-shot"
+                    ? "bg-amber-500/15 text-amber-300"
+                    : p.id === "few-shot"
+                    ? "bg-blue-500/15 text-blue-300"
+                    : "bg-emerald-500/15 text-emerald-300"
+                  : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              <span>{p.label}</span>
+              <span className={`text-xs px-2 py-0.5 rounded-full border font-medium hidden sm:inline-block ${p.badge.color}`}>
+                {p.badge.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Pattern content */}
+        <div className="fade-in-up" key={activeTab}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+            {/* Prompt */}
+            <div className="bg-[#0a0a1a] border border-white/10 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-white/10 bg-black/20 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-violet-400" />
+                <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">The Prompt</span>
+              </div>
+              <pre className="code-block text-gray-300 text-xs p-5 overflow-auto leading-relaxed max-h-80">{pattern.prompt}</pre>
+            </div>
+
+            {/* Output */}
+            <div className="bg-[#0a0a1a] border border-white/10 rounded-2xl overflow-hidden">
+              <div className="px-5 py-3 border-b border-white/10 bg-black/20 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
+                <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">{pattern.outputLabel}</span>
+              </div>
+              <pre className="code-block text-gray-300 text-xs p-5 overflow-auto leading-relaxed max-h-80">{pattern.output}</pre>
+            </div>
+          </div>
+
+          {/* Assessment */}
+          <div className={`rounded-2xl border p-5 ${pattern.assessment.color}`}>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-white font-bold text-sm">Quality Assessment</span>
+              <span className={`text-xs px-3 py-1 rounded-full font-bold border ${pattern.assessment.badge}`}>
+                {pattern.assessment.label}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {pattern.assessment.points.map((point, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <span className={`text-sm mt-0.5 shrink-0 font-bold ${point.ok ? "text-emerald-400" : "text-rose-400"}`}>
+                    {point.ok ? "✓" : "✗"}
+                  </span>
+                  <span className={`text-xs leading-relaxed ${point.ok ? "text-gray-300" : "text-gray-400"}`}>
+                    {point.text}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation hint */}
+          <div className="mt-5 flex items-center justify-center gap-3">
+            {PATTERNS.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setActiveTab(p.id)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
+                  activeTab === p.id ? "bg-indigo-400 scale-125" : "bg-white/20 hover:bg-white/40"
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <p className="text-center text-gray-600 text-xs mt-10">
+          CCI Interactive Practice &mdash; Lesson 3 of 5
+        </p>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
