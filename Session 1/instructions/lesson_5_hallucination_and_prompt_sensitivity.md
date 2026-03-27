@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Lesson 5: Hallucination & Prompt Sensitivity"
+permalink: /session-01/lesson-5-instructions/
+---
+
 # CCI Session 1 — Lesson 5 of 5: Hallucination, Prompt Sensitivity, and Why Every Word Matters
 
 **Estimated time:** 20 minutes (12 content + 8 practice)

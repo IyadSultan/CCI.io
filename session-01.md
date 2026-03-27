@@ -212,6 +212,17 @@ permalink: /session-01/
     transform: translateY(-1px);
   }
 
+  .s1-btn-instructions {
+    background: #F3E5F5;
+    border-color: #CE93D8;
+    color: #7B1FA2 !important;
+  }
+
+  .s1-btn-instructions:hover {
+    background: #E1BEE7;
+    transform: translateY(-1px);
+  }
+
   .s1-btn-icon {
     font-size: 0.9rem;
     line-height: 1;
@@ -280,14 +291,17 @@ permalink: /session-01/
       <li>Discuss safety boundaries and human-in-the-loop review</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-01/lesson-1-instructions/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=9b46dbcd-14f6-476e-be2f-856510779a55" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/practice/lesson1-flashcards.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Flashcards
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/quizzes/lesson1-quiz.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Take Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
     </div>
   </div>
@@ -310,14 +324,17 @@ permalink: /session-01/
       <li>Add clinical guardrails in every section</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-01/lesson-2-instructions/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=b15e8b42-8bf1-4d79-bd89-26dfa1f3290b" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/practice/lesson2-prompt-builder.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Prompt Builder
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/quizzes/lesson2-quiz.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Take Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
     </div>
   </div>
@@ -340,14 +357,17 @@ permalink: /session-01/
       <li>Use prompt templates for repeatable results</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-01/lesson-3-instructions/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=b14d58bd-f8e5-49ff-a530-e7a70b0ad9c4" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/practice/lesson3-pattern-comparison.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Pattern Comparison
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/quizzes/lesson3-quiz.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Take Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
     </div>
   </div>
@@ -370,14 +390,17 @@ permalink: /session-01/
       <li>Validate JSON shape before using output downstream</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-01/lesson-4-instructions/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=2654187c-889b-493c-9538-15ff72e5bcaf" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/practice/lesson4-schema-designer.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Schema Designer
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/quizzes/lesson4-quiz.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Take Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
     </div>
   </div>
@@ -400,14 +423,17 @@ permalink: /session-01/
       <li>Review grounding techniques: ask for evidence, source, and confidence</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-01/lesson-5-instructions/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=4641aae7-6ea6-40b2-8d24-e4bfe2e80751" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/practice/lesson5-hallucination-detector.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Hallucination Detector
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/quizzes/lesson5-quiz.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Take Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
     </div>
   </div>
@@ -431,7 +457,10 @@ permalink: /session-01/
     </ul>
     <div class="s1-actions">
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/214ec973-0f49-4647-bc3c-3f2cb5838470?artifactId=d526af63-7c6d-4af0-b630-7db8dff9eef3" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Lesson
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
+      <a class="s1-btn s1-btn-practice" href="https://bbycroft.net/llm" target="_blank" style="background:#E3F2FD;border-color:#90CAF9;color:#0D47A1 !important;">
+        <span class="s1-btn-icon">&#127760;</span> LLM Visualization (3D)
       </a>
     </div>
   </div>

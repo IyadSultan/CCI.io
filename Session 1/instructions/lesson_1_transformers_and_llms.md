@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Lesson 1: Transformers & LLMs"
+permalink: /session-01/lesson-1-instructions/
+---
+
 # CCI Session 1 — Lesson 1 of 5: What Are LLMs and the Transformer Revolution in Medicine
 
 **Estimated time:** 25 minutes (15 content + 10 practice)

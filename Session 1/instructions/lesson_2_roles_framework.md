@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Lesson 2: ROLES Framework"
+permalink: /session-01/lesson-2-instructions/
+---
+
 # CCI Session 1 — Lesson 2 of 5: The ROLES Framework for Clinical Prompting
 
 **Estimated time:** 25 minutes (15 content + 10 practice)
