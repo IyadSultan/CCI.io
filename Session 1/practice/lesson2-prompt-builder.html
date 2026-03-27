@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2 — ROLES Prompt Builder</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #1a1a2e; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.4s ease forwards; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide-down { animation: slideDown 0.35s ease forwards; }
+    textarea { resize: vertical; }
+    .code-block {
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const ROLES_FIELDS = [
+  {
+    key: "R",
+    label: "Role",
+    color: "indigo",
+    hint: "Who should the model act as?",
+    placeholder: "e.g., You are an expert oncology data abstractor with 10 years of experience in cancer registry documentation...",
+    example: "You are an expert oncology data abstractor with deep knowledge of AJCC staging and ICD-10-CM coding.",
+  },
+  {
+    key: "O",
+    label: "Objective",
+    color: "blue",
+    hint: "What is the exact task to perform?",
+    placeholder: "e.g., Extract structured oncology data fields from the following hospital discharge summary...",
+    example: "Extract structured oncology data from the discharge summary below and return it as a JSON object.",
+  },
+  {
+    key: "L",
+    label: "Layout",
+    color: "violet",
+    hint: "What format should the output use?",
+    placeholder: "e.g., Return a JSON object with fields: diagnosis, icd10_code, stage, tnm, treatment, medications...",
+    example: 'Return a JSON object with keys: "diagnosis", "icd10_code", "stage", "tnm", "treatment", "medications", "follow_up". Use null for any field not mentioned.',
+  },
+  {
+    key: "E",
+    label: "Examples",
+    color: "sky",
+    hint: "Provide 1-2 input/output examples (few-shot).",
+    placeholder: "e.g., Input: '58F with stage IIA ER+ IDC...' → Output: { diagnosis: 'Invasive ductal carcinoma', stage: 'IIA', ... }",
+    example: 'Input: "58M with newly diagnosed stage IIIA non-small cell lung cancer..."\nOutput: { "diagnosis": "NSCLC", "icd10_code": "C34.10", "stage": "IIIA", "tnm": "T2bN2M0" }',
+  },
+  {
+    key: "S",
+    label: "Safeguards",
+    color: "teal",
+    hint: "What constraints or rules must the model follow?",
+    placeholder: "e.g., Do not infer or fabricate data. If a field is not explicitly stated, return null. Never guess staging...",
+    example: "Do not infer or hallucinate values. Return null for any field not explicitly stated in the note. Do not interpret ambiguous language — flag it with a string value of 'AMBIGUOUS'.",
+  },
+];
+
+const COLOR_MAP = {
+  indigo: {
+    border: "border-indigo-500/50",
+    bg: "bg-indigo-500/10",
+    badge: "bg-indigo-600 text-white",
+    label: "text-indigo-300",
+    ring: "focus:ring-indigo-500/40 focus:border-indigo-400",
+    dot: "bg-indigo-500",
+  },
+  blue: {
+    border: "border-blue-500/50",
+    bg: "bg-blue-500/10",
+    badge: "bg-blue-600 text-white",
+    label: "text-blue-300",
+    ring: "focus:ring-blue-500/40 focus:border-blue-400",
+    dot: "bg-blue-500",
+  },
+  violet: {
+    border: "border-violet-500/50",
+    bg: "bg-violet-500/10",
+    badge: "bg-violet-600 text-white",
+    label: "text-violet-300",
+    ring: "focus:ring-violet-500/40 focus:border-violet-400",
+    dot: "bg-violet-500",
+  },
+  sky: {
+    border: "border-sky-500/50",
+    bg: "bg-sky-500/10",
+    badge: "bg-sky-600 text-white",
+    label: "text-sky-300",
+    ring: "focus:ring-sky-500/40 focus:border-sky-400",
+    dot: "bg-sky-500",
+  },
+  teal: {
+    border: "border-teal-500/50",
+    bg: "bg-teal-500/10",
+    badge: "bg-teal-600 text-white",
+    label: "text-teal-300",
+    ring: "focus:ring-teal-500/40 focus:border-teal-400",
+    dot: "bg-teal-500",
+  },
+};
+
+function RolesField({ field, value, onChange }) {
+  const [showExample, setShowExample] = useState(false);
+  const c = COLOR_MAP[field.color];
+  const filled = value.trim().length > 0;
+
+  return (
+    <div className={`rounded-xl border ${filled ? c.border : "border-white/10"} ${filled ? c.bg : "bg-[#0f0f23]"} p-5 transition-all duration-300`}>
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <span className={`${c.badge} font-black text-sm w-8 h-8 rounded-lg flex items-center justify-center shrink-0`}>
+            {field.key}
+          </span>
+          <div>
+            <h3 className={`font-bold text-base ${filled ? c.label : "text-white"}`}>{field.label}</h3>
+            <p className="text-gray-500 text-xs">{field.hint}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {filled && (
+            <span className={`text-xs font-semibold ${c.label} flex items-center gap-1`}>
+              <span>&#10003;</span> Filled
+            </span>
+          )}
+          <button
+            onClick={() => setShowExample(e => !e)}
+            className="text-xs text-gray-500 hover:text-gray-300 border border-white/10 hover:border-white/25 px-2 py-1 rounded transition-all"
+          >
+            {showExample ? "Hide hint" : "Show example"}
+          </button>
+        </div>
+      </div>
+      {showExample && (
+        <div className="mb-3 slide-down bg-black/30 border border-white/10 rounded-lg p-3">
+          <p className="text-xs text-gray-400 font-medium mb-1">Example:</p>
+          <p className="text-gray-300 text-xs code-block">{field.example}</p>
+        </div>
+      )}
+      <textarea
+        rows={3}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={field.placeholder}
+        className={`w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 text-gray-200 text-sm placeholder-gray-600 outline-none focus:ring-2 ${c.ring} transition-all duration-200`}
+      />
+    </div>
+  );
+}
+
+function App() {
+  const [values, setValues] = useState({ R: "", O: "", L: "", E: "", S: "" });
+  const [assembled, setAssembled] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const filledCount = useMemo(
+    () => Object.values(values).filter(v => v.trim().length > 0).length,
+    [values]
+  );
+  const progress = Math.round((filledCount / 5) * 100);
+
+  const handleChange = (key, val) => {
+    setValues(prev => ({ ...prev, [key]: val }));
+    setAssembled(null);
+  };
+
+  const assemblePrompt = () => {
+    const parts = ROLES_FIELDS.map(f => {
+      const val = values[f.key].trim();
+      return val ? `### ${f.key} — ${f.label}\n${val}` : null;
+    }).filter(Boolean);
+    setAssembled(parts.join("\n\n"));
+  };
+
+  const copyToClipboard = () => {
+    if (!assembled) return;
+    navigator.clipboard.writeText(assembled).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: "#1a1a2e" }}>
+      {/* Header */}
+      <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+        <div className="max-w-3xl mx-auto px-6 py-5">
+          <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 2</span>
+          <h1 className="text-white font-bold text-xl mt-0.5">ROLES Prompt Builder</h1>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-8">
+        {/* Scenario */}
+        <div className="mb-7 bg-gradient-to-r from-indigo-900/40 to-violet-900/30 border border-indigo-500/30 rounded-2xl p-5">
+          <p className="text-xs font-semibold tracking-widest text-indigo-400 uppercase mb-2">Your Scenario</p>
+          <p className="text-gray-200 text-sm leading-relaxed">
+            You need to build a prompt that extracts structured oncology data from discharge summaries for a hospital cancer registry.
+            Use the ROLES framework to craft a prompt that is precise, safe, and reliable.
+          </p>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-7 bg-[#0f0f23] rounded-xl border border-white/10 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-gray-400 text-sm font-medium">{filledCount} / 5 components filled</span>
+            <span className="text-indigo-400 font-bold text-sm">{progress}%</span>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
+            <div
+              className="h-2.5 rounded-full transition-all duration-500 ease-out bg-gradient-to-r from-indigo-500 to-violet-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="flex gap-2 mt-3 flex-wrap">
+            {ROLES_FIELDS.map(f => {
+              const filled = values[f.key].trim().length > 0;
+              const c = COLOR_MAP[f.color];
+              return (
+                <span
+                  key={f.key}
+                  className={`text-xs px-2 py-1 rounded-md font-semibold transition-all duration-200 ${
+                    filled ? `${c.badge}` : "bg-white/5 text-gray-600"
+                  }`}
+                >
+                  {f.key}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Fields */}
+        <div className="flex flex-col gap-4 mb-7">
+          {ROLES_FIELDS.map(field => (
+            <RolesField
+              key={field.key}
+              field={field}
+              value={values[field.key]}
+              onChange={val => handleChange(field.key, val)}
+            />
+          ))}
+        </div>
+
+        {/* Assemble button */}
+        <button
+          onClick={assemblePrompt}
+          disabled={filledCount === 0}
+          className={`w-full py-4 rounded-xl font-bold text-base transition-all duration-200 mb-6 ${
+            filledCount === 0
+              ? "bg-white/5 text-gray-600 cursor-not-allowed"
+              : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40 hover:shadow-indigo-900/60"
+          }`}
+        >
+          Assemble My Prompt
+        </button>
+
+        {/* Output */}
+        {assembled && (
+          <div className="fade-in-up">
+            <div className="bg-[#0a0a1a] border border-indigo-500/30 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/20">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-rose-500" />
+                  <span className="w-3 h-3 rounded-full bg-amber-500" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-gray-400 text-xs ml-2 font-medium">assembled-prompt.txt</span>
+                </div>
+                <button
+                  onClick={copyToClipboard}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                    copied
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <pre className="code-block text-gray-300 text-sm p-5 overflow-x-auto leading-relaxed">{assembled}</pre>
+            </div>
+
+            <div className="mt-4 bg-emerald-900/30 border border-emerald-500/30 rounded-xl p-4 flex items-start gap-3">
+              <span className="text-emerald-400 text-lg mt-0.5">&#10003;</span>
+              <div>
+                <p className="text-emerald-300 font-semibold text-sm">Prompt assembled successfully!</p>
+                <p className="text-emerald-200/60 text-xs mt-0.5">
+                  Copy this prompt and paste it into the OpenAI Playground to test your extraction against a sample discharge summary.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <p className="text-center text-gray-600 text-xs mt-10">
+          CCI Interactive Practice &mdash; Lesson 2 of 5
+        </p>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

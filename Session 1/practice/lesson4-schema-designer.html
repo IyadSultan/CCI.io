@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4 — JSON Schema Designer for Clinical Extraction</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #1a1a2e; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.35s ease forwards; }
+    .code-block {
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useCallback } = React;
+
+const NOTE_TYPES = [
+  {
+    id: "discharge",
+    label: "Discharge Summary",
+    icon: "D",
+    color: "indigo",
+    description: "Inpatient hospital discharge records",
+    fields: ["diagnosis", "icd10_code", "stage", "tnm", "treatment", "medications", "follow_up"],
+  },
+  {
+    id: "radiology",
+    label: "Radiology Report",
+    icon: "R",
+    color: "blue",
+    description: "CT, MRI, PET/CT, X-ray reports",
+    fields: ["modality", "body_region", "findings", "impression", "comparison", "recommendations"],
+  },
+  {
+    id: "operative",
+    label: "Operative Note",
+    icon: "O",
+    color: "violet",
+    description: "Surgical procedure documentation",
+    fields: ["procedure", "cpt_code", "indication", "findings", "complications", "specimens_sent"],
+  },
+  {
+    id: "clinic",
+    label: "Clinic Note",
+    icon: "C",
+    color: "teal",
+    description: "Outpatient clinic visit notes",
+    fields: ["chief_complaint", "assessment", "plan", "medications_changed", "next_appointment"],
+  },
+];
+
+const FIELD_DESCRIPTIONS = {
+  diagnosis: "Primary clinical diagnosis",
+  icd10_code: "ICD-10-CM code for diagnosis",
+  stage: "AJCC cancer stage (e.g., IIA)",
+  tnm: "TNM staging components",
+  treatment: "Treatments administered or planned",
+  medications: "Medications prescribed or changed",
+  follow_up: "Follow-up instructions or referrals",
+  modality: "Imaging modality used",
+  body_region: "Anatomical region imaged",
+  findings: "Detailed imaging or operative findings",
+  impression: "Radiologist's or surgeon's impression",
+  comparison: "Prior study used for comparison",
+  recommendations: "Recommended next steps",
+  procedure: "Name of surgical procedure",
+  cpt_code: "CPT billing code for procedure",
+  indication: "Clinical indication for surgery",
+  complications: "Intraoperative or postoperative complications",
+  specimens_sent: "Tissue specimens sent to pathology",
+  chief_complaint: "Patient's primary complaint",
+  assessment: "Clinician's assessment",
+  plan: "Treatment plan",
+  medications_changed: "Medications added, stopped, or modified",
+  next_appointment: "Next scheduled appointment",
+};
+
+const FIELD_TYPES = {
+  diagnosis: "string",
+  icd10_code: "string",
+  stage: "string",
+  tnm: "object",
+  treatment: "array",
+  medications: "array",
+  follow_up: "string",
+  modality: "string",
+  body_region: "string",
+  findings: "string",
+  impression: "string",
+  comparison: "string",
+  recommendations: "array",
+  procedure: "string",
+  cpt_code: "string",
+  indication: "string",
+  findings_op: "string",
+  complications: "array",
+  specimens_sent: "array",
+  chief_complaint: "string",
+  assessment: "string",
+  plan: "string",
+  medications_changed: "array",
+  next_appointment: "string",
+};
+
+const COLOR_MAP = {
+  indigo: {
+    badge: "bg-indigo-600 text-white",
+    pill_on: "bg-indigo-500 text-white border-indigo-400",
+    pill_off: "bg-indigo-500/10 text-indigo-300 border-indigo-500/30 hover:bg-indigo-500/20",
+    border: "border-indigo-500/40",
+    bg: "bg-indigo-500/10",
+    label: "text-indigo-300",
+    active_card: "border-indigo-500 bg-indigo-900/20",
+  },
+  blue: {
+    badge: "bg-blue-600 text-white",
+    pill_on: "bg-blue-500 text-white border-blue-400",
+    pill_off: "bg-blue-500/10 text-blue-300 border-blue-500/30 hover:bg-blue-500/20",
+    border: "border-blue-500/40",
+    bg: "bg-blue-500/10",
+    label: "text-blue-300",
+    active_card: "border-blue-500 bg-blue-900/20",
+  },
+  violet: {
+    badge: "bg-violet-600 text-white",
+    pill_on: "bg-violet-500 text-white border-violet-400",
+    pill_off: "bg-violet-500/10 text-violet-300 border-violet-500/30 hover:bg-violet-500/20",
+    border: "border-violet-500/40",
+    bg: "bg-violet-500/10",
+    label: "text-violet-300",
+    active_card: "border-violet-500 bg-violet-900/20",
+  },
+  teal: {
+    badge: "bg-teal-600 text-white",
+    pill_on: "bg-teal-500 text-white border-teal-400",
+    pill_off: "bg-teal-500/10 text-teal-300 border-teal-500/30 hover:bg-teal-500/20",
+    border: "border-teal-500/40",
+    bg: "bg-teal-500/10",
+    label: "text-teal-300",
+    active_card: "border-teal-500 bg-teal-900/20",
+  },
+};
+
+function buildSchemaJSON(fields) {
+  const obj = {};
+  fields.forEach(f => {
+    const type = FIELD_TYPES[f] || "string";
+    if (type === "array") obj[f] = ["string | null"];
+    else if (type === "object") obj[f] = { T: "string | null", N: "string | null", M: "string | null" };
+    else obj[f] = "string | null";
+  });
+  return JSON.stringify(obj, null, 2);
+}
+
+function buildPromptSnippet(noteType, fields) {
+  const nt = NOTE_TYPES.find(n => n.id === noteType);
+  const schema = buildSchemaJSON(fields);
+  const icdNote = fields.includes("icd10_code") || fields.includes("diagnosis")
+    ? "\n- Use ICD-10-CM codes for all diagnoses where applicable."
+    : "";
+  const arrayNote = fields.some(f => FIELD_TYPES[f] === "array")
+    ? "\n- Use arrays for fields that may contain multiple values."
+    : "";
+
+  return `You are an expert clinical data abstractor. Extract structured data from the ${nt ? nt.label : "clinical note"} below.
+
+RULES:
+- Return ONLY valid JSON matching the schema below.
+- Use null for any field not explicitly stated in the note.
+- Do not infer, assume, or hallucinate values.${icdNote}${arrayNote}
+- Flag ambiguous values as "AMBIGUOUS" rather than guessing.
+
+OUTPUT SCHEMA:
+${schema}
+
+CLINICAL NOTE:
+[Paste your ${nt ? nt.label.toLowerCase() : "note"} here]`;
+}
+
+function App() {
+  const [selectedType, setSelectedType] = useState("discharge");
+  const [enabledFields, setEnabledFields] = useState(() => {
+    const nt = NOTE_TYPES.find(n => n.id === "discharge");
+    return new Set(nt.fields);
+  });
+  const [customInput, setCustomInput] = useState("");
+  const [customFields, setCustomFields] = useState([]);
+  const [promptOutput, setPromptOutput] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const currentType = NOTE_TYPES.find(n => n.id === selectedType);
+  const c = COLOR_MAP[currentType.color];
+
+  const handleTypeChange = (id) => {
+    setSelectedType(id);
+    const nt = NOTE_TYPES.find(n => n.id === id);
+    setEnabledFields(new Set(nt.fields));
+    setCustomFields([]);
+    setCustomInput("");
+    setPromptOutput(null);
+  };
+
+  const toggleField = (field) => {
+    setEnabledFields(prev => {
+      const next = new Set(prev);
+      if (next.has(field)) next.delete(field);
+      else next.add(field);
+      return next;
+    });
+    setPromptOutput(null);
+  };
+
+  const addCustomFields = () => {
+    const parts = customInput.split(",").map(s => s.trim().toLowerCase().replace(/\s+/g, "_")).filter(Boolean);
+    if (parts.length === 0) return;
+    setCustomFields(prev => {
+      const combined = [...new Set([...prev, ...parts])];
+      return combined;
+    });
+    setEnabledFields(prev => {
+      const next = new Set(prev);
+      parts.forEach(p => next.add(p));
+      return next;
+    });
+    setCustomInput("");
+    setPromptOutput(null);
+  };
+
+  const removeCustomField = (field) => {
+    setCustomFields(prev => prev.filter(f => f !== field));
+    setEnabledFields(prev => {
+      const next = new Set(prev);
+      next.delete(field);
+      return next;
+    });
+    setPromptOutput(null);
+  };
+
+  const allFields = [...currentType.fields, ...customFields];
+  const activeFields = allFields.filter(f => enabledFields.has(f));
+
+  const generatePrompt = () => {
+    setPromptOutput(buildPromptSnippet(selectedType, activeFields));
+  };
+
+  const copyToClipboard = () => {
+    if (!promptOutput) return;
+    navigator.clipboard.writeText(promptOutput).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: "#1a1a2e" }}>
+      {/* Header */}
+      <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+        <div className="max-w-4xl mx-auto px-6 py-5">
+          <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 4</span>
+          <h1 className="text-white font-bold text-xl mt-0.5">JSON Schema Designer for Clinical Extraction</h1>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        {/* Step 1: Note Type */}
+        <div className="mb-7">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">1</span>
+            <h2 className="text-white font-semibold text-base">Select Note Type</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {NOTE_TYPES.map(nt => {
+              const cc = COLOR_MAP[nt.color];
+              const isActive = selectedType === nt.id;
+              return (
+                <button
+                  key={nt.id}
+                  onClick={() => handleTypeChange(nt.id)}
+                  className={`rounded-xl border p-4 text-left transition-all duration-200 ${
+                    isActive ? cc.active_card : "border-white/10 bg-[#0f0f23] hover:border-white/25"
+                  }`}
+                >
+                  <span className={`w-8 h-8 rounded-lg ${cc.badge} font-black text-sm flex items-center justify-center mb-2`}>
+                    {nt.icon}
+                  </span>
+                  <p className={`font-semibold text-sm ${isActive ? cc.label : "text-gray-300"}`}>{nt.label}</p>
+                  <p className="text-gray-500 text-xs mt-0.5">{nt.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Step 2: Toggle Fields */}
+        <div className="mb-7">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">2</span>
+            <h2 className="text-white font-semibold text-base">Toggle Fields</h2>
+            <span className="text-gray-500 text-sm">({activeFields.length} selected)</span>
+          </div>
+          <div className="bg-[#0f0f23] rounded-xl border border-white/10 p-5">
+            <div className="flex flex-wrap gap-2 mb-4">
+              {currentType.fields.map(field => {
+                const isOn = enabledFields.has(field);
+                return (
+                  <button
+                    key={field}
+                    onClick={() => toggleField(field)}
+                    title={FIELD_DESCRIPTIONS[field] || ""}
+                    className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-all duration-200 ${
+                      isOn ? c.pill_on : c.pill_off
+                    }`}
+                  >
+                    {isOn ? "✓ " : ""}{field}
+                  </button>
+                );
+              })}
+              {customFields.map(field => (
+                <span key={field} className="flex items-center gap-1 px-3 py-1.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs font-semibold">
+                  {field}
+                  <button onClick={() => removeCustomField(field)} className="ml-1 text-emerald-400 hover:text-white font-bold">×</button>
+                </span>
+              ))}
+            </div>
+            <div className="border-t border-white/10 pt-4">
+              <p className="text-gray-500 text-xs mb-2 font-medium">Add custom fields (comma-separated):</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={customInput}
+                  onChange={e => setCustomInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && addCustomFields()}
+                  placeholder="e.g., biomarker, pdl1_score, mutation_status"
+                  className="flex-1 bg-black/30 border border-white/10 rounded-lg px-4 py-2 text-gray-200 text-sm placeholder-gray-600 outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-400 transition-all"
+                />
+                <button
+                  onClick={addCustomFields}
+                  className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition-all duration-200"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 3: Generate */}
+        <div className="mb-7">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-black flex items-center justify-center">3</span>
+            <h2 className="text-white font-semibold text-base">Generate Prompt Snippet</h2>
+          </div>
+          <button
+            onClick={generatePrompt}
+            disabled={activeFields.length === 0}
+            className={`w-full py-4 rounded-xl font-bold text-base transition-all duration-200 ${
+              activeFields.length === 0
+                ? "bg-white/5 text-gray-600 cursor-not-allowed"
+                : `bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40`
+            }`}
+          >
+            Generate Prompt Snippet ({activeFields.length} fields)
+          </button>
+        </div>
+
+        {/* Output */}
+        {promptOutput && (
+          <div className="fade-in-up">
+            <div className="bg-[#0a0a1a] border border-indigo-500/30 rounded-2xl overflow-hidden mb-4">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-black/20">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-rose-500" />
+                  <span className="w-3 h-3 rounded-full bg-amber-500" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                  <span className="text-gray-400 text-xs ml-2 font-medium">extraction-prompt.txt</span>
+                </div>
+                <button
+                  onClick={copyToClipboard}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 ${
+                    copied
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <pre className="code-block text-gray-300 text-xs p-5 overflow-auto leading-relaxed">{promptOutput}</pre>
+            </div>
+
+            {/* Rules reminder */}
+            <div className="bg-[#0f0f23] border border-white/10 rounded-xl p-4">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Schema Rules Applied</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {[
+                  { icon: "∅", label: "null for missing", desc: "Any field not in the note returns null" },
+                  { icon: "[ ]", label: "arrays for multiples", desc: "Fields like medications use arrays" },
+                  { icon: "ICD", label: "ICD-10 for diagnoses", desc: "Diagnoses get ICD-10-CM codes" },
+                ].map((r, i) => (
+                  <div key={i} className="flex items-start gap-3 bg-black/20 rounded-lg p-3">
+                    <span className="text-indigo-400 font-black text-sm font-mono w-8 shrink-0 text-center">{r.icon}</span>
+                    <div>
+                      <p className="text-gray-300 text-xs font-semibold">{r.label}</p>
+                      <p className="text-gray-500 text-xs">{r.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <p className="text-center text-gray-600 text-xs mt-10">
+          CCI Interactive Practice &mdash; Lesson 4 of 5
+        </p>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

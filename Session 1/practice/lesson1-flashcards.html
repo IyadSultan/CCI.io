@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1 — Transformer Concepts Flashcard Deck</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #1a1a2e; }
+    .flip-card { perspective: 1000px; }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card-inner.flipped { transform: rotateY(180deg); }
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 1rem;
+    }
+    .flip-card-back { transform: rotateY(180deg); }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.4s ease forwards; }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.6); }
+      70%  { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
+      100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    }
+    .pulse-ring { animation: pulse-ring 1.5s infinite; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useCallback } = React;
+
+const CARDS = [
+  {
+    term: "Transformer",
+    definition: "The neural network architecture behind modern LLMs. Uses attention mechanisms to process all parts of text simultaneously.",
+    icon: "T",
+    color: "from-indigo-600 to-violet-700",
+  },
+  {
+    term: "Token",
+    definition: "The smallest unit of text an LLM processes. 'Pembrolizumab' might become ['pem', 'brol', 'iz', 'umab'].",
+    icon: "Tk",
+    color: "from-blue-600 to-cyan-700",
+  },
+  {
+    term: "Attention Mechanism",
+    definition: "Allows the model to weigh how important each token is relative to every other token.",
+    icon: "A",
+    color: "from-sky-600 to-blue-700",
+  },
+  {
+    term: "Embedding",
+    definition: "A numerical vector representation of a token. Similar concepts get similar numbers.",
+    icon: "E",
+    color: "from-teal-600 to-emerald-700",
+  },
+  {
+    term: "Hallucination",
+    definition: "When an LLM generates text that is fluent and plausible but factually incorrect.",
+    icon: "H",
+    color: "from-rose-600 to-pink-700",
+  },
+  {
+    term: "Context Window",
+    definition: "The maximum number of tokens an LLM can process at once.",
+    icon: "C",
+    color: "from-amber-600 to-orange-700",
+  },
+  {
+    term: "LLM",
+    definition: "An AI model trained on massive text data to predict and generate language. They are statistical pattern matchers.",
+    icon: "L",
+    color: "from-purple-600 to-indigo-700",
+  },
+  {
+    term: "Fine-tuning",
+    definition: "Additional training of a pre-trained LLM on domain-specific data to improve performance.",
+    icon: "F",
+    color: "from-green-600 to-teal-700",
+  },
+];
+
+function Flashcard({ card, index, isFlipped, onFlip, status, onMark }) {
+  return (
+    <div className="fade-in-up" style={{ animationDelay: `${index * 60}ms` }}>
+      <div className="flip-card w-full h-56 cursor-pointer" onClick={onFlip}>
+        <div className={`flip-card-inner ${isFlipped ? "flipped" : ""}`}>
+          {/* FRONT */}
+          <div className={`flip-card-front bg-gradient-to-br ${card.color} flex flex-col items-center justify-center shadow-xl border border-white/10`}>
+            <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center mb-4 text-white font-black text-xl">
+              {card.icon}
+            </div>
+            <h3 className="text-white font-bold text-xl text-center px-4">{card.term}</h3>
+            <p className="text-white/60 text-sm mt-2">Click to reveal</p>
+          </div>
+          {/* BACK */}
+          <div className="flip-card-back bg-[#0f0f23] border border-indigo-500/40 flex flex-col items-center justify-between shadow-xl px-6 py-6">
+            <div className="flex-1 flex items-center">
+              <p className="text-gray-100 text-base text-center leading-relaxed">{card.definition}</p>
+            </div>
+            {isFlipped && (
+              <div className="flex gap-3 mt-4 w-full" onClick={e => e.stopPropagation()}>
+                <button
+                  onClick={() => onMark("learning")}
+                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border ${
+                    status === "learning"
+                      ? "bg-amber-500 border-amber-400 text-white"
+                      : "bg-amber-500/10 border-amber-500/40 text-amber-300 hover:bg-amber-500/20"
+                  }`}
+                >
+                  Still learning
+                </button>
+                <button
+                  onClick={() => onMark("mastered")}
+                  className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border ${
+                    status === "mastered"
+                      ? "bg-emerald-500 border-emerald-400 text-white"
+                      : "bg-emerald-500/10 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20"
+                  }`}
+                >
+                  Got it!
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Status badge */}
+      <div className="mt-2 h-5 flex items-center justify-center">
+        {status === "mastered" && (
+          <span className="text-emerald-400 text-xs font-medium flex items-center gap-1">
+            <span>&#10003;</span> Mastered
+          </span>
+        )}
+        {status === "learning" && (
+          <span className="text-amber-400 text-xs font-medium flex items-center gap-1">
+            <span>&#9679;</span> Still learning
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [flipped, setFlipped] = useState({});
+  const [statuses, setStatuses] = useState({});
+
+  const masteredCount = Object.values(statuses).filter(s => s === "mastered").length;
+  const progress = Math.round((masteredCount / CARDS.length) * 100);
+  const allDone = masteredCount === CARDS.length;
+
+  const toggleFlip = useCallback((i) => {
+    setFlipped(prev => ({ ...prev, [i]: !prev[i] }));
+  }, []);
+
+  const markCard = useCallback((i, status) => {
+    setStatuses(prev => ({ ...prev, [i]: status }));
+  }, []);
+
+  const resetAll = () => {
+    setFlipped({});
+    setStatuses({});
+  };
+
+  return (
+    <div className="min-h-screen" style={{ background: "#1a1a2e" }}>
+      {/* Header */}
+      <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 1</span>
+            <h1 className="text-white font-bold text-xl mt-0.5">Transformer Concepts Flashcard Deck</h1>
+          </div>
+          <button
+            onClick={resetAll}
+            className="text-sm text-gray-400 hover:text-white border border-white/20 hover:border-white/40 px-4 py-2 rounded-lg transition-all duration-200"
+          >
+            Reset All
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-6 py-8">
+        {/* Progress section */}
+        <div className="mb-8 bg-[#0f0f23] rounded-2xl p-5 border border-white/10">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-gray-300 text-sm font-medium">Progress</p>
+              <p className="text-white font-bold text-lg">{masteredCount} / {CARDS.length} mastered</p>
+            </div>
+            <div className="text-right">
+              <p className="text-indigo-400 font-bold text-3xl">{progress}%</p>
+            </div>
+          </div>
+          <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+            <div
+              className="h-3 rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-indigo-500 to-emerald-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="flex gap-6 mt-3">
+            <span className="text-emerald-400 text-xs font-medium">
+              &#10003; {masteredCount} mastered
+            </span>
+            <span className="text-amber-400 text-xs font-medium">
+              &#9679; {Object.values(statuses).filter(s => s === "learning").length} still learning
+            </span>
+            <span className="text-gray-500 text-xs font-medium">
+              &#9675; {CARDS.length - Object.keys(statuses).length} unseen
+            </span>
+          </div>
+        </div>
+
+        {/* Completion banner */}
+        {allDone && (
+          <div className="mb-8 bg-gradient-to-r from-emerald-900/60 to-teal-900/60 border border-emerald-500/40 rounded-2xl p-6 text-center fade-in-up">
+            <div className="text-4xl mb-2">&#127881;</div>
+            <h2 className="text-emerald-300 font-bold text-xl mb-1">Deck Complete!</h2>
+            <p className="text-emerald-200/70 text-sm">You've mastered all 8 Transformer concepts. You're ready for Lesson 2.</p>
+          </div>
+        )}
+
+        {/* Instruction */}
+        <p className="text-gray-400 text-sm mb-6 text-center">
+          Click any card to flip it and reveal the definition, then mark your confidence level.
+        </p>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {CARDS.map((card, i) => (
+            <Flashcard
+              key={i}
+              card={card}
+              index={i}
+              isFlipped={!!flipped[i]}
+              onFlip={() => toggleFlip(i)}
+              status={statuses[i]}
+              onMark={(status) => markCard(i, status)}
+            />
+          ))}
+        </div>
+
+        <p className="text-center text-gray-600 text-xs mt-10">
+          CCI Interactive Practice &mdash; Lesson 1 of 5
+        </p>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

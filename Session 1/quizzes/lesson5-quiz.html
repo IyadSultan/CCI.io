@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 Quiz — Hallucination &amp; Prompt Sensitivity</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+
+const QUIZ_TITLE = "Hallucination & Prompt Sensitivity";
+const LESSON_NUMBER = 5;
+
+const questions = [
+  {
+    id: 1,
+    question: "An LLM reviewing a treatment plan lists trastuzumab as a recommended therapy for a HER2-negative breast cancer patient. What best explains this output?",
+    options: [
+      "The model correctly identified an alternative therapy indication for HER2-negative patients",
+      "The model accessed outdated oncology guidelines from its training data",
+      "Hallucination — trastuzumab is statistically probable in breast cancer contexts but incorrect for this subtype",
+      "The model confused the patient's record with a HER2-positive case in its context window",
+    ],
+    correct: 2,
+    explanation: "Hallucination occurs when the model generates statistically probable text that is factually incorrect for the specific case. Trastuzumab is strongly associated with breast cancer in training data, making it a likely completion — even when clinically contraindicated for HER2-negative patients.",
+  },
+  {
+    id: 2,
+    question: "You change one word in your prompt: 'Extract all medications' becomes 'Extract the most important medications.' The output drops from 8 medications to 3. This demonstrates:",
+    options: [
+      "A model bug — medication extraction should be deterministic",
+      "Prompt sensitivity — one word changed the model's interpretation and behavior",
+      "Context window truncation — the longer prompt reduced available space for output",
+      "Model drift — the underlying model weights changed between runs",
+    ],
+    correct: 1,
+    explanation: "Prompt sensitivity means small, seemingly minor wording changes can dramatically shift model behavior. 'Most important' introduces a subjective filter the model applies autonomously. This is why systematic prompt versioning and regression testing are essential in clinical pipelines.",
+  },
+  {
+    id: 3,
+    question: "Which prompting strategy most directly prevents an LLM from adding clinical details that are not present in the source note?",
+    options: [
+      "Chain-of-thought — step-by-step reasoning reduces fabrication",
+      "Few-shot — examples of correct extractions anchor the output",
+      "Grounding instructions: 'Only include information explicitly stated in the provided text'",
+      "Temperature reduction — lower temperature makes outputs more deterministic",
+    ],
+    correct: 2,
+    explanation: "Explicit grounding instructions directly constrain the model's output to the source document. This is the most targeted countermeasure against hallucination in extraction tasks — it sets a clear rule the model must follow rather than relying on indirect influences like examples or temperature.",
+  },
+  {
+    id: 4,
+    question: "A colleague argues that prompt engineering is 'just chatting with the AI' and not a rigorous discipline. What is the strongest counter-argument?",
+    options: [
+      "Prompt engineering requires specialized software tools and API access",
+      "Research shows prompt design changes accuracy by 20+ percentage points, with direct patient safety implications",
+      "Prompts must be written in a formal syntax that follows strict grammatical rules",
+      "Large language models are too complex for non-engineers to use effectively",
+    ],
+    correct: 1,
+    explanation: "Empirical research demonstrates that prompt design choices — pattern selection, grounding constraints, output structure — can shift clinical task accuracy by 20 or more percentage points. In healthcare contexts, this translates directly to patient safety risk, making prompt engineering a critical clinical informatics discipline.",
+  },
+  {
+    id: 5,
+    question: "You want the LLM to support each extracted field with the exact sentence from the source note that justifies it. Which technique achieves this?",
+    options: [
+      "Schema enforcement — add a 'source' key to the JSON schema",
+      "Chain-of-thought — ask the model to reason before answering",
+      "Citation prompting — instruct the model to quote exact source text for each field",
+      "Grounding instructions — tell the model to stay within the document",
+    ],
+    correct: 2,
+    explanation: "Citation prompting instructs the model to pair each extracted value with a verbatim quote from the source text. This enables downstream auditors to verify every extraction against the original note, providing a direct traceability chain and reducing the risk of undetected hallucination.",
+  },
+];
+
+function ProgressBar({ current, total }) {
+  const pct = Math.round((current / total) * 100);
+  return (
+    <div className="w-full mb-6">
+      <div className="flex justify-between text-sm text-gray-500 mb-1">
+        <span>Question {current} of {total}</span>
+        <span>{pct}% complete</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2.5">
+        <div className="h-2.5 rounded-full transition-all duration-500"
+          style={{ width: `${pct}%`, backgroundColor: "#1a1a2e" }} />
+      </div>
+    </div>
+  );
+}
+
+function OptionButton({ label, text, selected, correct, revealed, onClick }) {
+  let base = "w-full text-left px-4 py-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex items-start gap-3 ";
+  if (!revealed) {
+    base += selected
+      ? "border-blue-500 bg-blue-50 text-blue-900"
+      : "border-gray-200 bg-white text-gray-800 hover:border-blue-300 hover:bg-blue-50 cursor-pointer";
+  } else {
+    if (correct) base += "border-green-500 bg-green-50 text-green-900";
+    else if (selected) base += "border-red-500 bg-red-50 text-red-900";
+    else base += "border-gray-200 bg-white text-gray-400";
+  }
+  return (
+    <button className={base} onClick={onClick} disabled={revealed} aria-pressed={selected}>
+      <span className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold
+        ${revealed && correct ? "border-green-500 bg-green-500 text-white" :
+          revealed && selected ? "border-red-500 bg-red-500 text-white" :
+          selected ? "border-blue-500 bg-blue-500 text-white" :
+          "border-gray-300 text-gray-500"}`}>
+        {label}
+      </span>
+      <span className="flex-1">{text}</span>
+    </button>
+  );
+}
+
+function QuizQuestion({ q, index, total, onAnswer }) {
+  const [selected, setSelected] = React.useState(null);
+  const [revealed, setRevealed] = React.useState(false);
+  const labels = ["A", "B", "C", "D"];
+
+  const handleSelect = (i) => { if (!revealed) setSelected(i); };
+  const handleSubmit = () => { if (selected !== null) setRevealed(true); };
+  const handleNext = () => onAnswer(selected === q.correct);
+  const isCorrect = selected === q.correct;
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={index + 1} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#1a1a2e" }}>
+          Question {index + 1}
+        </p>
+        <h2 className="text-base md:text-lg font-semibold text-gray-900 mb-5 leading-snug">{q.question}</h2>
+        <div className="flex flex-col gap-3 mb-5">
+          {q.options.map((opt, i) => (
+            <OptionButton key={i} label={labels[i]} text={opt}
+              selected={selected === i} correct={revealed && i === q.correct}
+              revealed={revealed} onClick={() => handleSelect(i)} />
+          ))}
+        </div>
+        {revealed && (
+          <div className={`fade-in rounded-lg p-4 mb-4 ${isCorrect ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}>
+            <p className={`font-semibold text-sm mb-1 ${isCorrect ? "text-green-800" : "text-red-800"}`}>
+              {isCorrect ? "Correct!" : `Incorrect — the correct answer is ${labels[q.correct]}`}
+            </p>
+            <p className="text-sm text-gray-700">{q.explanation}</p>
+          </div>
+        )}
+        <div className="flex justify-end">
+          {!revealed ? (
+            <button onClick={handleSubmit} disabled={selected === null}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "#1a1a2e" }}>
+              Submit Answer
+            </button>
+          ) : (
+            <button onClick={handleNext}
+              className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+              style={{ backgroundColor: "#1a1a2e" }}>
+              {index + 1 < total ? "Next Question →" : "See Results →"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreScreen({ score, total, onRetry }) {
+  const pct = Math.round((score / total) * 100);
+  const grade = pct >= 80 ? { label: "Excellent", color: "text-green-600", bg: "bg-green-50 border-green-200" }
+    : pct >= 60 ? { label: "Good", color: "text-yellow-600", bg: "bg-yellow-50 border-yellow-200" }
+    : { label: "Keep Practicing", color: "text-red-600", bg: "bg-red-50 border-red-200" };
+
+  return (
+    <div className="fade-in">
+      <ProgressBar current={total} total={total} />
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+        <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4"
+          style={{ borderColor: "#1a1a2e", backgroundColor: "#f0f0f8" }}>
+          <span className="text-3xl font-bold" style={{ color: "#1a1a2e" }}>{pct}%</span>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Quiz Complete!</h2>
+        <p className="text-gray-500 mb-4">You scored {score} out of {total} questions correctly</p>
+        <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold border ${grade.bg} ${grade.color} mb-6`}>
+          {grade.label}
+        </div>
+        <div className="flex justify-center">
+          <button onClick={onRetry} className="px-6 py-2 rounded-lg text-sm font-semibold text-white"
+            style={{ backgroundColor: "#1a1a2e" }}>
+            Retake Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [answers, setAnswers] = React.useState([]);
+  const [finished, setFinished] = React.useState(false);
+
+  const handleAnswer = (correct) => {
+    const newAnswers = [...answers, correct];
+    setAnswers(newAnswers);
+    if (currentIndex + 1 >= questions.length) setFinished(true);
+    else setCurrentIndex(currentIndex + 1);
+  };
+
+  const handleRetry = () => { setCurrentIndex(0); setAnswers([]); setFinished(false); };
+  const score = answers.filter(Boolean).length;
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="text-white py-5 px-4 shadow-md" style={{ backgroundColor: "#1a1a2e" }}>
+        <div className="max-w-2xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-widest opacity-60 mb-1">CCI — Lesson {LESSON_NUMBER}</p>
+          <h1 className="text-xl md:text-2xl font-bold">{QUIZ_TITLE}</h1>
+          <p className="text-sm opacity-70 mt-1">Knowledge Check · {questions.length} Questions</p>
+        </div>
+      </header>
+      <main className="max-w-2xl mx-auto px-4 py-8">
+        {!finished ? (
+          <QuizQuestion key={currentIndex} q={questions[currentIndex]} index={currentIndex}
+            total={questions.length} onAnswer={handleAnswer} />
+        ) : (
+          <ScoreScreen score={score} total={questions.length} onRetry={handleRetry} />
+        )}
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

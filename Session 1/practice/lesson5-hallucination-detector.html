@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 — Hallucination Detector Game</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #1a1a2e; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in-up { animation: fadeInUp 0.38s ease forwards; }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+    .shake { animation: shake 0.45s ease; }
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .pop { animation: pop 0.3s ease; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useCallback } = React;
+
+const CASES = [
+  {
+    id: 1,
+    title: "Breast Cancer Discharge",
+    source: "62F with stage IIA ER+/PR+/HER2- invasive ductal carcinoma. S/p lumpectomy + SLND. Started on anastrozole 1mg daily. Radiation oncology referral placed. Oncotype DX pending.",
+    fields: [
+      {
+        id: "diagnosis",
+        label: "Diagnosis",
+        value: "Invasive ductal carcinoma, left breast — ER+/PR+/HER2-",
+        hallucinated: false,
+      },
+      {
+        id: "stage",
+        label: "Stage",
+        value: "Stage IIA",
+        hallucinated: false,
+      },
+      {
+        id: "treatment",
+        label: "Treatment",
+        value: "Lumpectomy, SLND, anastrozole 1mg daily, trastuzumab loading dose",
+        hallucinated: true,
+      },
+      {
+        id: "pending",
+        label: "Pending",
+        value: "Oncotype DX score",
+        hallucinated: false,
+      },
+    ],
+    explanation: {
+      field: "Treatment",
+      hallucination: "trastuzumab loading dose",
+      reason: "Trastuzumab (Herceptin) is a HER2-targeted therapy. This patient is explicitly HER2-negative, so trastuzumab would never be indicated. The LLM likely associated 'breast cancer treatment' with trastuzumab from training data, but fabricated its presence here. The source note mentions only lumpectomy, SLND, and anastrozole.",
+    },
+  },
+  {
+    id: 2,
+    title: "CT Chest Radiology",
+    source: "CT chest with contrast: 3.2cm spiculated mass in RUL. Mediastinal lymphadenopathy at station 4R (2.1cm) and 7 (1.8cm). No pleural effusion. No osseous metastases identified on this study.",
+    fields: [
+      {
+        id: "modality",
+        label: "Modality",
+        value: "CT chest with contrast",
+        hallucinated: false,
+      },
+      {
+        id: "primary_finding",
+        label: "Primary Finding",
+        value: "3.2cm spiculated mass, right upper lobe",
+        hallucinated: false,
+      },
+      {
+        id: "lymph_nodes",
+        label: "Lymph Nodes",
+        value: "Mediastinal LAD: station 4R (2.1cm), station 7 (1.8cm)",
+        hallucinated: false,
+      },
+      {
+        id: "metastases",
+        label: "Metastases",
+        value: "Liver metastasis noted on prior PET/CT",
+        hallucinated: true,
+      },
+      {
+        id: "pleural",
+        label: "Pleural",
+        value: "No pleural effusion",
+        hallucinated: false,
+      },
+    ],
+    explanation: {
+      field: "Metastases",
+      hallucination: "Liver metastasis noted on prior PET/CT",
+      reason: "The source note states only 'No osseous metastases identified on this study.' There is no mention of liver metastasis anywhere in the note, and no prior PET/CT is referenced. The LLM fabricated both the finding and an entirely fictitious prior study. This is a dangerous hallucination — it could incorrectly upstage a patient to M1 disease.",
+    },
+  },
+  {
+    id: 3,
+    title: "Oncology Follow-up — FOLFOX",
+    source: "Patient returns for follow-up after cycle 4 of FOLFOX for stage III colon cancer. Reports Grade 2 peripheral neuropathy. CBC: WBC 3.2, ANC 1.1, Hgb 10.8, Plt 145. Plan: Reduce oxaliplatin by 25%, continue 5-FU/leucovorin at full dose.",
+    fields: [
+      {
+        id: "regimen",
+        label: "Regimen",
+        value: "FOLFOX (oxaliplatin + 5-FU + leucovorin)",
+        hallucinated: false,
+      },
+      {
+        id: "cycle",
+        label: "Cycle",
+        value: "Cycle 4",
+        hallucinated: false,
+      },
+      {
+        id: "side_effects",
+        label: "Side Effects",
+        value: "Grade 2 peripheral neuropathy",
+        hallucinated: false,
+      },
+      {
+        id: "lab_values",
+        label: "Lab Values",
+        value: "WBC 3.2, ANC 1.1, Hgb 10.8, Plt 145, Cr 0.9",
+        hallucinated: true,
+      },
+      {
+        id: "plan",
+        label: "Plan",
+        value: "Reduce oxaliplatin 25%; 5-FU/leucovorin at full dose",
+        hallucinated: false,
+      },
+    ],
+    explanation: {
+      field: "Lab Values",
+      hallucination: "Cr 0.9",
+      reason: "The source CBC lists exactly four values: WBC 3.2, ANC 1.1, Hgb 10.8, and Plt 145. Creatinine (Cr 0.9) does not appear anywhere in the note. The LLM likely added it because creatinine is commonly reported alongside CBC in oncology visit notes — a plausible but fabricated addition. Even 'normal-looking' hallucinations like this corrupt structured data and must be caught.",
+    },
+  },
+];
+
+function FieldCard({ field, onClick, selected, revealed, isCorrect }) {
+  let cardStyle = "bg-[#0f0f23] border-white/10 hover:border-white/30 cursor-pointer hover:bg-white/5";
+
+  if (revealed) {
+    if (field.hallucinated) {
+      cardStyle = "bg-rose-900/30 border-rose-500/60 cursor-default pop";
+    } else if (selected && !field.hallucinated) {
+      cardStyle = "bg-rose-900/20 border-rose-500/40 cursor-default shake";
+    } else {
+      cardStyle = "bg-emerald-900/20 border-emerald-500/30 cursor-default";
+    }
+  } else if (selected) {
+    cardStyle = "bg-indigo-900/30 border-indigo-400 cursor-pointer";
+  }
+
+  return (
+    <button
+      onClick={!revealed ? onClick : undefined}
+      className={`w-full text-left rounded-xl border p-4 transition-all duration-200 ${cardStyle}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">{field.label}</p>
+          <p className={`text-sm leading-relaxed ${revealed && field.hallucinated ? "text-rose-200" : "text-gray-200"}`}>
+            {field.value}
+          </p>
+        </div>
+        {revealed && (
+          <div className="shrink-0 mt-0.5">
+            {field.hallucinated ? (
+              <span className="text-rose-400 text-lg font-black">&#9888;</span>
+            ) : (
+              <span className="text-emerald-400 text-lg font-black">&#10003;</span>
+            )}
+          </div>
+        )}
+        {!revealed && (
+          <div className={`shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 mt-0.5 ${
+            selected ? "border-indigo-400 bg-indigo-500" : "border-white/20"
+          }`} />
+        )}
+      </div>
+    </button>
+  );
+}
+
+function ScoreDisplay({ score, total }) {
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  return (
+    <div className="flex items-center gap-3">
+      <div className="text-right">
+        <p className="text-gray-500 text-xs">Score</p>
+        <p className="text-white font-bold text-lg leading-none">{score}/{total}</p>
+      </div>
+      <div className="w-16 h-16 relative flex items-center justify-center">
+        <svg className="w-16 h-16 -rotate-90" viewBox="0 0 36 36">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="3" />
+          <circle
+            cx="18" cy="18" r="15.9" fill="none"
+            stroke={pct >= 66 ? "#10b981" : pct >= 33 ? "#f59e0b" : "#ef4444"}
+            strokeWidth="3"
+            strokeDasharray={`${pct} 100`}
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="absolute text-white text-xs font-bold">{pct}%</span>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [caseIndex, setCaseIndex] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+  const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [finished, setFinished] = useState(false);
+
+  const currentCase = CASES[caseIndex];
+  const isCorrect = selected !== null && currentCase.fields.find(f => f.id === selected)?.hallucinated === true;
+
+  const handleSelect = (id) => {
+    if (revealed) return;
+    setSelected(id);
+  };
+
+  const handleReveal = () => {
+    if (selected === null) return;
+    setRevealed(true);
+    if (isCorrect) setScore(s => s + 1);
+    setAnswers(prev => [...prev, { caseId: currentCase.id, correct: isCorrect }]);
+  };
+
+  const handleNext = () => {
+    if (caseIndex < CASES.length - 1) {
+      setCaseIndex(i => i + 1);
+      setSelected(null);
+      setRevealed(false);
+    } else {
+      setFinished(true);
+    }
+  };
+
+  const handleRestart = () => {
+    setCaseIndex(0);
+    setSelected(null);
+    setRevealed(false);
+    setScore(0);
+    setAnswers([]);
+    setFinished(false);
+  };
+
+  if (finished) {
+    const pct = Math.round((score / CASES.length) * 100);
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: "#1a1a2e" }}>
+        <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+          <div className="max-w-2xl mx-auto px-6 py-5">
+            <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 5</span>
+            <h1 className="text-white font-bold text-xl mt-0.5">Hallucination Detector Game</h1>
+          </div>
+        </header>
+        <main className="flex-1 flex items-center justify-center px-6 py-12">
+          <div className="max-w-lg w-full fade-in-up">
+            <div className={`rounded-2xl border p-8 text-center ${
+              pct === 100
+                ? "bg-emerald-900/30 border-emerald-500/40"
+                : pct >= 66
+                ? "bg-blue-900/30 border-blue-500/40"
+                : "bg-amber-900/30 border-amber-500/40"
+            }`}>
+              <div className="text-5xl mb-4">
+                {pct === 100 ? "🎯" : pct >= 66 ? "👍" : "📚"}
+              </div>
+              <h2 className="text-white font-bold text-2xl mb-1">
+                {pct === 100 ? "Perfect Score!" : pct >= 66 ? "Well Done!" : "Keep Practicing!"}
+              </h2>
+              <p className={`text-lg font-bold mb-2 ${
+                pct === 100 ? "text-emerald-300" : pct >= 66 ? "text-blue-300" : "text-amber-300"
+              }`}>
+                {score} / {CASES.length} correct &mdash; {pct}%
+              </p>
+              <p className="text-gray-400 text-sm mb-6">
+                {pct === 100
+                  ? "You correctly identified every hallucination. You have a sharp eye for LLM errors in clinical text."
+                  : pct >= 66
+                  ? "Good instincts. Review the cases you missed and notice the pattern: plausible but unsupported additions."
+                  : "Hallucinations are tricky! The key is always comparing each extracted field back to the source note word by word."}
+              </p>
+              <div className="flex flex-col gap-3 mb-6">
+                {CASES.map((c, i) => {
+                  const ans = answers.find(a => a.caseId === c.id);
+                  return (
+                    <div key={c.id} className={`flex items-center justify-between rounded-lg px-4 py-3 ${
+                      ans?.correct ? "bg-emerald-500/10 border border-emerald-500/30" : "bg-rose-500/10 border border-rose-500/30"
+                    }`}>
+                      <span className="text-gray-300 text-sm font-medium">Case {i + 1}: {c.title}</span>
+                      <span className={`font-bold text-sm ${ans?.correct ? "text-emerald-400" : "text-rose-400"}`}>
+                        {ans?.correct ? "Correct" : "Missed"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={handleRestart}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm transition-all duration-200"
+              >
+                Play Again
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen" style={{ background: "#1a1a2e" }}>
+      {/* Header */}
+      <header className="border-b border-white/10" style={{ background: "#16213e" }}>
+        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <span className="text-xs font-semibold tracking-widest text-indigo-400 uppercase">CCI &middot; Lesson 5</span>
+            <h1 className="text-white font-bold text-xl mt-0.5">Hallucination Detector Game</h1>
+          </div>
+          <ScoreDisplay score={score} total={answers.length} />
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-8">
+        {/* Case counter */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            {CASES.map((_, i) => (
+              <div
+                key={i}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i < caseIndex
+                    ? answers[i]?.correct ? "w-8 bg-emerald-500" : "w-8 bg-rose-500"
+                    : i === caseIndex
+                    ? "w-12 bg-indigo-400"
+                    : "w-8 bg-white/10"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-gray-500 text-sm font-medium">
+            Case {caseIndex + 1} of {CASES.length}
+          </span>
+        </div>
+
+        {/* Case card */}
+        <div className="fade-in-up" key={caseIndex}>
+          {/* Title */}
+          <div className="mb-5 flex items-center gap-3">
+            <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white font-black text-sm flex items-center justify-center shrink-0">
+              {caseIndex + 1}
+            </span>
+            <div>
+              <h2 className="text-white font-bold text-base">{currentCase.title}</h2>
+              <p className="text-gray-500 text-xs">Find the hallucinated extraction field</p>
+            </div>
+          </div>
+
+          {/* Source note */}
+          <div className="mb-5 bg-[#0f0f23] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-white/10 bg-black/20 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-indigo-400" />
+              <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">Source Clinical Note</span>
+            </div>
+            <div className="p-5">
+              <p className="text-gray-300 text-sm leading-relaxed">{currentCase.source}</p>
+            </div>
+          </div>
+
+          {/* Instruction */}
+          {!revealed && (
+            <div className="mb-4 bg-amber-900/20 border border-amber-500/20 rounded-xl px-4 py-3 flex items-center gap-3">
+              <span className="text-amber-400 text-lg shrink-0">&#128270;</span>
+              <p className="text-amber-200/80 text-sm">
+                One of the extracted fields below contains a hallucination not supported by the source note. Click the field you think is wrong.
+              </p>
+            </div>
+          )}
+
+          {/* Fields */}
+          <div className="flex flex-col gap-3 mb-5">
+            {currentCase.fields.map(field => (
+              <FieldCard
+                key={field.id}
+                field={field}
+                onClick={() => handleSelect(field.id)}
+                selected={selected === field.id}
+                revealed={revealed}
+                isCorrect={isCorrect}
+              />
+            ))}
+          </div>
+
+          {/* Reveal / Next button */}
+          {!revealed ? (
+            <button
+              onClick={handleReveal}
+              disabled={selected === null}
+              className={`w-full py-4 rounded-xl font-bold text-base transition-all duration-200 ${
+                selected === null
+                  ? "bg-white/5 text-gray-600 cursor-not-allowed"
+                  : "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40"
+              }`}
+            >
+              {selected === null ? "Select a field to continue" : "Reveal Answer"}
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="w-full py-4 rounded-xl font-bold text-base bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-900/40 transition-all duration-200"
+            >
+              {caseIndex < CASES.length - 1 ? "Next Case →" : "See Final Score →"}
+            </button>
+          )}
+
+          {/* Feedback panel */}
+          {revealed && (
+            <div className={`mt-5 rounded-2xl border p-5 fade-in-up ${
+              isCorrect
+                ? "bg-emerald-900/30 border-emerald-500/40"
+                : "bg-rose-900/30 border-rose-500/40"
+            }`}>
+              <div className="flex items-center gap-3 mb-3">
+                <span className={`text-2xl ${isCorrect ? "text-emerald-400" : "text-rose-400"}`}>
+                  {isCorrect ? "✓" : "✗"}
+                </span>
+                <div>
+                  <p className={`font-bold text-base ${isCorrect ? "text-emerald-300" : "text-rose-300"}`}>
+                    {isCorrect ? "Correct! You found the hallucination." : "Not quite — here's what was hallucinated."}
+                  </p>
+                  <p className="text-gray-400 text-xs mt-0.5">
+                    Field: <span className="font-semibold text-gray-200">{currentCase.explanation.field}</span>
+                    {" "}&mdash; Hallucinated value: <span className="font-semibold text-rose-300">"{currentCase.explanation.hallucination}"</span>
+                  </p>
+                </div>
+              </div>
+              <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Why this is a hallucination</p>
+                <p className="text-gray-300 text-sm leading-relaxed">{currentCase.explanation.reason}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <p className="text-center text-gray-600 text-xs mt-10">
+          CCI Interactive Practice &mdash; Lesson 5 of 5
+        </p>
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
