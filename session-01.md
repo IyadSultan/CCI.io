@@ -476,12 +476,16 @@ permalink: /session-01/
 
 <!-- ─── Assignment ─── -->
 <div class="s1-assignment">
-  <h3>Session 1 Assignment</h3>
-  <ol>
-    <li>Your best final prompt (using ROLES + grounding + JSON schema).</li>
-    <li>One sample model output in valid JSON.</li>
-    <li>A short reflection (5-7 lines) on what improved output quality.</li>
-  </ol>
+  <h3>Session 1 Assignment — Clinical Data Extraction</h3>
+  <p style="color:#CFD8DC;font-size:0.85rem;line-height:1.6;margin-bottom:0.75rem;">
+    Apply everything from Session 1 to a real-world task: extract 32 structured fields from a synthetic KHCC gastric cancer discharge summary into valid JSON. You will write a single prompt that handles narrative text, tables, staging, biomarkers, tumor marker trends, and comorbidities scattered across multiple sections.
+  </p>
+  <p style="color:#90A4AE;font-size:0.8rem;line-height:1.5;margin-bottom:1rem;">
+    <strong style="color:#FFC107;">Grading:</strong> Completeness (30%) &middot; Accuracy (30%) &middot; JSON Structure (20%) &middot; Prompt Quality (20%)
+  </p>
+  <a href="https://academy.cci.khcc.jo" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
+    Open Assignment on CCI Academy &#8594;
+  </a>
 </div>
 
 <div class="s1-footer-note">

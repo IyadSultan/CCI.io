@@ -4,6 +4,10 @@ title: "Lesson 4: JSON Mode & Structured Output"
 permalink: /session-01/lesson-4-instructions/
 ---
 
+<style>.site-nav{display:none!important}.site-header{border-top:5px solid #00897B!important}.site-title,.site-title:visited{color:#00897B!important;font-weight:800!important}.back-btn{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#00897B;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #B2DFDB;background:#E0F2F1;margin-bottom:1rem;transition:all .15s}.back-btn:hover{background:#B2DFDB}</style>
+
+<a class="back-btn" href="{{ site.baseurl }}/session-01/">&#8249; Back to Session 1</a>
+
 # CCI Session 1 — Lesson 4 of 5: JSON Mode and Structured Output for Clinical Pipelines
 
 **Estimated time:** 25 minutes (15 content + 10 practice)
