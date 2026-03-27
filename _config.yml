@@ -1,3 +1,5 @@
-theme: jekyll-theme-minimal
-title: Prompt Engineering for Cancer Care Informatics
-description: Learn Prompt Engineering for healthcare intelligence with focus on cancer care.
+title: CCI.io
+description: Cancer Care Informatics - Prompt Engineering Course
+theme: minima
+url: "https://IyadSultan.github.io"
+baseurl: "/CCI.io"
