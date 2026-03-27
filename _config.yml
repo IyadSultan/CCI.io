@@ -3,3 +3,12 @@ description: Cancer Care Informatics - Prompt Engineering Course
 theme: minima
 url: "https://IyadSultan.github.io"
 baseurl: "/CCI.io"
+
+header_pages: []
+
+exclude:
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - "Session 1/notebookLM.txt"

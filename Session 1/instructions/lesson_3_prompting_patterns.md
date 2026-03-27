@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Lesson 3: Prompting Patterns"
+permalink: /session-01/lesson-3-instructions/
+---
+
 # CCI Session 1 — Lesson 3 of 5: Prompting Patterns — Zero-Shot, Few-Shot, and Chain-of-Thought
 
 **Estimated time:** 25 minutes (15 content + 10 practice)

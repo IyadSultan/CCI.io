@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Lesson 4: JSON Mode & Structured Output"
+permalink: /session-01/lesson-4-instructions/
+---
+
 # CCI Session 1 — Lesson 4 of 5: JSON Mode and Structured Output for Clinical Pipelines
 
 **Estimated time:** 25 minutes (15 content + 10 practice)
