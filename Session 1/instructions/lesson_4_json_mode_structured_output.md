@@ -16,22 +16,6 @@ Everything we have done so far produces free text. And free text is fine for a c
 
 ---
 
-## NotebookLM Summary
-
-Structured output is the bridge between an LLM's natural language capabilities and the structured data requirements of clinical information systems. In clinical AI pipelines, the LLM is rarely the final destination: its output feeds into databases, EHR fields, analytics dashboards, or downstream processing steps. If the output format varies across runs, the entire pipeline breaks.
-
-JSON mode is a feature available in modern LLM APIs (OpenAI, Azure OpenAI, Claude) that constrains the model to output valid JSON. Without JSON mode, a model asked to return patient data might sometimes produce a JSON object, sometimes a markdown table, and sometimes a narrative paragraph, even with explicit formatting instructions. JSON mode eliminates this variability by guaranteeing that every response is parseable JSON.
-
-The key to effective structured output is schema design. A well-designed clinical JSON schema includes field names that map directly to database columns or EHR fields, controlled vocabularies for categorical values (ICD-10 codes, TNM staging values, ECOG performance status levels), required versus optional fields with sensible defaults, and explicit handling of missing data (null values or sentinel strings like "NOT_FOUND" rather than leaving fields empty or omitting them). For example, an oncology discharge extraction schema might define primary_diagnosis as a required string with ICD-10 format, secondary_diagnoses as an array of strings, tnm_staging as an object with T, N, and M string fields, and discharge_disposition as an enum of "home", "facility", "hospice", or "deceased".
-
-The clinical importance of structured output extends beyond convenience. When extraction results are structured and consistent, they become auditable, queryable, and comparable across patients. A clinical research team can run the same extraction prompt across 10,000 discharge summaries and aggregate results directly because every output follows the same schema. Without structure, each result would require manual review and reformatting, defeating the purpose of automation.
-
-Combining JSON mode with the ROLES framework and few-shot examples creates a robust extraction pipeline: the Role and Objective define the clinical context, the Examples show the exact JSON format expected, and JSON mode guarantees compliance. This combination is the standard architecture for production clinical NLP at scale.
-
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add any reference PDFs, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
-
----
-
 ## Lab Exercise
 
 **Title:** Designing a Clinical JSON Schema and Testing JSON Mode
@@ -49,8 +33,60 @@ By the end of this lab, students will have designed a JSON schema for operative 
 1. Open platform.openai.com/playground
 2. GPT-4o, temperature 0, max tokens 500
 3. Enable JSON mode (in the response format dropdown)
-4. Instructor provides 2 sample operative notes
+4. Use both sample operative notes below
 ```
+
+**Sample Operative Note 1:**
+
+> **Date of Surgery:** 2025-07-14
+> **Surgeon:** Dr. Fadi Nasr, Surgical Oncology
+> **Assistant:** Dr. Lina Khoury
+>
+> **Preoperative Diagnosis:** Left breast invasive ductal carcinoma, Stage IIA (T2N0M0)
+> **Postoperative Diagnosis:** Same
+>
+> **Procedure:** Left partial mastectomy (lumpectomy) with sentinel lymph node biopsy
+>
+> **Anesthesia:** General
+>
+> **Findings:**
+> A 2.6 cm firm mass was identified in the left breast upper outer quadrant at 10 o'clock position, 4 cm from the nipple. The mass was excised with grossly adequate margins. Specimen was oriented with short suture superior, long suture lateral. Sentinel lymph node mapping identified 3 sentinel nodes in the left axilla, all of which were removed and sent for frozen section. Frozen section was negative for all 3 nodes.
+>
+> **Specimen:** Left breast tissue, 4.2 x 3.8 x 2.9 cm, with tumor grossly centered. Three sentinel lymph nodes.
+>
+> **Margins:** Final pathology: Superior margin 0.8 cm, inferior margin 1.2 cm, medial margin 0.6 cm, lateral margin 1.5 cm, anterior margin 0.4 cm, posterior margin 1.1 cm. All margins negative. Closest margin: anterior at 0.4 cm.
+>
+> **Complications:** None
+>
+> **Estimated Blood Loss:** 45 mL
+>
+> **Disposition:** Patient tolerated procedure well, transferred to PACU in stable condition.
+
+**Sample Operative Note 2:**
+
+> **Date of Surgery:** 2025-08-22
+> **Surgeon:** Dr. Khaled Barakat, Thoracic Surgery
+> **Assistant:** Dr. Nour Saleh
+>
+> **Preoperative Diagnosis:** Right upper lobe non-small cell lung cancer (adenocarcinoma), Stage IB (T2aN0M0)
+> **Postoperative Diagnosis:** Same
+>
+> **Procedure:** Right upper lobectomy with mediastinal lymph node dissection, video-assisted thoracoscopic surgery (VATS)
+>
+> **Anesthesia:** General with double-lumen endotracheal tube
+>
+> **Findings:**
+> Right upper lobe contained a 3.4 cm solid mass in the posterior segment. No pleural effusion or chest wall invasion identified. Fissure was complete. Right upper lobe bronchus, pulmonary artery branches, and superior pulmonary vein were individually dissected and divided with endoscopic staplers. Mediastinal lymph node stations 2R, 4R, 7, and 10R were dissected and sent separately.
+>
+> **Specimen:** Right upper lobe with 3.4 cm tumor. Lymph nodes from stations 2R (2 nodes), 4R (3 nodes), 7 (2 nodes), and 10R (1 node).
+>
+> **Margins:** Bronchial margin negative (frozen section confirmed). Vascular margins negative. Final pathology: 3.4 cm moderately differentiated adenocarcinoma, 0/8 lymph nodes positive. No lymphovascular invasion.
+>
+> **Complications:** None
+>
+> **Estimated Blood Loss:** 120 mL
+>
+> **Disposition:** Chest tube placed. Patient extubated in OR and transferred to thoracic surgery step-down unit.
 
 **Step-by-step instructions:**
 1. Design your JSON schema on paper first. Decide: what fields do you need? What are the allowed values for each? How do you handle missing data?

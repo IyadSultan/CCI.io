@@ -16,20 +16,6 @@ Welcome to the CCI Prompt Engineering course. Before we touch a single prompt, w
 
 ---
 
-## NotebookLM Summary
-
-Large Language Models (LLMs) like GPT-4, Claude, and Gemini are built on the Transformer architecture, introduced in the 2017 paper "Attention Is All You Need." At their core, Transformers process text by first breaking it into tokens: subword units that the model uses as its vocabulary. Each token is converted into a numerical embedding, a high-dimensional vector that captures semantic meaning. The breakthrough of the Transformer is the self-attention mechanism, which allows the model to weigh relationships between every token in a sequence simultaneously, rather than reading left to right like older recurrent networks.
-
-For clinicians, the critical insight is that LLMs are statistical pattern-matchers, not reasoning engines. When an LLM generates a response about a patient's diagnosis, it is predicting the most probable next token based on patterns learned during training. It has no access to a patient's actual medical record unless you provide it in the prompt. This is why the context window matters: it defines how much text the model can see at once, typically ranging from 4,000 to 200,000 tokens depending on the model.
-
-Consider a clinical example. When you paste a discharge summary into an LLM and ask it to extract the primary diagnosis, the model reads every token in that summary, uses attention to identify which tokens are most relevant to the concept of "primary diagnosis," and generates output token by token. If the summary mentions both "Type 2 diabetes mellitus" and "acute myeloid leukemia," the attention mechanism helps the model weigh which condition the document treats as primary based on context clues like section headers, frequency of mention, and clinical narrative structure.
-
-Understanding these fundamentals is essential because every technique we learn in later lessons, from prompt engineering to structured output to hallucination mitigation, is a strategy for working within the constraints and capabilities of this architecture. The Transformer does not "know" medicine; it has learned statistical patterns from medical text. Our job as clinical AI practitioners is to guide those patterns toward accurate, safe, and useful outputs.
-
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add any reference PDFs, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
-
----
-
 ## Lab Exercise
 
 **Title:** Exploring the OpenAI Playground: Your First Clinical Prompt
@@ -50,13 +36,40 @@ By the end of this lab, students will have submitted their first prompt in the O
 4. Set max tokens to 500
 ```
 
+**Sample Discharge Summary (use this for all steps below):**
+
+> **Patient:** 58-year-old female
+> **MRN:** XXXX-DEMO
+> **Admission Date:** 2025-11-02 | **Discharge Date:** 2025-11-09
+>
+> **Chief Complaint:** Shortness of breath and persistent cough for 3 weeks.
+>
+> **History of Present Illness:**
+> Patient is a 58-year-old female with a 30-pack-year smoking history who presented with progressive dyspnea, hemoptysis, and unintentional weight loss of 8 kg over 2 months. CT chest revealed a 4.2 cm right upper lobe mass with mediastinal lymphadenopathy. PET-CT showed FDG-avid right upper lobe lesion (SUVmax 12.3) with uptake in ipsilateral mediastinal lymph nodes (stations 4R and 7). No distant metastases identified. Brain MRI was negative.
+>
+> **Pathology:** CT-guided biopsy of the right upper lobe mass confirmed non-small cell lung cancer (NSCLC), adenocarcinoma subtype. Immunohistochemistry: TTF-1 positive, PD-L1 TPS 60%. Molecular testing: EGFR wild-type, ALK negative, ROS1 negative, KRAS G12C mutation detected.
+>
+> **Staging:** T2bN2M0, Stage IIIA (AJCC 8th edition)
+>
+> **Hospital Course:**
+> Patient underwent multidisciplinary tumor board review on 2025-11-04. Recommended concurrent chemoradiation with carboplatin/paclitaxel followed by durvalumab consolidation. Port-a-cath placed on 2025-11-05 without complications. Pulmonary function tests showed FEV1 72% predicted. Echocardiogram showed normal LVEF 60%. Patient educated on treatment plan, potential side effects, and follow-up schedule.
+>
+> **Discharge Diagnoses:**
+> 1. Non-small cell lung cancer, adenocarcinoma, Stage IIIA (T2bN2M0) — C34.11
+> 2. Type 2 diabetes mellitus, controlled — E11.65
+> 3. Hypertension, stable — I10
+>
+> **Discharge Medications:** Metformin 1000 mg BID, Lisinopril 10 mg daily, Ondansetron 8 mg PRN nausea, Dexamethasone taper per protocol
+>
+> **Follow-up:** Oncology clinic in 7 days for cycle 1 chemoradiation planning. PFT re-check in 2 weeks.
+
 **Step-by-step instructions:**
-1. Paste the following sample discharge summary excerpt into the system message: "You are a clinical data extraction assistant."
-2. In the user message, type: "Extract the primary diagnosis from the following note:" followed by a sample discharge summary.
+1. Set the system message to: "You are a clinical data extraction assistant."
+2. In the user message, paste the discharge summary above and prepend: **"Extract the primary diagnosis from the following note:"**
 3. Submit and observe the output.
-4. Now change "Extract the primary diagnosis" to "List all diagnoses mentioned in the following note:" and resubmit.
+4. Now change the prompt to: **"List all diagnoses mentioned in the following note:"** and resubmit with the same note.
 5. Compare the two outputs. Note how a small change in the prompt produced a completely different structure.
-6. Try once more: "What is wrong with this patient?" and observe the difference in tone, specificity, and clinical accuracy.
+6. Try once more: **"What is wrong with this patient?"** and observe the difference in tone, specificity, and clinical accuracy.
 
 **Expected output:**
 Three different responses from the same note, demonstrating that the LLM's behavior is directly controlled by prompt wording, not by "understanding" the note.

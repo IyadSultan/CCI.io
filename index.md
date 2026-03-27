@@ -4,7 +4,6 @@ title: CCI.io
 ---
 
 <style>
-  .site-header { border-top: 5px solid #00897B !important; }
   .page-content { padding-top: 0 !important; }
 
   .cci-hero {

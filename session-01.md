@@ -5,7 +5,6 @@ permalink: /session-01/
 ---
 
 <style>
-  .site-header { border-top: 5px solid #00897B !important; }
   .page-content { padding-top: 0 !important; }
 
   .s1-header {
@@ -461,6 +460,12 @@ permalink: /session-01/
       </a>
       <a class="s1-btn s1-btn-practice" href="https://bbycroft.net/llm" target="_blank" style="background:#E3F2FD;border-color:#90CAF9;color:#0D47A1 !important;">
         <span class="s1-btn-icon">&#127760;</span> LLM Visualization (3D)
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/Session%201/extras/session1_lesson2_attention.html" target="_blank">
+        <span class="s1-btn-icon">&#128065;</span> Attention Visualizer
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/Session%201/extras/session1_lesson3_prompt_compare.html" target="_blank">
+        <span class="s1-btn-icon">&#9878;</span> Prompt Comparison
       </a>
     </div>
   </div>

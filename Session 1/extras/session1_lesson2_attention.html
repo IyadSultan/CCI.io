@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier New', monospace;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #888;
+  --color-background-primary: #fff;
+  --color-background-secondary: #f5f7fa;
+  --color-background-info: #e3f2fd;
+  --color-border-primary: #1a1a2e;
+  --color-border-secondary: #90a4ae;
+  --color-border-tertiary: #e0e0e0;
+  --color-border-info: #42a5f5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,"system-ui");color:var(--color-text-primary);background:#fff;padding:24px;max-width:780px;margin:0 auto}
+h2{font-size:16px;font-weight:500;margin-bottom:4px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:16px}
+.instruction{font-size:13px;color:var(--color-text-tertiary);margin-bottom:16px;padding:10px 12px;border-radius:8px;background:var(--color-background-secondary);border-left:3px solid var(--color-border-secondary)}
+.sentence-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;min-height:44px;align-items:center}
+.token{padding:8px 12px;border-radius:8px;border:1px solid var(--color-border-tertiary);font-size:14px;cursor:pointer;background:var(--color-background-primary);transition:all .2s;user-select:none}
+.token:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.token.selected{background:#FAEEDA;border-color:#BA7517;color:#633806}
+.token.highlighted{border-color:var(--color-border-info);background:var(--color-background-info)}
+.token.dim{opacity:.35}
+svg#attn-canvas{width:100%;display:block;margin-bottom:16px}
+.info-panel{background:var(--color-background-secondary);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.6;min-height:60px;color:var(--color-text-secondary)}
+.info-panel strong{color:var(--color-text-primary)}
+.sentence-picker{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.sp-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--color-border-tertiary);font-size:13px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.sp-btn.active,.sp-btn:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);background:var(--color-background-secondary)}
+</style>
+</head>
+<body>
+<h2>Attention Visualizer — Clinical Sentences</h2>
+<p class="sub">Click any token to see which other tokens it attends to most strongly</p>
+<div class="instruction">This simulates how a transformer's attention mechanism connects words. Line thickness = attention weight. Thicker lines = stronger connection. Click different tokens to explore how attention shifts.</div>
+<div class="sentence-picker" id="picker"></div>
+<div class="sentence-row" id="tokens"></div>
+<svg id="attn-canvas" viewBox="0 0 680 80"></svg>
+<div class="info-panel" id="info">Select a token above to see its attention pattern and clinical explanation.</div>
+<script>
+const sentences=[
+  {
+    label:"Negation",
+    tokens:["The","patient","denied","any","chest","pain","or","dyspnea"],
+    attentions:{
+      0:[0.1,0.3,0.1,0.05,0.1,0.1,0.05,0.1],
+      1:[0.2,0.2,0.4,0.05,0.05,0.05,0.02,0.03],
+      2:[0.1,0.4,0.2,0.1,0.05,0.05,0.05,0.05],
+      3:[0.05,0.1,0.55,0.1,0.05,0.1,0.02,0.03],
+      4:[0.05,0.1,0.5,0.1,0.1,0.1,0.02,0.03],
+      5:[0.05,0.1,0.5,0.05,0.1,0.1,0.05,0.05],
+      6:[0.05,0.05,0.2,0.1,0.1,0.2,0.1,0.2],
+      7:[0.05,0.05,0.35,0.05,0.1,0.1,0.15,0.15]
+    },
+    explanations:{
+      2:"'Denied' is the key negation anchor — the model connects it strongly to 'patient', 'chest pain', and 'dyspnea'. This is why LLMs can understand that denial applies to everything that follows, not just the next word.",
+      4:"'Chest' attends strongly to 'denied' — the model has learned these co-occur in negation patterns in clinical notes. This is learned from millions of clinical texts, not programmed.",
+      7:"'Dyspnea' attends to both 'denied' and 'or', capturing the coordinated negation across both symptoms.",
+      1:"'Patient' attends to 'denied' — the model links the subject to the negation verb, establishing the semantic relationship.",
+      5:"'Pain' attends to 'denied' and 'chest' — the model groups 'chest pain' as a clinical phrase and connects it to the negation.",
+      default:"This token connects to others in patterns the model learned from clinical text. Explore the negation anchor 'denied' to see the strongest effects."
+    }
+  },
+  {
+    label:"Co-reference",
+    tokens:["Mrs","Al-Rashidi","was","started","on","FOLFOX","She","tolerated","it","well"],
+    attentions:{
+      0:[0.2,0.5,0.1,0.05,0.02,0.05,0.03,0.02,0.01,0.02],
+      1:[0.4,0.2,0.1,0.05,0.02,0.05,0.05,0.02,0.01,0.1],
+      2:[0.1,0.3,0.1,0.2,0.05,0.1,0.05,0.05,0.02,0.03],
+      3:[0.05,0.2,0.1,0.15,0.1,0.2,0.05,0.1,0.03,0.02],
+      4:[0.02,0.05,0.05,0.15,0.1,0.3,0.1,0.1,0.05,0.08],
+      5:[0.02,0.1,0.05,0.2,0.1,0.2,0.05,0.1,0.1,0.08],
+      6:[0.1,0.4,0.1,0.05,0.02,0.05,0.1,0.1,0.05,0.03],
+      7:[0.05,0.2,0.05,0.15,0.05,0.15,0.1,0.1,0.1,0.05],
+      8:[0.02,0.05,0.02,0.05,0.1,0.45,0.05,0.1,0.1,0.06],
+      9:[0.05,0.1,0.05,0.1,0.05,0.15,0.05,0.25,0.1,0.1]
+    },
+    explanations:{
+      6:"'She' attends strongly to 'Mrs' and 'Al-Rashidi' — co-reference resolution. The model connects the pronoun to its antecedent across the sentence boundary. This is one of the core clinical benefits of attention.",
+      8:"'It' attends strongly to 'FOLFOX' — the model correctly identifies what pronoun refers to the drug regimen. Without attention, earlier models would often fail this kind of long-distance reference.",
+      5:"'FOLFOX' is a key clinical anchor — it attends to 'started on', connecting the drug to its clinical context.",
+      1:"'Al-Rashidi' attends to 'Mrs' and later to 'She' — the model knows this is a person and the pronoun refers back to her.",
+      default:"Try clicking 'She' or 'it' — these pronouns show how attention resolves co-reference across sentence boundaries."
+    }
+  },
+  {
+    label:"Staging",
+    tokens:["Final","pathology","confirmed","Stage","IIIB","non-small","cell","lung","cancer"],
+    attentions:{
+      0:[0.15,0.2,0.1,0.1,0.05,0.1,0.1,0.1,0.1],
+      1:[0.1,0.2,0.2,0.1,0.05,0.1,0.1,0.1,0.05],
+      2:[0.1,0.3,0.15,0.1,0.1,0.05,0.05,0.05,0.1],
+      3:[0.05,0.1,0.2,0.15,0.3,0.05,0.05,0.05,0.05],
+      4:[0.05,0.1,0.2,0.3,0.15,0.05,0.05,0.05,0.05],
+      5:[0.05,0.05,0.05,0.1,0.1,0.2,0.2,0.15,0.1],
+      6:[0.05,0.05,0.05,0.05,0.1,0.25,0.2,0.15,0.1],
+      7:[0.05,0.05,0.05,0.05,0.1,0.15,0.2,0.2,0.15],
+      8:[0.05,0.1,0.15,0.05,0.1,0.1,0.1,0.15,0.2]
+    },
+    explanations:{
+      3:"'Stage' attends strongly to 'IIIB' — the model has learned that staging classifications are multi-token phrases and clusters them as a unit.",
+      4:"'IIIB' attends strongly to 'Stage' and 'confirmed' — the model connects the specific stage to both its staging label and the verb of confirmation.",
+      2:"'Confirmed' attends to 'pathology' and 'cancer' — the model understands that pathological confirmation is the source of the staging information.",
+      8:"'Cancer' attends to multiple tokens across the disease descriptor — 'non-small cell lung cancer' is learned as a multi-token clinical concept.",
+      default:"Click 'Stage' or 'IIIB' to see how the model groups clinical staging as a coherent phrase."
+    }
+  }
+];
+let activeSentence=0,selectedToken=null;
+function initSentence(){
+  selectedToken=null;
+  renderPicker();
+  renderTokens();
+  renderCanvas();
+  document.getElementById('info').innerHTML='Select a token above to see its attention pattern and clinical explanation.';
+}
+function renderPicker(){
+  document.getElementById('picker').innerHTML=sentences.map((s,i)=>`<button class="sp-btn ${i===activeSentence?'active':''}" onclick="activeSentence=${i};initSentence()">${s.label}</button>`).join('');
+}
+function renderTokens(){
+  const s=sentences[activeSentence];
+  document.getElementById('tokens').innerHTML=s.tokens.map((t,i)=>`<div class="token ${selectedToken===i?'selected':''}" id="tok${i}" onclick="selectToken(${i})">${t}</div>`).join('');
+}
+function selectToken(i){
+  selectedToken=i;
+  renderTokens();
+  renderCanvas();
+  const s=sentences[activeSentence];
+  const expl=s.explanations[i]||s.explanations.default;
+  document.getElementById('info').innerHTML=`<strong>"${s.tokens[i]}"</strong> — ${expl}`;
+}
+function renderCanvas(){
+  const s=sentences[activeSentence];
+  const n=s.tokens.length;
+  const canvasW=640;
+  const startX=20;
+  const boxW=Math.min(72,Math.floor((canvasW-startX*(2))/(n+0.5*(n-1))));
+  const gap=Math.floor(boxW*0.5);
+  const positions=s.tokens.map((_,i)=>startX+i*(boxW+gap)+boxW/2);
+  const boxY=40;const boxH=28;
+  let svg='';
+  if(selectedToken!==null){
+    const weights=s.attentions[selectedToken];
+    for(let j=0;j<n;j++){
+      if(j===selectedToken)continue;
+      const w=weights[j];
+      if(w<0.04)continue;
+      const stroke=w>0.3?'#BA7517':w>0.15?'#EF9F27':'#FAC775';
+      const sw=Math.max(1,Math.round(w*14));
+      const x1=positions[selectedToken];
+      const x2=positions[j];
+      const cy=boxY-8;
+      svg+=`<path d="M${x1} ${boxY} Q${(x1+x2)/2} ${cy} ${x2} ${boxY}" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linecap="round" opacity="${0.5+w*0.5}"/>`;
+    }
+  }
+  for(let i=0;i<n;i++){
+    const x=positions[i]-boxW/2;
+    const isSelected=i===selectedToken;
+    const fill=isSelected?'#FAEEDA':'var(--color-background-primary)';
+    const stroke=isSelected?'#BA7517':'var(--color-border-tertiary)';
+    const tc=isSelected?'#633806':'var(--color-text-primary)';
+    const tok=s.tokens[i];
+    const displayTok=tok.length>7?tok.slice(0,6)+'…':tok;
+    svg+=`<g style="cursor:pointer" onclick="selectToken(${i})">
+      <rect x="${x}" y="${boxY-boxH/2}" width="${boxW}" height="${boxH}" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="${isSelected?1.5:0.5}"/>
+      <text x="${positions[i]}" y="${boxY}" text-anchor="middle" dominant-baseline="central" style="font-size:11px;font-family:var(--font-sans);fill:${tc};font-weight:${isSelected?'500':'400'}">${displayTok}</text>
+    </g>`;
+  }
+  document.getElementById('attn-canvas').innerHTML=svg;
+}
+initSentence();
+</script>
+</body>
+</html>
