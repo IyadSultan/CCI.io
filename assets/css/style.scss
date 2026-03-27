@@ -1,0 +1,22 @@
+---
+---
+
+@import "minima";
+
+.site-nav {
+  display: none !important;
+}
+
+.site-header {
+  border-top: 5px solid #00897B;
+  min-height: 46px;
+}
+
+.site-title {
+  color: #00897B !important;
+  font-weight: 800 !important;
+}
+
+.site-title:visited {
+  color: #00897B !important;
+}

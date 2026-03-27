@@ -16,22 +16,6 @@ This is the lesson that keeps me up at night. Everything we have built today, th
 
 ---
 
-## NotebookLM Summary
-
-Hallucination in LLMs refers to the generation of content that is fluent, confident, and entirely fabricated. Unlike human errors, which often come with hedging or uncertainty, LLM hallucinations are delivered with the same linguistic confidence as accurate responses. This is particularly dangerous in clinical settings where a hallucinated diagnosis, medication dose, or staging classification could directly impact patient care decisions.
-
-Hallucination occurs because of how Transformers generate text. The model predicts the most probable next token based on patterns in its training data and the current context. When the context does not contain enough information to produce an accurate answer, the model does not say "I don't know." Instead, it generates the most statistically likely completion, which may be a plausible-sounding but incorrect clinical fact. For example, asked to extract a TNM stage from a pathology report that does not contain explicit staging, the model might generate "T2N1M0" because that is a common staging pattern in its training data for the described tumor type, not because it is present in the document.
-
-Prompt sensitivity is the closely related problem that small, seemingly insignificant changes in prompt wording can produce dramatically different outputs. Changing "Extract the diagnoses" to "List the diagnoses" might alter which conditions the model includes. Changing "primary diagnosis" to "main diagnosis" might shift the model's interpretation of hierarchy. In clinical benchmarks, synonym substitution in prompts has been shown to cause accuracy swings of 10-25 percentage points on identical datasets. This matters because it means clinical AI systems are fragile unless prompts are rigorously tested and locked down.
-
-Three key mitigation strategies are grounding, citation prompting, and confidence calibration. Grounding means explicitly instructing the model to only use information present in the provided text: "Only extract information that is explicitly stated in the note. Do not infer, assume, or add information not present in the text." Citation prompting asks the model to quote the exact text it used to justify each extraction: "For each diagnosis, include the exact sentence from the note that supports it." This makes hallucinations visible because fabricated content cannot be cited. Confidence calibration asks the model to rate its own certainty: "For each field, rate your confidence as HIGH (explicitly stated), MEDIUM (strongly implied), or LOW (inferred)." While not perfectly calibrated, this provides a useful signal for human reviewers to prioritize their attention.
-
-The overarching lesson for clinical AI practitioners is that validation is not optional. Every prompt must be tested against known ground truth, every output must be reviewed with awareness that it may be fabricated, and every production system must include guardrails that catch hallucinated content before it reaches clinical workflows.
-
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add any reference PDFs, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
-
----
-
 ## Lab Exercise
 
 **Title:** Breaking the Model: Hallucination Detection and Prompt Sensitivity Demo
@@ -48,16 +32,68 @@ By the end of this lab, students will have seen live examples of hallucination a
 ```
 1. Open platform.openai.com/playground
 2. GPT-4o, temperature 0, max tokens 500
-3. Prepare a clinic note that deliberately OMITS staging information
-4. Prepare a second note with ambiguous diagnosis language
+3. Use both sample notes below
 ```
 
+**Sample Note A — Staging deliberately OMITTED (use for hallucination demo):**
+
+> **Patient:** 67-year-old male
+> **Visit Date:** 2025-11-10 | **Provider:** Dr. Hana Abboud, Medical Oncology
+>
+> **History of Present Illness:**
+> Patient is a 67-year-old male, former smoker (40 pack-years, quit 5 years ago), who presented with a persistent cough and hemoptysis for 6 weeks. CT chest showed a 3.8 cm right upper lobe mass with ipsilateral mediastinal lymphadenopathy. CT-guided biopsy confirmed non-small cell lung cancer, squamous cell carcinoma subtype. PD-L1 TPS 45%. Brain MRI pending.
+>
+> **Assessment:**
+> - Newly diagnosed right upper lobe squamous cell carcinoma of the lung
+> - Awaiting completion of staging workup (brain MRI and PET-CT)
+> - Pulmonary function testing scheduled prior to treatment planning
+> - Tumor board review planned for next week once all imaging is complete
+>
+> **Plan:**
+> - Complete staging: Brain MRI and PET-CT this week
+> - PFTs for surgical candidacy assessment
+> - Present at multidisciplinary tumor board
+> - Return in 1 week to discuss treatment plan based on final staging
+>
+> **Note:** No TNM staging has been assigned. Final staging will be determined after imaging completion and tumor board review.
+
+**Sample Note B — Ambiguous diagnosis language (use for prompt sensitivity demo):**
+
+> **Patient:** 52-year-old female
+> **Visit Date:** 2025-10-28 | **Provider:** Dr. Omar Issa, Internal Medicine
+>
+> **History of Present Illness:**
+> Patient presents with 3-month history of fatigue, night sweats, and unintentional weight loss of 5 kg. Physical exam reveals bilateral cervical and axillary lymphadenopathy. CBC shows WBC 14.2, hemoglobin 10.8, platelets 142. LDH elevated at 380 U/L. CT neck/chest/abdomen showed extensive lymphadenopathy above and below the diaphragm with largest node measuring 4.1 cm in the left axilla. Spleen mildly enlarged at 14 cm.
+>
+> **Assessment:**
+> Suspected lymphoproliferative disorder — differential includes diffuse large B-cell lymphoma, follicular lymphoma, or Hodgkin lymphoma. Awaiting excisional lymph node biopsy results. Cannot rule out other hematologic malignancies.
+>
+> **Plan:**
+> - Excisional biopsy of left axillary node performed today, pathology pending
+> - Flow cytometry and immunohistochemistry ordered
+> - Bone marrow biopsy scheduled if lymphoma confirmed
+> - Hepatitis B and HIV screening sent
+> - PET-CT to be scheduled once tissue diagnosis is confirmed
+> - Referral to hematology-oncology for management once diagnosis is established
+
 **Step-by-step instructions:**
-1. **Hallucination demo**: Submit the staging-free note with the prompt: "Extract the TNM staging from this note." Observe: the model will likely generate a plausible staging even though none exists in the note. Show the class the fabricated output.
-2. **Grounding fix**: Add to the prompt: "Only extract information explicitly stated in the note. If staging is not mentioned, respond with NOT_FOUND." Resubmit. The model should now correctly return NOT_FOUND.
-3. **Citation fix**: Add: "For each extracted field, quote the exact sentence from the note that supports it." Resubmit. Show how citation prompting makes hallucinations self-evident (no quote = fabricated).
-4. **Prompt sensitivity demo**: Take the ambiguous note. Submit: "What is the primary diagnosis?" Then submit: "What is the main problem?" Then submit: "What condition is being treated?" Compare all three outputs. Highlight differences.
-5. **Class discussion**: What are the implications for clinical AI deployment? How do we decide which prompt wording to use? Why must prompts be version-controlled?
+
+**Part 1 — Hallucination demo (use Note A):**
+1. Submit Note A with the prompt: **"Extract the TNM staging from this note."**
+   Observe: the model will likely generate a plausible staging (e.g., T2N2M0) even though none exists in the note. Show the class the fabricated output.
+2. **Grounding fix**: Add to the prompt: **"Only extract information explicitly stated in the note. If staging is not mentioned, respond with NOT_FOUND."** Resubmit. The model should now correctly return NOT_FOUND.
+3. **Citation fix**: Add: **"For each extracted field, quote the exact sentence from the note that supports it."** Resubmit. Show how citation prompting makes hallucinations self-evident (no quote = fabricated).
+
+**Part 2 — Prompt sensitivity demo (use Note B):**
+4. Submit Note B with: **"What is the primary diagnosis?"**
+5. Then submit with: **"What is the main problem?"**
+6. Then submit with: **"What condition is being treated?"**
+7. Compare all three outputs. Highlight differences in specificity, certainty, and clinical accuracy.
+
+**Part 3 — Class discussion:**
+8. What are the implications for clinical AI deployment?
+9. How do we decide which prompt wording to use?
+10. Why must prompts be version-controlled?
 
 **Expected output:**
 Students observe: (a) a confident hallucination from an ungrounded prompt, (b) correct NOT_FOUND behavior from a grounded prompt, (c) citation-based auditability, and (d) output variation from synonym-level prompt changes.

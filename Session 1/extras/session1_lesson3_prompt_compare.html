@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier New', monospace;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #888;
+  --color-text-warning: #e65100;
+  --color-text-danger: #c62828;
+  --color-text-success: #2e7d32;
+  --color-background-primary: #fff;
+  --color-background-secondary: #f5f7fa;
+  --color-background-danger: #ffebee;
+  --color-background-success: #e8f5e9;
+  --color-border-primary: #1a1a2e;
+  --color-border-secondary: #90a4ae;
+  --color-border-tertiary: #e0e0e0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,"system-ui");color:var(--color-text-primary);background:#fff;padding:24px;max-width:860px;margin:0 auto}
+h2{font-size:16px;font-weight:500;margin-bottom:4px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:16px}
+.note-box{background:var(--color-background-secondary);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.7;margin-bottom:20px;border:1px solid var(--color-border-tertiary)}
+.note-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:500px){.compare-grid{grid-template-columns:1fr}}
+.prompt-col{border:1px solid var(--color-border-tertiary);border-radius:10px;overflow:hidden}
+.prompt-header{padding:10px 14px;border-bottom:1px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px}
+.badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:12px}
+.badge-bad{background:var(--color-background-danger);color:var(--color-text-danger)}
+.badge-good{background:var(--color-background-success);color:var(--color-text-success)}
+.col-title{font-size:13px;font-weight:500}
+.prompt-text{padding:12px 14px;font-size:12px;font-family:var(--font-mono,monospace);line-height:1.6;background:var(--color-background-secondary);border-bottom:1px solid var(--color-border-tertiary);min-height:90px;white-space:pre-wrap}
+.output-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;padding:8px 14px 4px}
+.output-text{padding:4px 14px 14px;font-size:12px;line-height:1.7}
+.issue{display:flex;align-items:flex-start;gap:6px;background:var(--color-background-danger);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;line-height:1.5;color:var(--color-text-danger)}
+.check{display:flex;align-items:flex-start;gap:6px;background:var(--color-background-success);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px;line-height:1.5;color:var(--color-text-success)}
+.icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.analysis{background:var(--color-background-secondary);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.analysis-title{font-size:13px;font-weight:500;margin-bottom:10px}
+.analysis-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--color-border-tertiary);font-size:13px}
+.analysis-row:last-child{border-bottom:none}
+.dim-label{color:var(--color-text-secondary);min-width:140px;font-size:12px}
+.rating{font-size:12px;font-weight:500}
+.rating-bad{color:var(--color-text-danger)}
+.rating-ok{color:var(--color-text-warning)}
+.rating-good{color:var(--color-text-success)}
+.note-picker{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.np-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--color-border-tertiary);font-size:12px;cursor:pointer;background:transparent;color:var(--color-text-secondary);transition:all .15s}
+.np-btn.active,.np-btn:hover{border-color:var(--color-border-primary);color:var(--color-text-primary);background:var(--color-background-secondary)}
+</style>
+</head>
+<body>
+<h2>Prompt Comparison — Same Note, Two Prompts</h2>
+<p class="sub">See how prompt design changes clinical output quality and safety</p>
+
+<div class="note-picker" id="picker"></div>
+
+<div class="note-box">
+  <div class="note-label">Clinical note (same for both prompts)</div>
+  <div id="note-text"></div>
+</div>
+
+<div class="compare-grid" id="grid"></div>
+<div class="analysis" id="analysis"></div>
+
+<script>
+const cases=[
+  {
+    label:"Discharge summary",
+    note:`Patient: Female, 54y. Admitted for management of newly diagnosed breast cancer.
+Pathology: Invasive ductal carcinoma, grade 2. ER positive, PR positive, HER2 negative.
+Staging: T2N1M0, Stage IIB.
+Treatment: Patient started on AC chemotherapy (doxorubicin 60mg/m² + cyclophosphamide 600mg/m²). Tolerated first cycle with mild nausea. Antiemetics prescribed.
+Follow-up: Scheduled in 3 weeks for cycle 2. Oncology clinic appointment confirmed.
+Plan: Continue AC x4 cycles, then paclitaxel x12 weekly. Reassess with CT after cycle 4.`,
+    badPrompt:`Summarize this note.`,
+    goodPrompt:`You are an oncology data extraction assistant. Extract the following fields from the clinical note below and return them as a JSON object. If a field is not explicitly stated in the note, return null. Do not infer or estimate.
+
+Fields:
+- primary_diagnosis
+- histology
+- receptor_status (object: ER, PR, HER2)
+- tnm_staging
+- current_regimen
+- next_follow_up_weeks
+
+Note:
+[PASTE NOTE HERE]`,
+    badOutput:`The patient is a 54-year-old female admitted for newly diagnosed breast cancer. Pathology showed invasive ductal carcinoma. She was started on AC chemotherapy and tolerated it reasonably well. Follow-up is planned.`,
+    goodOutput:`{
+  "primary_diagnosis": "Invasive ductal carcinoma",
+  "histology": "Grade 2",
+  "receptor_status": {
+    "ER": "positive",
+    "PR": "positive",
+    "HER2": "negative"
+  },
+  "tnm_staging": "T2N1M0, Stage IIB",
+  "current_regimen": "AC (doxorubicin 60mg/m² + cyclophosphamide 600mg/m²)",
+  "next_follow_up_weeks": 3
+}`,
+    issues:["Missing grade, staging, and receptor status","Prose format — cannot be parsed by a pipeline","'Tolerated reasonably well' is imprecise (source says 'mild nausea')","No handling of missing fields"],
+    checks:["All 6 fields extracted accurately","JSON format — directly parseable","HER2 negative explicitly captured","null returned for any missing field"]
+  },
+  {
+    label:"Clinic note",
+    note:`Oncology follow-up — Patient: Male, 67y, colorectal cancer.
+PSA not applicable. CEA: 3.2 ng/mL (previously 2.8 — slight rise noted).
+CT chest/abdomen: No new lesions identified. Stable appearance.
+Assessment: Patient tolerating FOLFIRI well. Mild fatigue reported, no grade 3+ toxicity.
+Plan: Continue FOLFIRI. Repeat imaging in 3 months. CEA recheck at next visit.
+Surgeon consulted re: resection candidacy — decision pending MDT review.`,
+    badPrompt:`What is the plan for this patient?`,
+    goodPrompt:`You are an oncology clinical data extraction assistant. From the note below, extract the following and return as JSON. Return null if not explicitly stated. Do not infer.
+
+Fields:
+- tumor_marker (name and value)
+- imaging_result
+- current_treatment
+- toxicity_grade
+- next_imaging_weeks
+- mdt_pending (boolean)
+
+Note:
+[PASTE NOTE HERE]`,
+    badOutput:`The plan is to continue the patient's current treatment and repeat imaging in 3 months. A CEA recheck will be done at the next visit. The surgeon was consulted regarding resection.`,
+    goodOutput:`{
+  "tumor_marker": {
+    "name": "CEA",
+    "value_ng_ml": 3.2,
+    "trend": "rising (previously 2.8)"
+  },
+  "imaging_result": "No new lesions, stable",
+  "current_treatment": "FOLFIRI",
+  "toxicity_grade": "less than 3 (mild fatigue only)",
+  "next_imaging_weeks": 12,
+  "mdt_pending": true
+}`,
+    issues:["Omits CEA value and trend — clinically important","No toxicity grade captured","'3 months' not converted to weeks for pipeline","MDT pending status lost — affects care coordination"],
+    checks:["CEA value and trend both captured","Toxicity grade explicitly stated as <3","12 weeks calculated and stored numerically","MDT pending captured as boolean flag"]
+  }
+];
+let active=0;
+function render(){
+  document.getElementById('picker').innerHTML=cases.map((c,i)=>`<button class="np-btn ${i===active?'active':''}" onclick="active=${i};render()">${c.label}</button>`).join('');
+  const c=cases[active];
+  document.getElementById('note-text').textContent=c.note;
+  document.getElementById('grid').innerHTML=`
+    <div class="prompt-col">
+      <div class="prompt-header"><span class="badge badge-bad">Vague prompt</span></div>
+      <div class="prompt-text">${c.badPrompt}</div>
+      <div class="output-label">Output</div>
+      <div class="output-text">${c.badOutput.split('\n').map(l=>`<div>${l||'&nbsp;'}</div>`).join('')}</div>
+    </div>
+    <div class="prompt-col">
+      <div class="prompt-header"><span class="badge badge-good">Structured prompt</span></div>
+      <div class="prompt-text">${c.goodPrompt}</div>
+      <div class="output-label">Output</div>
+      <div class="output-text" style="font-family:var(--font-mono,monospace);font-size:11px">${c.goodOutput.split('\n').map(l=>`<div>${l||'&nbsp;'}</div>`).join('')}</div>
+    </div>`;
+  document.getElementById('analysis').innerHTML=`
+    <div class="analysis-title">What changed — and why it matters clinically</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>${c.issues.map(i=>`<div class="issue"><span class="icon">✕</span><span>${i}</span></div>`).join('')}</div>
+      <div>${c.checks.map(ch=>`<div class="check"><span class="icon">✓</span><span>${ch}</span></div>`).join('')}</div>
+    </div>`;
+}
+render();
+</script>
+</body>
+</html>

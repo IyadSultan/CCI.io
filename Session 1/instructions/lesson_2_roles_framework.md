@@ -16,20 +16,6 @@ Now that you know what an LLM is, let me tell you the single most important thin
 
 ---
 
-## NotebookLM Summary
-
-The ROLES framework is a structured approach to prompt engineering designed specifically for clinical and high-stakes applications. ROLES stands for Role, Objective, Language, Examples, and Structure. Each component serves a specific function in guiding the LLM toward accurate and consistent output.
-
-Role defines who the model should act as. In clinical contexts, this is not decorative: telling the model "You are an oncology data abstractor with experience in ICD-10 coding" activates different statistical patterns than "You are a helpful assistant." The role primes the model's vocabulary, tone, and decision-making patterns. Objective states exactly what the model should do, including what it should not do. A vague objective like "summarize this note" produces unpredictable output. A precise objective like "Extract the TNM staging from this pathology report; if staging is not explicitly stated, respond with NOT_FOUND" tells the model both the target and the failure mode. Language specifies the terminology, reading level, and domain conventions expected. For clinical work, this might mean "Use ICD-10-CM codes," "Write at a health literacy level appropriate for patient education," or "Use SNOMED CT preferred terms."
-
-Examples are the most powerful component. Providing one or two examples of the desired input-output pair transforms model accuracy dramatically. In clinical NLP benchmarks, few-shot prompts with examples outperform zero-shot prompts by 15-30 percentage points on structured extraction tasks. Structure defines the output format: JSON, table, bullet list, or narrative. Without explicit structure, the model chooses its own format, which varies across runs and breaks downstream pipelines.
-
-The critical insight for beginners is that prompt engineering is not a soft skill or an afterthought. It is the primary control mechanism for clinical AI systems. A well-constructed ROLES prompt is the difference between a system that extracts diagnoses at 95% accuracy and one that hallucinates at 60%. Every minute spent crafting a better prompt saves hours of debugging, validation, and clinical review downstream.
-
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add any reference PDFs, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
-
----
-
 ## Lab Exercise
 
 **Title:** Building Your First ROLES Prompt for Discharge Summary Extraction
@@ -46,18 +32,61 @@ By the end of this lab, students will have built a complete ROLES prompt and tes
 ```
 1. Open platform.openai.com/playground
 2. Select GPT-4o, temperature 0, max tokens 500
-3. Have two sample discharge summaries ready (provided by instructor)
+3. Have both sample discharge summaries ready (provided below)
 ```
 
+**Sample Discharge Summary 1:**
+
+> **Patient:** 62-year-old male
+> **Admission Date:** 2025-10-15 | **Discharge Date:** 2025-10-22
+>
+> **History of Present Illness:**
+> Patient is a 62-year-old male who presented with painless jaundice, dark urine, and 6 kg weight loss over 6 weeks. CT abdomen/pelvis revealed a 3.1 cm mass in the head of the pancreas with pancreatic duct dilation. CA 19-9 was elevated at 487 U/mL. EUS-guided FNA confirmed pancreatic ductal adenocarcinoma, moderately differentiated. Staging CT showed no vascular invasion and no distant metastases.
+>
+> **Staging:** T2N0M0, Stage IB (AJCC 8th edition)
+>
+> **Hospital Course:**
+> Multidisciplinary tumor board recommended upfront surgical resection. Patient underwent Whipple procedure (pancreaticoduodenectomy) on 2025-10-17. Surgical margins were negative (R0). Pathology confirmed 2.8 cm moderately differentiated adenocarcinoma, 0/14 lymph nodes positive. Postoperative course was uncomplicated. Jackson-Pratt drain removed on POD 4. Patient tolerated regular diet by POD 5.
+>
+> **Discharge Diagnoses:**
+> 1. Pancreatic ductal adenocarcinoma, Stage IB (T2N0M0) — C25.0
+> 2. Type 2 diabetes mellitus, insulin-requiring — E11.65
+> 3. Obstructive jaundice, resolved post-surgery — K83.1
+>
+> **Discharge Medications:** Insulin glargine 18 units nightly, Creon 36,000 units with meals, Pantoprazole 40 mg daily, Acetaminophen 500 mg PRN pain
+>
+> **Follow-up:** Surgical oncology in 2 weeks for wound check and discussion of adjuvant gemcitabine/capecitabine.
+
+**Sample Discharge Summary 2:**
+
+> **Patient:** 45-year-old female
+> **Admission Date:** 2025-09-20 | **Discharge Date:** 2025-09-24
+>
+> **History of Present Illness:**
+> Patient is a 45-year-old premenopausal female who presented with a palpable left breast mass. Diagnostic mammogram showed a 2.4 cm irregular mass at 10 o'clock position, BIRADS 5. Ultrasound-guided core biopsy confirmed invasive ductal carcinoma, grade 2. ER positive (95%), PR positive (80%), HER2 negative (IHC 1+), Ki-67 18%. Oncotype DX recurrence score: 14 (low risk). Sentinel lymph node biopsy showed 0/3 nodes positive.
+>
+> **Staging:** T2N0M0, Stage IIA (AJCC 8th edition)
+>
+> **Hospital Course:**
+> Patient underwent left breast-conserving surgery (lumpectomy) with sentinel lymph node biopsy on 2025-09-21. Surgical margins negative. Postoperative recovery uneventful. Patient counseled on adjuvant treatment plan: whole-breast radiation therapy followed by endocrine therapy (tamoxifen). Chemotherapy not recommended given low Oncotype score.
+>
+> **Discharge Diagnoses:**
+> 1. Invasive ductal carcinoma, left breast, Stage IIA (T2N0M0) — C50.412
+> 2. Iron deficiency anemia — D50.9
+>
+> **Discharge Medications:** Tamoxifen 20 mg daily (to start after radiation), Ferrous sulfate 325 mg daily, Ibuprofen 400 mg PRN pain
+>
+> **Follow-up:** Radiation oncology consult in 10 days. Surgical oncology in 2 weeks.
+
 **Step-by-step instructions:**
-1. Start with a naive prompt: "What are the diagnoses in this note?" Submit it with discharge summary 1. Copy the output.
+1. Start with a naive prompt: **"What are the diagnoses in this note?"** Submit it with discharge summary 1. Copy the output.
 2. Now build a ROLES prompt step by step:
    - **R**: "You are a clinical data abstractor specializing in oncology discharge summaries at a comprehensive cancer center."
    - **O**: "Extract the primary diagnosis, all secondary diagnoses, and TNM staging if present. If any field is not found, output NOT_FOUND."
    - **L**: "Use ICD-10-CM codes where possible. Use standard oncology terminology."
-   - **E**: Provide one example input/output pair using a sample note.
+   - **E**: Provide one example input/output pair using discharge summary 2.
    - **S**: "Return output as a JSON object with keys: primary_diagnosis, secondary_diagnoses (array), tnm_staging."
-3. Submit the ROLES prompt with the same discharge summary 1. Compare with the naive output.
+3. Submit the ROLES prompt with discharge summary 1. Compare with the naive output.
 4. Submit the ROLES prompt with discharge summary 2. Verify the output follows the same structure.
 5. Document the differences in a brief note: accuracy, consistency, format.
 

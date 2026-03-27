@@ -16,22 +16,6 @@ You now have the ROLES framework as your scaffold. But within that framework, th
 
 ---
 
-## NotebookLM Summary
-
-Prompting patterns define how much guidance and reasoning structure you provide to an LLM. The three foundational patterns are zero-shot, few-shot, and chain-of-thought (CoT), and each has distinct strengths and costs in clinical applications.
-
-Zero-shot prompting means giving the model a task with no examples. You simply state what you want: "Classify this radiology report as normal or abnormal." This is the fastest to write and uses the least tokens, but it relies entirely on the model's pre-training knowledge to interpret what "normal" and "abnormal" mean in your specific clinical context. For well-defined, common tasks, zero-shot can work well. For nuanced clinical classification, it often produces inconsistent results because the model has no reference point for your specific criteria.
-
-Few-shot prompting adds one to five examples of the desired input-output mapping before presenting the actual task. This is the most reliable improvement technique available. When you show the model two examples of discharge summaries with their correct extracted diagnoses, you are not just teaching it the task; you are defining the output format, the level of detail, the terminology, and the edge cases all at once. Clinical NLP benchmarks consistently show 15-30 percentage point improvements from zero-shot to few-shot, with diminishing returns after three to five examples.
-
-Chain-of-thought prompting asks the model to reason step by step before producing its final answer. Instead of jumping directly from a clinic note to a diagnosis code, the model first identifies relevant clinical findings, considers differential diagnoses, weighs supporting evidence, and then produces its classification. In clinical reasoning tasks, CoT has been shown to improve accuracy by over 20 percentage points compared to direct zero-shot prompting. The key insight is that CoT makes the model's reasoning visible and auditable, which is essential for clinical trust. When a model explains why it classified a tumor as T3N1M0, the clinician can verify each step rather than trusting a black-box output.
-
-The practical skill is learning when to use each pattern. Zero-shot for simple, well-defined extractions. Few-shot for any task requiring consistent formatting or domain-specific judgment. Chain-of-thought for complex clinical reasoning where auditability matters. In production clinical systems, few-shot with chain-of-thought is often the default because it maximizes both accuracy and transparency.
-
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add any reference PDFs, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
-
----
-
 ## Lab Exercise
 
 **Title:** Head-to-Head Comparison: Zero-Shot vs. Few-Shot vs. CoT on Clinical Notes
@@ -48,16 +32,60 @@ By the end of this lab, students will have tested all three prompting patterns o
 ```
 1. Open platform.openai.com/playground
 2. GPT-4o, temperature 0, max tokens 800
-3. Instructor provides 3 sample clinic notes with known treatment intent labels
-4. Prepare a simple tracking sheet: Pattern | Note | Predicted Intent | Correct? | Reasoning Quality
+3. Use the 3 sample clinic notes below
+4. Prepare a tracking sheet: Pattern | Note | Predicted Intent | Correct? | Reasoning Quality
 ```
 
+**Sample Clinic Note 1 (Curative intent):**
+
+> **Visit Date:** 2025-08-12 | **Provider:** Dr. Ahmad Khalil, Medical Oncology
+>
+> **Subjective:** 55-year-old male presents for initial oncology consultation following diagnosis of Stage II colon cancer. Patient underwent right hemicolectomy 3 weeks ago. Pathology showed T3N1aM0 moderately differentiated adenocarcinoma, 2/18 lymph nodes positive. Microsatellite stable (MSS). CEA post-surgery 2.1 (normal). Patient reports good recovery, tolerating regular diet, no complaints.
+>
+> **Assessment & Plan:**
+> - Colon adenocarcinoma, Stage IIIA (T3N1aM0), status post right hemicolectomy with negative margins
+> - Recommend adjuvant CAPOX chemotherapy x 3 months (based on IDEA trial data for low-risk Stage III)
+> - Goal: cure — reduce recurrence risk from ~30% to ~15%
+> - Labs and CT chest/abdomen/pelvis prior to cycle 1
+> - Port placement scheduled for next week
+> - Discussed expected side effects: neuropathy, hand-foot syndrome, fatigue
+> - Patient agrees to proceed. Return in 1 week for cycle 1.
+
+**Sample Clinic Note 2 (Palliative intent):**
+
+> **Visit Date:** 2025-09-05 | **Provider:** Dr. Rania Masri, Medical Oncology
+>
+> **Subjective:** 71-year-old female with metastatic pancreatic adenocarcinoma (liver and peritoneal metastases) presents for follow-up after 4 cycles of gemcitabine/nab-paclitaxel. CT shows mixed response: primary tumor stable, but 2 new hepatic lesions. CA 19-9 rising from 1,200 to 2,450. ECOG performance status 2. Patient reports increasing fatigue, decreased appetite, and 3 kg weight loss over 4 weeks. Pain managed with oxycodone.
+>
+> **Assessment & Plan:**
+> - Metastatic pancreatic adenocarcinoma, progressing on first-line therapy
+> - Disease is not curable; goal is to prolong survival and maintain quality of life
+> - Switch to second-line FOLFIRINOX (modified dose given PS 2)
+> - Palliative care referral for symptom management and goals-of-care discussion
+> - Nutrition consult for weight loss and appetite support
+> - Re-image in 8 weeks to assess response
+> - If further decline in performance status, will discuss transition to best supportive care
+
+**Sample Clinic Note 3 (Surveillance intent):**
+
+> **Visit Date:** 2025-10-01 | **Provider:** Dr. Samer Habash, Medical Oncology
+>
+> **Subjective:** 48-year-old female with history of Stage IIA left breast invasive ductal carcinoma (ER+/PR+/HER2-), treated 3 years ago with lumpectomy, whole-breast radiation, and adjuvant tamoxifen. Currently on tamoxifen with good tolerance. No new symptoms. Denies breast lumps, bone pain, or weight loss. Mammogram from last month showed no suspicious findings (BIRADS 1). Labs: CBC normal, CMP normal.
+>
+> **Assessment & Plan:**
+> - Breast cancer, Stage IIA, in remission — 3 years post-treatment
+> - Continue tamoxifen (plan for 5-year total course, 2 years remaining)
+> - No evidence of recurrence on clinical exam and imaging
+> - Surveillance plan: annual mammogram, clinical exam every 6 months
+> - Discussed signs/symptoms of recurrence to watch for
+> - Return in 6 months for surveillance visit
+
 **Step-by-step instructions:**
-1. **Zero-shot test**: Prompt: "Classify the following clinic note by treatment intent (curative, palliative, or surveillance): [note]". Run on all 3 notes. Record results.
+1. **Zero-shot test**: Prompt: "Classify the following clinic note by treatment intent (curative, palliative, or surveillance): [paste note]". Run on all 3 notes. Record results in your tracking sheet.
 2. **Few-shot test**: Add 2 examples before the task note:
-   - Example 1: [curative note] -> "curative"
-   - Example 2: [palliative note] -> "palliative"
-   Then classify the same 3 notes. Record results.
+   - Example 1: [Clinic Note 1 text] → "curative"
+   - Example 2: [Clinic Note 2 text] → "palliative"
+   Then classify Clinic Note 3. Record results.
 3. **Chain-of-thought test**: Add the instruction: "Think step by step. First identify the key clinical findings, then consider what treatment approach they suggest, then classify as curative, palliative, or surveillance." Run on all 3 notes. Record results.
 4. Compare your tracking sheet. Which pattern was most accurate? Which gave the best reasoning?
 5. Discuss as a class: when would you use each pattern in a real clinical pipeline?
