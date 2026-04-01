@@ -17,7 +17,7 @@ permalink: /session-02/
     display: flex;
     align-items: center;
     gap: 1rem;
-  }
+  } 
 
   .s1-header .back {
     display: inline-flex;
@@ -463,6 +463,9 @@ permalink: /session-02/
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/blob/main/session2/students/Lab5_GitHub_Setup_Student.ipynb" target="_blank">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/blob/main/session2/students/Lab6_OpenAI_Extract_Email_Student.ipynb" target="_blank" style="background:#FFEBEE;border-color:#EF9A9A;color:#C62828 !important;">
+        <span class="s1-btn-icon">&#129302;</span> Lab 6: OpenAI Extract &amp; Email
+      </a>
     </div>
   </div>
 </div>
@@ -516,3 +519,4 @@ permalink: /session-02/
 <div class="s1-footer-note">
   KHCC Cancer Care Informatics &middot; Session 2 of 15
 </div>
+
