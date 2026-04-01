@@ -1,0 +1,129 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "Where should you put '!pip install pandas openpyxl' in a clinical notebook?",
+    options: [
+      "In the very first cell — Package Installations section",
+      "Right before the cell that uses pandas",
+      "At the end of the notebook",
+      "In the Imports section alongside import statements"
+    ],
+    correct: 0,
+    explanation: "All pip installs go in the first cell so the notebook installs everything upfront. This prevents failures mid-execution and makes dependencies visible."
+  },
+  {
+    question: "You have an API key for Azure OpenAI. Where does it belong in the notebook template?",
+    options: [
+      "Hardcoded in the function that calls the API",
+      "In the Configuration section as a variable (or loaded from environment/secrets)",
+      "In the Imports section",
+      "In a comment at the top of the notebook"
+    ],
+    correct: 1,
+    explanation: "API keys belong in the Configuration section. In production, they should be loaded from environment variables or Colab secrets — never hardcoded in function bodies."
+  },
+  {
+    question: "Why should LLM prompt templates be in their own section rather than inside functions?",
+    options: [
+      "Python doesn't allow strings inside functions",
+      "It makes prompts easy to review, version, and modify without touching code logic",
+      "Prompt strings are too long for function bodies",
+      "It makes the notebook run faster"
+    ],
+    correct: 1,
+    explanation: "Separating prompts from logic means you can iterate on prompt engineering without risk of breaking code. It also makes prompt review and auditing straightforward."
+  },
+  {
+    question: "A colleague sends you a notebook with no markdown summary at the end. Why is this a problem in clinical informatics?",
+    options: [
+      "The notebook won't run without it",
+      "It violates Python syntax rules",
+      "Reviewers and auditors can't understand what the notebook did without running it",
+      "The CSV export will fail"
+    ],
+    correct: 2,
+    explanation: "In clinical settings, notebooks must be auditable. A markdown summary provides a human-readable record of inputs, outputs, and purpose without requiring execution."
+  },
+  {
+    question: "Which section of the notebook template should contain: thresholds = {'hgb_low': 10.0, 'wbc_high': 11.0}?",
+    options: [
+      "Functions",
+      "Main Code",
+      "Configuration",
+      "Imports"
+    ],
+    correct: 2,
+    explanation: "Clinical thresholds are configuration values — they may change between hospitals or protocols. Keeping them in Configuration makes them easy to adjust without modifying logic."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (selected !== null) return;
+    setSelected(idx);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+    setShowResult(true);
+  };
+
+  const next = () => {
+    if (current + 1 < questions.length) {
+      setCurrent(c => c + 1);
+      setSelected(null);
+      setShowResult(false);
+    } else {
+      setFinished(true);
+    }
+  };
+
+  if (finished) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 text-center">
+        <h2 className="text-2xl font-bold mb-4">Quiz Complete!</h2>
+        <p className="text-xl">Score: {score}/{questions.length}</p>
+        <div className="w-full bg-gray-200 rounded-full h-4 mt-4">
+          <div className="bg-green-500 h-4 rounded-full" style={{width: `${(score/questions.length)*100}%`}}></div>
+        </div>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="mb-4">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="bg-blue-500 h-2 rounded-full" style={{width: `${((current+1)/questions.length)*100}%`}}></div>
+        </div>
+        <p className="text-sm text-gray-500 mt-1">Question {current+1} of {questions.length}</p>
+      </div>
+      <h3 className="text-lg font-semibold mb-4">{q.question}</h3>
+      <div className="space-y-2">
+        {q.options.map((opt, idx) => (
+          <button key={idx} onClick={() => handleSelect(idx)}
+            className={`w-full text-left p-3 rounded border ${
+              selected === null ? 'hover:bg-gray-50 border-gray-300' :
+              idx === q.correct ? 'bg-green-100 border-green-500' :
+              idx === selected ? 'bg-red-100 border-red-500' : 'border-gray-200'
+            }`}>
+            {opt}
+          </button>
+        ))}
+      </div>
+      {showResult && (
+        <div className="mt-4 p-3 bg-blue-50 rounded">
+          <p className="text-sm">{q.explanation}</p>
+          <button onClick={next} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            {current + 1 < questions.length ? 'Next Question' : 'See Results'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
