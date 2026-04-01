@@ -12,3 +12,6 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - "Session 1/notebookLM.txt"
+  - "Session 2/session_2_curriculum.md"
+  - "Session 2/practices/practice_lesson6_wrapup_review.md"
+  - "Session 2/quizzes/quiz_lesson6_wrapup_selfcheck.md"

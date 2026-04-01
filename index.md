@@ -243,8 +243,8 @@ title: CCI.io
   <a class="cci-card" href="{{ site.baseurl }}/session-02/">
     <div class="cci-num" style="background:#00897B;">2</div>
     <div class="cci-card-body">
-      <p class="title">Python Basics + GitHub</p>
-      <p class="desc">Environment setup, version control, first scripts</p>
+      <p class="title">Python Basics + GitHub <span class="cci-active-badge">Active</span></p>
+      <p class="desc">Variables, classes, pandas, Colab notebooks, GitHub</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

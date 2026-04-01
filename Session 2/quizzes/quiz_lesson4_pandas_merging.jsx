@@ -1,0 +1,126 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "You have a DataFrame 'df' with columns: mrn, name, hemoglobin, wbc. How do you get only patients with hemoglobin below 10?",
+    options: [
+      "df.filter(hemoglobin < 10)",
+      "df[df['hemoglobin'] < 10]",
+      "df.where('hemoglobin', '<', 10)",
+      "df.select(hemoglobin < 10)"
+    ],
+    correct: 1,
+    explanation: "Pandas uses boolean indexing: df[df['hemoglobin'] < 10] creates a True/False mask and returns only rows where the condition is True."
+  },
+  {
+    question: "You have two DataFrames: 'patients' (mrn, name, age) and 'labs' (mrn, hemoglobin, wbc). How do you combine them?",
+    options: [
+      "patients + labs",
+      "pd.concat([patients, labs])",
+      "pd.merge(patients, labs, on='mrn')",
+      "patients.append(labs)"
+    ],
+    correct: 2,
+    explanation: "pd.merge() joins two DataFrames on a shared column (mrn). concat() stacks vertically, which would be wrong here since the columns are different."
+  },
+  {
+    question: "After merging patients and labs with how='left', some patients have NaN in the hemoglobin column. What does this mean?",
+    options: [
+      "The hemoglobin values were zero",
+      "Those patients had no matching lab results in the labs table",
+      "The merge failed for those rows",
+      "NaN means the values are normal"
+    ],
+    correct: 1,
+    explanation: "In a left join, all rows from the left table are kept. NaN appears where there's no matching row in the right table — these patients had no lab results."
+  },
+  {
+    question: "df.groupby('diagnosis')['hemoglobin'].mean() — what does this produce?",
+    options: [
+      "The mean hemoglobin for each unique diagnosis",
+      "A list of all hemoglobin values grouped by diagnosis",
+      "The overall mean hemoglobin across all patients",
+      "A new column called 'mean' in the DataFrame"
+    ],
+    correct: 0,
+    explanation: "groupby splits the data by diagnosis, then .mean() calculates the average hemoglobin within each group — useful for comparing lab values across cancer types."
+  },
+  {
+    question: "You're merging monthly lab exports (January, February, March) — each has the same columns. Which function do you use?",
+    options: [
+      "pd.merge(jan, feb, mar)",
+      "pd.concat([jan, feb, mar])",
+      "jan.join(feb).join(mar)",
+      "pd.append(jan, feb, mar)"
+    ],
+    correct: 1,
+    explanation: "pd.concat() stacks DataFrames vertically when they have the same columns. merge() is for combining different tables with a shared key."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [score, setScore] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (selected !== null) return;
+    setSelected(idx);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+    setShowResult(true);
+  };
+
+  const next = () => {
+    if (current + 1 < questions.length) {
+      setCurrent(c => c + 1);
+      setSelected(null);
+      setShowResult(false);
+    } else {
+      setFinished(true);
+    }
+  };
+
+  if (finished) {
+    return (
+      <div className="max-w-2xl mx-auto p-6 text-center">
+        <h2 className="text-2xl font-bold mb-4">Quiz Complete!</h2>
+        <p className="text-xl">Score: {score}/{questions.length}</p>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="mb-4">
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="bg-blue-500 h-2 rounded-full" style={{width: `${((current+1)/questions.length)*100}%`}}></div>
+        </div>
+        <p className="text-sm text-gray-500 mt-1">Question {current+1} of {questions.length}</p>
+      </div>
+      <h3 className="text-lg font-semibold mb-4">{q.question}</h3>
+      <div className="space-y-2">
+        {q.options.map((opt, idx) => (
+          <button key={idx} onClick={() => handleSelect(idx)}
+            className={`w-full text-left p-3 rounded border ${
+              selected === null ? 'hover:bg-gray-50 border-gray-300' :
+              idx === q.correct ? 'bg-green-100 border-green-500' :
+              idx === selected ? 'bg-red-100 border-red-500' : 'border-gray-200'
+            }`}>
+            {opt}
+          </button>
+        ))}
+      </div>
+      {showResult && (
+        <div className="mt-4 p-3 bg-blue-50 rounded">
+          <p className="text-sm">{q.explanation}</p>
+          <button onClick={next} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            {current + 1 < questions.length ? 'Next Question' : 'See Results'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
