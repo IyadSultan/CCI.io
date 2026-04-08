@@ -1,0 +1,103 @@
+import React, { useState } from 'react';
+
+const sampleNote = `DISCHARGE SUMMARY - KHCC Ward 4C
+Patient: Fatima Al-Hassan, MRN: 29384756102938
+Diagnosis: Invasive ductal carcinoma, left breast, T2N1M0, Stage IIB
+ER+/PR+/HER2-negative, Ki-67: 22%
+
+Treatment: Completed 4 cycles AC (doxorubicin 60mg/m2 + cyclophosphamide 600mg/m2) followed by 12 weeks paclitaxel 80mg/m2 weekly. Tolerated well with Grade 1 neuropathy.
+Surgery: Left modified radical mastectomy (Dr. Ahmad Khalil, 2026-02-15)
+Current medications: Tamoxifen 20mg daily, Ondansetron 8mg PRN nausea, Gabapentin 300mg TID for neuropathy
+Allergies: Sulfa drugs, Penicillin
+
+Follow-up: Oncology clinic in 3 weeks (2026-03-20). Repeat imaging in 3 months.
+Condition at discharge: Stable, ambulating independently.`;
+
+const correctFields = {
+  patient_name: "Fatima Al-Hassan",
+  mrn: "29384756102938",
+  diagnosis: "Invasive ductal carcinoma, left breast",
+  stage: "T2N1M0 / Stage IIB",
+  medications: ["Tamoxifen 20mg daily", "Ondansetron 8mg PRN", "Gabapentin 300mg TID"],
+  allergies: ["Sulfa drugs", "Penicillin"],
+  procedures: ["Left modified radical mastectomy"],
+  follow_up_date: "2026-03-20"
+};
+
+const fields = [
+  { key: 'patient_name', label: 'Patient Name', type: 'text' },
+  { key: 'mrn', label: 'MRN', type: 'text' },
+  { key: 'diagnosis', label: 'Primary Diagnosis', type: 'text' },
+  { key: 'stage', label: 'Stage (TNM / Clinical)', type: 'text' },
+  { key: 'medications', label: 'Medications (comma-separated)', type: 'text' },
+  { key: 'allergies', label: 'Allergies (comma-separated)', type: 'text' },
+  { key: 'procedures', label: 'Procedures (comma-separated)', type: 'text' },
+  { key: 'follow_up_date', label: 'Follow-up Date', type: 'text' },
+];
+
+export default function Practice() {
+  const [answers, setAnswers] = useState({});
+  const [checked, setChecked] = useState(false);
+
+  const handleChange = (key, value) => setAnswers({ ...answers, [key]: value });
+
+  const checkAnswers = () => setChecked(true);
+
+  const getScore = () => {
+    let correct = 0;
+    if ((answers.patient_name || '').toLowerCase().includes('fatima')) correct++;
+    if ((answers.mrn || '').includes('29384756102938')) correct++;
+    if ((answers.diagnosis || '').toLowerCase().includes('ductal carcinoma')) correct++;
+    if ((answers.stage || '').includes('T2N1') || (answers.stage || '').includes('IIB')) correct++;
+    if ((answers.medications || '').toLowerCase().includes('tamoxifen')) correct++;
+    if ((answers.allergies || '').toLowerCase().includes('sulfa') || (answers.allergies || '').toLowerCase().includes('penicillin')) correct++;
+    if ((answers.procedures || '').toLowerCase().includes('mastectomy')) correct++;
+    if ((answers.follow_up_date || '').includes('2026-03-20') || (answers.follow_up_date || '').includes('3 weeks')) correct++;
+    return correct;
+  };
+
+  return (
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h2>Practice: Manual Clinical Data Extraction</h2>
+      <p style={{ color: '#666', marginBottom: 12 }}>Read the discharge summary below and extract structured data into the fields. This is exactly what you'll automate with Pydantic in the lab!</p>
+
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, marginBottom: 20, whiteSpace: 'pre-wrap', fontFamily: 'monospace', fontSize: 13, lineHeight: 1.6, maxHeight: 300, overflow: 'auto', border: '1px solid #dee2e6' }}>
+        {sampleNote}
+      </div>
+
+      <div style={{ display: 'grid', gap: 12 }}>
+        {fields.map(f => (
+          <div key={f.key}>
+            <label style={{ fontWeight: 'bold', fontSize: 14, display: 'block', marginBottom: 2 }}>{f.label}:</label>
+            <input
+              type="text"
+              value={answers[f.key] || ''}
+              onChange={e => handleChange(f.key, e.target.value)}
+              disabled={checked}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px solid #ccc', boxSizing: 'border-box' }}
+              placeholder={`Extract ${f.label.toLowerCase()} from the note...`}
+            />
+            {checked && (
+              <div style={{ fontSize: 13, marginTop: 4, color: '#198754' }}>
+                Expected: <strong>{Array.isArray(correctFields[f.key]) ? correctFields[f.key].join(', ') : correctFields[f.key]}</strong>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {!checked && (
+        <button onClick={checkAnswers} style={{ marginTop: 20, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer', fontSize: 16 }}>
+          Check My Extraction
+        </button>
+      )}
+
+      {checked && (
+        <div style={{ marginTop: 20, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <h3>Score: {getScore()} / 8 fields correctly extracted</h3>
+          <p>Now imagine doing this for 500 notes manually. In the lab, you'll build a Pydantic model that does this automatically using GPT — every note, every time, in seconds.</p>
+        </div>
+      )}
+    </div>
+  );
+}
