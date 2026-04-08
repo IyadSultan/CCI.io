@@ -252,8 +252,8 @@ title: CCI.io
   <a class="cci-card" href="{{ site.baseurl }}/session-03/">
     <div class="cci-num" style="background:#7B1FA2;">3</div>
     <div class="cci-card-body">
-      <p class="title">Data Science Foundations: SQL, Python &amp; LLMs</p>
-      <p class="desc">Querying data, pandas, integrating LLM outputs</p>
+      <p class="title">Data Science Foundations: SQL, Python &amp; LLMs <span class="cci-active-badge">Active</span></p>
+      <p class="desc">OpenAI API, structured extraction, tool calling, CSV-to-SQL, text-to-SQL</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
