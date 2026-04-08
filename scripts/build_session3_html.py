@@ -5,7 +5,11 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SESSION3 = ROOT / "Session 3"
 
-TEMPLATE = """<!DOCTYPE html>
+# layout: null + {% raw %} around JSX: Jekyll/Liquid otherwise eats `{{` in style={{ }} and breaks the script (blank page).
+TEMPLATE = """---
+layout: null
+---
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -22,12 +26,14 @@ TEMPLATE = """<!DOCTYPE html>
 <a href="https://IyadSultan.github.io/CCI.io/session-03/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 3</a>
 <div id="root"></div>
 <script type="text/babel">
+{{% raw %}}
 const {{ useState }} = React;
 
 {body}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<{component} />);
+{{% endraw %}}
 </script>
 </body>
 </html>
@@ -36,8 +42,15 @@ root.render(<{component} />);
 
 def convert(src: pathlib.Path, dst: pathlib.Path, title: str) -> None:
     text = src.read_text(encoding="utf-8")
-    text = re.sub(r"^import React.*from 'react';\s*\n", "", text)
-    text = re.sub(r"^export default function (\w+)\(", r"function \1(", text, count=1)
+    # re.M so ^ matches after newlines (export is never on line 1 after stripping import)
+    text = re.sub(r"^import React.*from 'react';\s*\n", "", text, flags=re.M)
+    text = re.sub(
+        r"^export default function (\w+)\(",
+        r"function \1(",
+        text,
+        count=1,
+        flags=re.M,
+    )
     m = re.search(r"^function (\w+)\(", text, re.M)
     comp = m.group(1) if m else "App"
     body = text.strip()
