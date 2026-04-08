@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 1 Quiz — OpenAI API</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-03/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 3</a>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const questions = [
+  {
+    question: "You want the LLM to extract a diagnosis from a clinical note with maximum consistency. Which temperature setting is best?",
+    options: ["temperature=1.5", "temperature=0.7", "temperature=0.0", "temperature=2.0"],
+    correct: 2,
+    explanation: "Temperature 0.0 produces the most deterministic output. For clinical data extraction, you want the same input to always produce the same output — reproducibility is critical in healthcare AI."
+  },
+  {
+    question: "In the OpenAI API, you set role='system' with the message: 'You are an oncology data assistant.' What does this do?",
+    options: [
+      "It sends the message to OpenAI's system logs",
+      "It defines the AI's persona and behavioral constraints for the entire conversation",
+      "It overrides all safety filters",
+      "It switches the model to a medical-specific version"
+    ],
+    correct: 1,
+    explanation: "The system message sets the AI's behavior, persona, and guardrails. It applies to the entire conversation and is where you define clinical constraints like 'only extract information explicitly stated in the note.'"
+  },
+  {
+    question: "A clinical note is 2,000 tokens. The model generates a 500-token response. If input costs $0.01/1K tokens and output costs $0.03/1K tokens, what is the total cost?",
+    options: ["$0.02", "$0.035", "$0.05", "$0.075"],
+    correct: 1,
+    explanation: "Input: 2,000 × $0.01/1,000 = $0.02. Output: 500 × $0.03/1,000 = $0.015. Total: $0.02 + $0.015 = $0.035. Output tokens are typically more expensive than input tokens."
+  },
+  {
+    question: "You are building a pipeline to process 500 discharge summaries. Which prompting technique should you use to get the model to identify cancer staging AND explain its reasoning?",
+    options: [
+      "Zero-shot: just ask 'What is the cancer stage?'",
+      "Few-shot: provide 3 example notes with their stages",
+      "Chain-of-thought: instruct the model to reason step-by-step before concluding",
+      "No prompting technique — just increase max_tokens"
+    ],
+    correct: 2,
+    explanation: "Chain-of-thought prompting forces the model to show its reasoning, which is critical when you need both the answer AND the justification. For clinical staging where errors have consequences, seeing the reasoning lets you verify the extraction."
+  },
+  {
+    question: "You call client.chat.completions.create() with a 150,000-token clinical note using GPT-4o (128K context window). What happens?",
+    options: [
+      "The model processes it but slowly",
+      "The API returns an error — the input exceeds the context window",
+      "The model truncates the note automatically",
+      "The model summarizes the note first, then processes it"
+    ],
+    correct: 1,
+    explanation: "If your input exceeds the model's context window, the API returns an error. You must check token counts BEFORE sending. This is why tiktoken is essential — you need to know if your clinical note fits before making the API call."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You're ready to build clinical API pipelines." : score >= 3 ? "Good foundation — review token counting and prompting techniques." : "Review the lesson material before moving on."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

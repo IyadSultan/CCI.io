@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 Practice — Text-to-SQL Pipeline</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-03/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 3</a>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const pipelineSteps = [
+  { id: 'schema', label: 'Describe database schema to LLM', order: 1 },
+  { id: 'question', label: 'User asks question in plain English', order: 2 },
+  { id: 'generate', label: 'LLM generates SQL query', order: 3 },
+  { id: 'validate', label: 'Validate SQL is a safe SELECT query', order: 4 },
+  { id: 'execute', label: 'Execute SQL against the database', order: 5 },
+  { id: 'format', label: 'Send results to LLM for natural language answer', order: 6 },
+];
+
+const clinicalQuestions = [
+  {
+    question: "How many patients had fever in the ICU last week?",
+    badSQL: "SELECT COUNT(*) FROM patients WHERE fever = true AND location = 'ICU'",
+    goodSQL: "SELECT COUNT(DISTINCT MRN) FROM vista_vitals WHERE VITAL_TYPE = 'TEMPERATURE' AND CAST(RATE AS FLOAT) > 100.4 AND HOSPITAL_LOCATION LIKE '%ICU%' AND DATE_TIME_VITALS_TAKEN >= '2026-01-09'",
+    issues: ["Wrong table name (patients vs vista_vitals)", "Wrong column names (fever, location)", "Missing VITAL_TYPE filter", "Missing DISTINCT for unique patients"],
+    whyBad: "The model doesn't know your schema. Without few-shot examples or schema description, it guesses generic column names."
+  },
+  {
+    question: "What was the average pulse rate in ward 4C yesterday?",
+    badSQL: "SELECT AVG(pulse_rate) FROM vitals WHERE ward = '4C' AND date = 'yesterday'",
+    goodSQL: "SELECT AVG(CAST(RATE AS FLOAT)) FROM vista_vitals WHERE VITAL_TYPE = 'PULSE' AND HOSPITAL_LOCATION LIKE '%4C%' AND DATE_TIME_VITALS_TAKEN LIKE '2026-01-15%'",
+    issues: ["Wrong column name (pulse_rate vs RATE)", "No VITAL_TYPE filter", "'yesterday' is not valid SQL — needs actual date", "Missing CAST for numeric comparison"],
+    whyBad: "Common LLM mistakes: using relative dates, inventing column names, forgetting that RATE stores all vital types."
+  },
+  {
+    question: "Show me all abnormal blood pressure readings this month",
+    badSQL: "SELECT * FROM vista_vitals WHERE blood_pressure > 140 AND date > '2026-01-01'",
+    goodSQL: "SELECT * FROM vista_vitals WHERE VITAL_TYPE = 'BLOOD PRESSURE' AND (CAST(SUBSTR(RATE, 1, INSTR(RATE, '/') - 1) AS INTEGER) > 140 OR CAST(SUBSTR(RATE, 1, INSTR(RATE, '/') - 1) AS INTEGER) < 90) AND DATE_TIME_VITALS_TAKEN >= '2026-01-01'",
+    issues: ["BP is stored as '120/80' string — can't compare directly", "No VITAL_TYPE filter", "Wrong column name", "Doesn't handle both high and low BP"],
+    whyBad: "Blood pressure as a compound string is the hardest data type challenge. The model needs explicit examples showing how BP is stored and parsed."
+  }
+];
+
+export default function Practice() {
+  const [phase, setPhase] = useState('pipeline');
+  const [dragOrder, setDragOrder] = useState([]);
+  const [available, setAvailable] = useState(() => [...pipelineSteps].sort(() => Math.random() - 0.5));
+  const [currentQ, setCurrentQ] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+
+  if (phase === 'pipeline') {
+    const isCorrect = dragOrder.length === pipelineSteps.length && dragOrder.every((s, i) => s.order === i + 1);
+
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+        <h2>Part 1: Order the Text-to-SQL Pipeline</h2>
+        <p>Click the steps in the correct order to build the pipeline:</p>
+
+        <div style={{ minHeight: 50, marginBottom: 16 }}>
+          <p style={{ fontWeight: 'bold', marginBottom: 8 }}>Your pipeline order:</p>
+          {dragOrder.map((s, i) => (
+            <div key={s.id} style={{ padding: '8px 12px', margin: 4, background: '#e3f2fd', borderRadius: 6, display: 'inline-block', cursor: 'pointer' }} onClick={() => {
+              setDragOrder(dragOrder.filter(x => x.id !== s.id));
+              setAvailable([...available, s]);
+            }}>
+              {i + 1}. {s.label} ✕
+            </div>
+          ))}
+          {dragOrder.length === 0 && <span style={{ color: '#999' }}>Click steps below to add them...</span>}
+        </div>
+
+        <div>
+          <p style={{ fontWeight: 'bold', marginBottom: 8 }}>Available steps:</p>
+          {available.map(s => (
+            <div key={s.id} onClick={() => {
+              setDragOrder([...dragOrder, s]);
+              setAvailable(available.filter(x => x.id !== s.id));
+            }} style={{ padding: '10px 14px', margin: 6, background: '#f8f9fa', borderRadius: 6, cursor: 'pointer', border: '1px solid #dee2e6', display: 'inline-block' }}>
+              {s.label}
+            </div>
+          ))}
+        </div>
+
+        {dragOrder.length === pipelineSteps.length && (
+          <div style={{ marginTop: 16, padding: 16, background: isCorrect ? '#d4edda' : '#f8d7da', borderRadius: 8 }}>
+            {isCorrect ? (
+              <>
+                <p><strong>Correct!</strong> Schema → Question → Generate SQL → Validate → Execute → Format Answer</p>
+                <button onClick={() => setPhase('debug')} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Continue to Part 2: Debug Bad SQL</button>
+              </>
+            ) : (
+              <p><strong>Not quite.</strong> Think about what needs to happen before the LLM can generate SQL, and what happens after execution. Click steps to remove and reorder.</p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const q = clinicalQuestions[currentQ];
+
+  if (currentQ >= clinicalQuestions.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Practice Complete!</h2>
+        <p>You've seen the full text-to-SQL pipeline and common LLM SQL mistakes. In the lab, you'll build this system for real with the vista_vitals database.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h2>Part 2: Debug LLM-Generated SQL ({currentQ + 1}/{clinicalQuestions.length})</h2>
+      <p style={{ background: '#f8f9fa', padding: 12, borderRadius: 8 }}><strong>Clinical question:</strong> "{q.question}"</p>
+
+      <div style={{ marginTop: 16 }}>
+        <p><strong>LLM generated this SQL (without schema description):</strong></p>
+        <pre style={{ background: '#fee', padding: 12, borderRadius: 6, fontSize: 13, border: '1px solid #fcc', overflow: 'auto' }}>{q.badSQL}</pre>
+      </div>
+
+      {!showAnswer ? (
+        <button onClick={() => setShowAnswer(true)} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Show Issues & Correct SQL</button>
+      ) : (
+        <div style={{ marginTop: 16 }}>
+          <p><strong>Issues found:</strong></p>
+          <ul>{q.issues.map((issue, i) => <li key={i} style={{ color: '#dc3545', marginBottom: 4 }}>{issue}</li>)}</ul>
+          <p style={{ fontStyle: 'italic', color: '#666' }}>{q.whyBad}</p>
+
+          <p style={{ marginTop: 12 }}><strong>Correct SQL (with proper schema):</strong></p>
+          <pre style={{ background: '#efe', padding: 12, borderRadius: 6, fontSize: 13, border: '1px solid #cec', overflow: 'auto' }}>{q.goodSQL}</pre>
+
+          <button onClick={() => { setCurrentQ(c => c + 1); setShowAnswer(false); }} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentQ + 1 < clinicalQuestions.length ? 'Next Example' : 'Finish'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>

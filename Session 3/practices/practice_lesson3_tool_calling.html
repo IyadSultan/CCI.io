@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 3 Practice — Tool Calling</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-03/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 3</a>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
+
+const steps = [
+  {
+    title: "Step 1: Define the Tool",
+    description: "A nurse wants to ask: 'What is the latest temperature for patient 18887304731609?' First, you need to define a tool the model can use. Which tool definition is correct?",
+    options: [
+      {
+        label: "A",
+        code: `tools = [{\n  "type": "function",\n  "function": {\n    "name": "lookup_vitals",\n    "description": "Look up recent vitals for a patient by MRN",\n    "parameters": {\n      "type": "object",\n      "properties": {\n        "mrn": {"type": "string", "description": "Patient MRN"},\n        "vital_type": {"type": "string", "description": "Type of vital sign"}\n      },\n      "required": ["mrn"]\n    }\n  }\n}]`,
+        correct: true
+      },
+      {
+        label: "B",
+        code: `tools = [{\n  "name": "lookup_vitals",\n  "args": ["mrn", "vital_type"],\n  "returns": "dict"\n}]`,
+        correct: false
+      },
+      {
+        label: "C",
+        code: `def lookup_vitals(mrn, vital_type):\n  # OpenAI will call this automatically\n  return db.query(mrn)`,
+        correct: false
+      }
+    ],
+    explanation: "OpenAI tool definitions use JSON Schema format with type, function name, description, and parameters. The model never calls your function directly — it returns the arguments for YOU to execute."
+  },
+  {
+    title: "Step 2: Handle the Model's Response",
+    description: "The model responds with a tool_calls request. What does your code do next?",
+    options: [
+      { label: "Extract the function name and arguments, execute the function locally, then send results back", correct: true },
+      { label: "Forward the tool_calls to OpenAI's execution server", correct: false },
+      { label: "Print the tool_calls and ask the user to provide the data manually", correct: false }
+    ],
+    explanation: "YOUR code executes the function. The model only specifies WHAT to call and WITH WHAT arguments. You run the actual database query and send results back as a tool message."
+  },
+  {
+    title: "Step 3: Send Results Back",
+    description: "Your lookup_vitals function returns: {'vital_type': 'TEMPERATURE', 'rate': '101.2', 'datetime': '2026-01-16T14:00:00'}. How do you send this back?",
+    options: [
+      {
+        label: "A",
+        code: `messages.append({\n  "role": "tool",\n  "tool_call_id": tool_call.id,\n  "content": json.dumps(result)\n})`,
+        correct: true
+      },
+      {
+        label: "B",
+        code: `messages.append({\n  "role": "user",\n  "content": f"The result is: {result}"\n})`,
+        correct: false
+      },
+      {
+        label: "C",
+        code: `messages.append({\n  "role": "system",\n  "content": f"Tool output: {result}"\n})`,
+        correct: false
+      }
+    ],
+    explanation: "Tool results must use role='tool' with the matching tool_call_id. This tells the model which tool call the result belongs to. Using 'user' or 'system' would confuse the conversation structure."
+  },
+  {
+    title: "Step 4: Final Answer",
+    description: "After receiving the tool result, the model generates: 'The patient's latest temperature is 101.2°F, recorded at 2:00 PM on January 16th. This is above the normal range of 97.8-99.1°F and may indicate fever.' What made this possible?",
+    options: [
+      { label: "The complete loop: question → tool call → execution → result → natural language answer", correct: true },
+      { label: "The model accessed the database directly through the API", correct: false },
+      { label: "The model memorized the patient's vitals from training data", correct: false }
+    ],
+    explanation: "The model combined the structured tool result with its clinical knowledge to produce a helpful, contextualized answer. It didn't access any database — your code did that. The model just formulated the answer."
+  }
+];
+
+export default function Practice() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const step = steps[currentStep];
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    if (step.options[selected]?.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    setCurrentStep(c => c + 1);
+    setSelected(null);
+    setSubmitted(false);
+  };
+
+  if (currentStep >= steps.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Tool Calling Walkthrough Complete!</h2>
+        <p style={{ fontSize: 20 }}>You got {score} / {steps.length} steps correct</p>
+        <div style={{ background: '#d4edda', padding: 16, borderRadius: 8 }}>
+          You've traced the complete tool calling flow — from tool definition to final answer. In the lab, you'll implement this in real code with a clinical vitals database.
+        </div>
+        <button onClick={() => { setCurrentStep(0); setScore(0); setSelected(null); setSubmitted(false); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Restart</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentStep + 1) / steps.length) * 100}%` }} />
+      </div>
+      <h3>{step.title}</h3>
+      <p style={{ lineHeight: 1.6, marginBottom: 16 }}>{step.description}</p>
+
+      {step.options.map((opt, i) => (
+        <div key={i} onClick={() => !submitted && setSelected(i)} style={{
+          padding: 12, margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+          border: `2px solid ${submitted ? (opt.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : i === selected ? '#0d6efd' : '#dee2e6'}`,
+          background: submitted ? (opt.correct ? '#d4edda' : i === selected && !opt.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>
+          {opt.code ? (
+            <pre style={{ margin: 0, fontSize: 12, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}><strong>{opt.label}:</strong>{'\n'}{opt.code}</pre>
+          ) : (
+            <span>{opt.label}</span>
+          )}
+        </div>
+      ))}
+
+      {!submitted && selected !== null && (
+        <button onClick={handleSubmit} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Answer</button>
+      )}
+
+      {submitted && (
+        <>
+          <div style={{ marginTop: 12, padding: 12, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+            {step.explanation}
+          </div>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentStep + 1 < steps.length ? 'Next Step' : 'See Results'}</button>
+        </>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+</script>
+</body>
+</html>
