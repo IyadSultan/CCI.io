@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "You load vista_vitals.csv and run df.shape. It returns (2000, 8). What does this tell you?",
+    options: [
+      "The file is 2000 KB with 8 sheets",
+      "There are 2000 rows and 8 columns in the dataset",
+      "There are 8 patients with 2000 readings each",
+      "The data spans 2000 days across 8 wards"
+    ],
+    correct: 1,
+    explanation: "df.shape returns (rows, columns). 2000 rows means 2000 individual vital sign readings, and 8 columns are: NUMBER, MRN, DATE_TIME_VITALS_TAKEN, VITAL_TYPE, DATE_TIME_VITALS_ENTERED, HOSPITAL_LOCATION, ENTERED_BY, RATE."
+  },
+  {
+    question: "You want to find all patients with fever (temperature > 100.4°F) in the ICU. Which SQL query is correct?",
+    options: [
+      "SELECT * FROM vista_vitals WHERE VITAL_TYPE = 'TEMPERATURE' AND CAST(RATE AS FLOAT) > 100.4 AND HOSPITAL_LOCATION LIKE '%ICU%'",
+      "SELECT * FROM vista_vitals WHERE RATE > 100.4 AND HOSPITAL_LOCATION = 'ICU'",
+      "FIND patients WHERE temperature > 100.4 IN ICU",
+      "SELECT TEMPERATURE FROM vista_vitals WHERE > 100.4"
+    ],
+    correct: 0,
+    explanation: "You need three conditions: filter by VITAL_TYPE (since RATE means different things for different vitals), cast RATE to a number for comparison, and use LIKE '%ICU%' because the location name includes more than just 'ICU'."
+  },
+  {
+    question: "df.to_sql('vista_vitals', conn, if_exists='replace') — what does if_exists='replace' do?",
+    options: [
+      "Replaces any rows with matching MRNs",
+      "Drops the existing table and creates a new one with the DataFrame data",
+      "Appends the DataFrame to the existing table",
+      "Throws an error if the table already exists"
+    ],
+    correct: 1,
+    explanation: "if_exists='replace' drops the existing table and creates a fresh one. Use 'append' to add rows to an existing table, or 'fail' (default) to raise an error if the table exists."
+  },
+  {
+    question: "You run: SELECT HOSPITAL_LOCATION, COUNT(*) as reading_count FROM vista_vitals GROUP BY HOSPITAL_LOCATION ORDER BY reading_count DESC. What does this return?",
+    options: [
+      "All vital readings sorted by hospital location",
+      "The total number of readings in the entire dataset",
+      "A list of wards ranked by how many vital readings they have, highest first",
+      "The average vital sign value per ward"
+    ],
+    correct: 2,
+    explanation: "GROUP BY groups rows by ward, COUNT(*) counts readings per group, and ORDER BY DESC sorts from highest to lowest. This answers: 'Which ward records the most vital signs?'"
+  },
+  {
+    question: "Blood pressure is stored as '120/80' in the RATE column. Why is this problematic for SQL analysis?",
+    options: [
+      "SQL can't store strings with slashes",
+      "It's stored as text, so you can't directly compute averages or compare systolic/diastolic values numerically",
+      "Blood pressure should be stored in a separate table",
+      "The format is non-standard and should use a comma"
+    ],
+    correct: 1,
+    explanation: "Blood pressure as '120/80' is a string — you can't AVG() it or compare systolic > 140. You'd need to split it into separate systolic and diastolic columns, or parse it in Python before analysis. This is a common real-world data cleaning challenge."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You're ready to query clinical data with SQL." : score >= 3 ? "Good grasp — review GROUP BY and data type handling." : "Review SQL basics and pandas-to-SQL conversion before the lab."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

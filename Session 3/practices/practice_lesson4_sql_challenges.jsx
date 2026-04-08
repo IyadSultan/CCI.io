@@ -1,0 +1,98 @@
+import React, { useState } from 'react';
+
+const challenges = [
+  {
+    question: "Find all TEMPERATURE readings above 100.4°F (fever) from the vista_vitals table.",
+    hint: "Remember: RATE is stored as text for temperatures. You need to filter by VITAL_TYPE first.",
+    correctSQL: "SELECT * FROM vista_vitals WHERE VITAL_TYPE = 'TEMPERATURE' AND CAST(RATE AS FLOAT) > 100.4",
+    keywords: ["SELECT", "VITAL_TYPE", "TEMPERATURE", "RATE", "100.4"],
+    minKeywords: 4
+  },
+  {
+    question: "Count how many vital sign readings each ward (HOSPITAL_LOCATION) has, sorted from most to least.",
+    hint: "Use GROUP BY to group by location, COUNT(*) to count, and ORDER BY DESC to sort.",
+    correctSQL: "SELECT HOSPITAL_LOCATION, COUNT(*) as count FROM vista_vitals GROUP BY HOSPITAL_LOCATION ORDER BY count DESC",
+    keywords: ["SELECT", "HOSPITAL_LOCATION", "COUNT", "GROUP BY", "ORDER BY"],
+    minKeywords: 4
+  },
+  {
+    question: "Find the number of unique patients (distinct MRNs) seen in the ICU.",
+    hint: "Use COUNT(DISTINCT ...) and filter HOSPITAL_LOCATION with LIKE '%ICU%'.",
+    correctSQL: "SELECT COUNT(DISTINCT MRN) FROM vista_vitals WHERE HOSPITAL_LOCATION LIKE '%ICU%'",
+    keywords: ["SELECT", "COUNT", "DISTINCT", "MRN", "ICU"],
+    minKeywords: 4
+  },
+  {
+    question: "List all vitals for patient MRN '18887304731609' taken on January 16, 2026, ordered by time.",
+    hint: "Filter by MRN and use DATE_TIME_VITALS_TAKEN for both filtering and sorting.",
+    correctSQL: "SELECT * FROM vista_vitals WHERE MRN = '18887304731609' AND DATE_TIME_VITALS_TAKEN LIKE '2026-01-16%' ORDER BY DATE_TIME_VITALS_TAKEN",
+    keywords: ["SELECT", "MRN", "18887304731609", "2026-01-16", "ORDER BY"],
+    minKeywords: 3
+  }
+];
+
+export default function Practice() {
+  const [currentChallenge, setCurrentChallenge] = useState(0);
+  const [userSQL, setUserSQL] = useState('');
+  const [checked, setChecked] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const c = challenges[currentChallenge];
+
+  const checkSQL = () => {
+    const upper = userSQL.toUpperCase();
+    const matchCount = c.keywords.filter(kw => upper.includes(kw.toUpperCase())).length;
+    if (matchCount >= c.minKeywords) setScore(s => s + 1);
+    setChecked(true);
+  };
+
+  const next = () => {
+    setCurrentChallenge(cc => cc + 1);
+    setUserSQL('');
+    setChecked(false);
+  };
+
+  if (currentChallenge >= challenges.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>SQL Challenge Complete!</h2>
+        <p style={{ fontSize: 20 }}>Score: {score} / {challenges.length}</p>
+        <div style={{ background: score >= 3 ? '#d4edda' : '#fff3cd', padding: 16, borderRadius: 8 }}>
+          {score >= 3 ? "Great SQL skills! Ready for text-to-SQL in Lesson 5." : "Review SQL syntax — you'll need it to verify LLM-generated queries."}
+        </div>
+        <button onClick={() => { setCurrentChallenge(0); setScore(0); setUserSQL(''); setChecked(false); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Retry</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentChallenge + 1) / challenges.length) * 100}%` }} />
+      </div>
+      <h3>SQL Challenge {currentChallenge + 1} of {challenges.length}</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>{c.question}</p>
+      <p style={{ color: '#666', fontSize: 14, fontStyle: 'italic' }}>Hint: {c.hint}</p>
+
+      <textarea
+        value={userSQL}
+        onChange={e => setUserSQL(e.target.value)}
+        disabled={checked}
+        placeholder="Write your SQL query here..."
+        style={{ width: '100%', minHeight: 80, padding: 12, fontFamily: 'monospace', fontSize: 14, borderRadius: 8, border: '1px solid #ccc', boxSizing: 'border-box', marginTop: 8 }}
+      />
+
+      {!checked && (
+        <button onClick={checkSQL} disabled={!userSQL.trim()} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer', opacity: !userSQL.trim() ? 0.5 : 1 }}>Check Query</button>
+      )}
+
+      {checked && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Example solution:</strong></p>
+          <pre style={{ background: '#1e1e1e', color: '#d4d4d4', padding: 12, borderRadius: 6, fontSize: 13, overflow: 'auto' }}>{c.correctSQL}</pre>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentChallenge + 1 < challenges.length ? 'Next Challenge' : 'See Final Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
