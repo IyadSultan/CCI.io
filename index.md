@@ -126,6 +126,12 @@ title: CCI.io
     transform: translateY(-1px);
   }
 
+  /* Active sessions: teal accent stripe (visible even if badge text is cached) */
+  .cci-card-active {
+    border-left: 4px solid #00897B;
+    padding-left: calc(1.1rem - 3px);
+  }
+
   .cci-card:visited { color: inherit !important; }
 
   .cci-num {
@@ -231,7 +237,7 @@ title: CCI.io
 
 <div class="cci-grid">
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-01/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-01/">
     <div class="cci-num" style="background:#3F51B5;">1</div>
     <div class="cci-card-body">
       <p class="title">Foundations, Transformers &amp; Prompt Engineering <span class="cci-active-badge">Active</span></p>
@@ -240,7 +246,7 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-02/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-02/">
     <div class="cci-num" style="background:#00897B;">2</div>
     <div class="cci-card-body">
       <p class="title">Python Basics + GitHub <span class="cci-active-badge">Active</span></p>
@@ -249,7 +255,7 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-03/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-03/">
     <div class="cci-num" style="background:#7B1FA2;">3</div>
     <div class="cci-card-body">
       <p class="title">Data Science Foundations: SQL, Python &amp; LLMs <span class="cci-active-badge">Active</span></p>
