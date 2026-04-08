@@ -465,7 +465,7 @@ permalink: /session-03/
       </a>
     </div>
   </div>
-</div>
+</div> 
 
 <!-- ─── Lesson 6 ─── -->
 <div class="s1-lesson">
