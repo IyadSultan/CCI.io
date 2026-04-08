@@ -519,4 +519,3 @@ permalink: /session-02/
 <div class="s1-footer-note">
   KHCC Cancer Care Informatics &middot; Session 2 of 15
 </div>
-
