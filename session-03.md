@@ -236,6 +236,17 @@ permalink: /session-03/
     transform: translateY(-1px);
   }
 
+  .s1-btn-resource {
+    background: #ECEFF1;
+    border-color: #B0BEC5;
+    color: #37474F !important;
+  }
+
+  .s1-btn-resource:hover {
+    background: #CFD8DC;
+    transform: translateY(-1px);
+  }
+
   .s1-btn-icon {
     font-size: 0.9rem;
     line-height: 1;
@@ -489,6 +500,21 @@ permalink: /session-03/
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session3/student" target="_blank">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
+      </a>
+    </div>
+    <p class="goals-title" style="margin-top:0.75rem;">Extra resources (optional)</p>
+    <div class="s1-actions">
+      <a class="s1-btn s1-btn-resource" href="https://developers.openai.com/api/docs" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128196;</span> OpenAI API docs
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://claude.ai/public/artifacts/e59ae0f4-46a7-4c64-9641-d36650a29c49" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128203;</span> OpenAI response parser (repr → YAML)
+      </a>
+      <a class="s1-btn s1-btn-practice" href="https://www.youtube.com/watch?v=XIdQ6gO3Anc" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Video: Pydantic tutorial
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="https://www.youtube.com/watch?v=S712jSrLWkA" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Video: PydanticAI
       </a>
     </div>
   </div>
