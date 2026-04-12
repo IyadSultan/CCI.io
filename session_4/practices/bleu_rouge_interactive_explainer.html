@@ -1,0 +1,512 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a14;--surface:#12121f;--panel:#1a1a2e;--card:#1e1e35;
+  --accent1:#7c6fff;--accent2:#ff6b9d;--accent3:#00e5c0;--accent4:#ffa94d;
+  --txt:#eeeef5;--txt2:#9898b8;--txt3:#5a5a80;
+  --bleu:#7c6fff;--rouge:#ff6b9d;
+  --border:rgba(255,255,255,0.07);
+}
+body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;padding:0;min-height:100vh}
+h1,h2,h3{font-family:'Space Mono',monospace;letter-spacing:-0.02em}
+.hero{padding:2.5rem 2rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.hero-badge{display:inline-flex;gap:10px;margin-bottom:1rem}
+.badge{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;letter-spacing:0.05em}
+.badge-bleu{background:rgba(124,111,255,0.15);color:#a89fff;border:1px solid rgba(124,111,255,0.3)}
+.badge-rouge{background:rgba(255,107,157,0.15);color:#ff99c0;border:1px solid rgba(255,107,157,0.3)}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);background:linear-gradient(135deg,#a89fff,#ff99c0,#00e5c0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.5rem}
+.hero p{color:var(--txt2);font-size:0.95rem;max-width:560px;margin:0 auto}
+.tabs{display:flex;gap:0;margin:0 2rem 0;border-bottom:1px solid var(--border)}
+.tab{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:12px 24px;cursor:pointer;color:var(--txt3);border-bottom:2px solid transparent;transition:all .2s;letter-spacing:0.04em;background:none;border:none;border-bottom:2px solid transparent;color:var(--txt3)}
+.tab:hover{color:var(--txt)}
+.tab.active-bleu{color:var(--bleu);border-bottom:2px solid var(--bleu)}
+.tab.active-rouge{color:var(--rouge);border-bottom:2px solid var(--rouge)}
+.panel{display:none;padding:1.5rem 2rem 2rem;animation:fadeIn .3s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.input-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.input-label{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.08em;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dot-bleu{width:8px;height:8px;border-radius:50%;background:var(--bleu);flex-shrink:0}
+.dot-rouge{width:8px;height:8px;border-radius:50%;background:var(--rouge);flex-shrink:0}
+.dot-ref{width:8px;height:8px;border-radius:50%;background:var(--accent3);flex-shrink:0}
+textarea,input[type=text]{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:10px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;resize:none;transition:border-color .2s}
+textarea:focus,input[type=text]:focus{outline:none;border-color:rgba(124,111,255,0.4)}
+.btn-calc{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.04em;padding:11px 24px;border-radius:10px;border:none;cursor:pointer;transition:all .2s;margin-top:1rem}
+.btn-bleu{background:linear-gradient(135deg,#7c6fff,#5f4fff);color:#fff}
+.btn-rouge{background:linear-gradient(135deg,#ff6b9d,#e0447a);color:#fff}
+.btn-calc:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.btn-calc:active{transform:translateY(0)}
+.results{display:none}
+.results.visible{display:block;animation:fadeIn .4s ease}
+.score-display{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:1.5rem}
+.score-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.score-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--txt3);letter-spacing:0.08em;margin-bottom:6px}
+.score-value{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700}
+.score-bleu .score-value{color:var(--bleu)}
+.score-rouge .score-value{color:var(--rouge)}
+.score-sub .score-value{color:var(--accent4);font-size:1.3rem}
+.steps-container{margin-top:1rem}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.step::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.step-bleu::before{background:var(--bleu)}
+.step-rouge::before{background:var(--rouge)}
+.step-num{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--txt3);margin-bottom:6px}
+.step h3{font-size:13px;margin-bottom:10px;font-family:'Space Mono',monospace}
+.step-bleu h3{color:#a89fff}
+.step-rouge h3{color:#ff99c0}
+.ngram-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ngram-chip{font-size:12px;font-family:'Space Mono',monospace;padding:3px 10px;border-radius:6px}
+.ngram-match{background:rgba(124,111,255,0.2);color:#a89fff;border:1px solid rgba(124,111,255,0.3)}
+.ngram-miss{background:rgba(90,90,128,0.15);color:var(--txt3);border:1px solid var(--border)}
+.ngram-rouge-match{background:rgba(255,107,157,0.2);color:#ff99c0;border:1px solid rgba(255,107,157,0.3)}
+.formula-box{background:var(--panel);border-radius:8px;padding:10px 14px;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent3);margin-top:8px;line-height:1.8}
+.tokens-display{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.token{font-size:12px;font-family:'Space Mono',monospace;padding:3px 9px;border-radius:5px}
+.token-cand{background:rgba(124,111,255,0.12);color:#a89fff;border:1px solid rgba(124,111,255,0.2)}
+.token-ref{background:rgba(0,229,192,0.1);color:#00e5c0;border:1px solid rgba(0,229,192,0.2)}
+.token-matched{background:rgba(255,169,77,0.15);color:#ffa94d;border:1px solid rgba(255,169,77,0.3)}
+.gauge-container{display:flex;align-items:center;gap:16px;margin-top:12px}
+.gauge-bar{flex:1;height:10px;background:var(--panel);border-radius:5px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:5px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.gauge-fill-bleu{background:linear-gradient(90deg,#7c6fff,#a89fff)}
+.gauge-fill-rouge{background:linear-gradient(90deg,#ff6b9d,#ff99c0)}
+.gauge-pct{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;min-width:44px;text-align:right}
+.theory-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.theory-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+@media(max-width:520px){.theory-grid{grid-template-columns:1fr}}
+.theory-card{background:var(--panel);border-radius:10px;padding:1rem;border:1px solid var(--border)}
+.theory-card h3{font-family:'Space Mono',monospace;font-size:12px;margin-bottom:8px}
+.theory-card p{font-size:12px;color:var(--txt2);line-height:1.7}
+.info-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:'Space Mono',monospace;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--txt3);margin-right:6px;margin-top:6px}
+.verdict-box{border-radius:12px;padding:1rem 1.25rem;margin-top:1rem;font-size:13px}
+.verdict-bleu{background:rgba(124,111,255,0.08);border:1px solid rgba(124,111,255,0.2)}
+.verdict-rouge{background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.2)}
+.verdict-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--txt3);margin-bottom:4px}
+.example-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.ex-btn{font-size:11px;font-family:'Space Mono',monospace;padding:5px 12px;border-radius:8px;background:var(--panel);border:1px solid var(--border);color:var(--txt2);cursor:pointer;transition:all .2s}
+.ex-btn:hover{border-color:rgba(124,111,255,0.4);color:var(--txt)}
+.compare-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+.compare-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+@media(max-width:520px){.compare-row{grid-template-columns:1fr}}
+.compare-card{background:var(--panel);border-radius:10px;padding:1rem;border:1px solid var(--border)}
+.compare-card h4{font-family:'Space Mono',monospace;font-size:11px;margin-bottom:6px}
+.highlight-word{display:inline;padding:1px 3px;border-radius:3px;font-weight:500}
+.hw-bleu{background:rgba(124,111,255,0.25);color:#c4bcff}
+.hw-rouge{background:rgba(255,107,157,0.25);color:#ffb3ce}
+.hw-green{background:rgba(0,229,192,0.2);color:#00e5c0}
+</style>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge badge-bleu">BLEU</span>
+    <span class="badge badge-rouge">ROUGE</span>
+  </div>
+  <h1>Score My Sentence</h1>
+  <p>See how AI evaluates language model outputs — enter any text and watch BLEU & ROUGE calculate scores step by step</p>
+</div>
+
+<div class="tabs">
+  <button class="tab active-bleu" onclick="switchTab('bleu',this)" id="tab-bleu">BLEU</button>
+  <button class="tab" onclick="switchTab('rouge',this)" id="tab-rouge">ROUGE</button>
+  <button class="tab" onclick="switchTab('theory',this)" id="tab-theory">THEORY</button>
+  <button class="tab" onclick="switchTab('compare',this)" id="tab-compare">COMPARE</button>
+</div>
+
+<div id="panel-bleu" class="panel active">
+  <div class="input-section">
+    <div class="input-label"><span class="dot-bleu"></span>CANDIDATE (model output)</div>
+    <textarea id="bleu-cand" rows="2" placeholder="e.g. The cat sat on the mat">The cat sat on the mat</textarea>
+    <div class="input-label" style="margin-top:12px"><span class="dot-ref"></span>REFERENCE (ground truth)</div>
+    <textarea id="bleu-ref" rows="2" placeholder="e.g. The cat is sitting on the mat">The cat is sitting on the mat</textarea>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <button class="btn-calc btn-bleu" onclick="calcBleu()">Calculate BLEU ↗</button>
+      <div style="margin-top:1rem">
+        <span style="font-size:11px;color:var(--txt3);font-family:'Space Mono',monospace">QUICK EXAMPLES:</span>
+        <div class="example-btns">
+          <button class="ex-btn" onclick="setExample('bleu','perfect')">Perfect match</button>
+          <button class="ex-btn" onclick="setExample('bleu','partial')">Partial match</button>
+          <button class="ex-btn" onclick="setExample('bleu','medical')">Clinical NLP</button>
+          <button class="ex-btn" onclick="setExample('bleu','poor')">Poor translation</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="results" id="bleu-results"></div>
+</div>
+
+<div id="panel-rouge" class="panel">
+  <div class="input-section">
+    <div class="input-label"><span class="dot-rouge"></span>CANDIDATE (model output)</div>
+    <textarea id="rouge-cand" rows="2" placeholder="e.g. The cat sat on the mat">The cat sat on the mat</textarea>
+    <div class="input-label" style="margin-top:12px"><span class="dot-ref"></span>REFERENCE (ground truth)</div>
+    <textarea id="rouge-ref" rows="2" placeholder="e.g. The cat is sitting on the mat">The cat is sitting on the mat</textarea>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <button class="btn-calc btn-rouge" onclick="calcRouge()">Calculate ROUGE ↗</button>
+      <div style="margin-top:1rem">
+        <span style="font-size:11px;color:var(--txt3);font-family:'Space Mono',monospace">QUICK EXAMPLES:</span>
+        <div class="example-btns">
+          <button class="ex-btn" onclick="setExample('rouge','perfect')">Perfect match</button>
+          <button class="ex-btn" onclick="setExample('rouge','summary')">Summarization</button>
+          <button class="ex-btn" onclick="setExample('rouge','medical')">Clinical NLP</button>
+          <button class="ex-btn" onclick="setExample('rouge','poor')">Poor output</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="results" id="rouge-results"></div>
+</div>
+
+<div id="panel-theory" class="panel">
+  <div class="theory-section">
+    <div class="input-label" style="margin-bottom:0"><span class="dot-bleu"></span>BLEU — Bilingual Evaluation Understudy</div>
+    <p style="color:var(--txt2);font-size:13px;margin-top:8px">Proposed by Papineni et al. (2002) at IBM for machine translation. Measures how many n-grams in the <span class="highlight-word hw-bleu">candidate</span> appear in the <span class="highlight-word hw-green">reference</span> — it's <strong>precision-focused</strong>.</p>
+    <div class="theory-grid">
+      <div class="theory-card">
+        <h3 style="color:#a89fff">HOW IT WORKS</h3>
+        <p>Counts overlapping n-grams (1-gram through 4-gram) between candidate and reference, then takes a geometric mean. A <em>brevity penalty</em> punishes overly short outputs.</p>
+      </div>
+      <div class="theory-card">
+        <h3 style="color:#a89fff">STRENGTHS & LIMITS</h3>
+        <p>Fast, reproducible, language-agnostic. But ignores recall, synonym variation, and sentence structure. A score of 1.0 = perfect; 0.6+ is generally good.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <span class="info-pill">Precision-focused</span>
+      <span class="info-pill">N-grams 1–4</span>
+      <span class="info-pill">Brevity penalty</span>
+      <span class="info-pill">Range: 0–1</span>
+      <span class="info-pill">Lower = worse</span>
+    </div>
+  </div>
+  <div class="theory-section">
+    <div class="input-label" style="margin-bottom:0"><span class="dot-rouge"></span>ROUGE — Recall-Oriented Understudy for Gisting Evaluation</div>
+    <p style="color:var(--txt2);font-size:13px;margin-top:8px">Proposed by Chin-Yew Lin (2004) at USC for summarization. Measures how much of the <span class="highlight-word hw-green">reference</span> appears in the <span class="highlight-word hw-rouge">candidate</span> — it's <strong>recall-focused</strong>.</p>
+    <div class="theory-grid">
+      <div class="theory-card">
+        <h3 style="color:#ff99c0">ROUGE-1 & ROUGE-2</h3>
+        <p>ROUGE-1 overlaps individual words. ROUGE-2 overlaps bigrams. Both report Precision, Recall, and F1 — giving a fuller picture than BLEU alone.</p>
+      </div>
+      <div class="theory-card">
+        <h3 style="color:#ff99c0">ROUGE-L</h3>
+        <p>Uses the Longest Common Subsequence (LCS) — words don't need to be adjacent. Captures sentence-level structure better than n-gram counting.</p>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <span class="info-pill">Recall-focused</span>
+      <span class="info-pill">Unigram, bigram, LCS</span>
+      <span class="info-pill">F1 score</span>
+      <span class="info-pill">Range: 0–1</span>
+      <span class="info-pill">Summarization standard</span>
+    </div>
+  </div>
+  <div class="theory-section">
+    <div class="input-label" style="margin-bottom:0">BLEU vs ROUGE — when to use what?</div>
+    <div class="theory-grid" style="margin-top:12px">
+      <div class="theory-card">
+        <h3 style="color:#ffa94d">USE BLEU WHEN</h3>
+        <p>Evaluating <strong>machine translation</strong> or text generation where you care about fluency. You want to know: did the model produce the right words?</p>
+      </div>
+      <div class="theory-card">
+        <h3 style="color:#00e5c0">USE ROUGE WHEN</h3>
+        <p>Evaluating <strong>summarization</strong> or clinical note extraction where coverage matters. You want to know: did the model miss anything important?</p>
+      </div>
+    </div>
+    <div class="verdict-box verdict-bleu" style="margin-top:1rem">
+      <div class="verdict-label">CLINICAL AI NOTE</div>
+      In oncology NLP (e.g., extracting diagnosis from notes), ROUGE-recall matters more — missing a cancer diagnosis is worse than a slightly awkward phrasing.
+    </div>
+  </div>
+</div>
+
+<div id="panel-compare" class="panel">
+  <div class="compare-section">
+    <div class="input-label"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent4);display:inline-block;margin-right:6px"></span>SIDE-BY-SIDE COMPARISON</div>
+    <p style="color:var(--txt2);font-size:13px;margin-top:6px">Enter a reference and two candidates to compare their BLEU and ROUGE scores head to head.</p>
+    <div style="margin-top:12px">
+      <div class="input-label" style="margin-bottom:6px"><span class="dot-ref"></span>REFERENCE</div>
+      <textarea id="cmp-ref" rows="2" placeholder="Ground truth reference sentence">Patients with neutropenic fever should receive broad-spectrum antibiotics immediately</textarea>
+      <div style="margin-top:10px" class="input-label"><span class="dot-bleu"></span>CANDIDATE A</div>
+      <textarea id="cmp-a" rows="2">Neutropenic patients with fever must get broad-spectrum antibiotics right away</textarea>
+      <div style="margin-top:10px" class="input-label"><span class="dot-rouge"></span>CANDIDATE B</div>
+      <textarea id="cmp-b" rows="2">Fever in neutropenia requires urgent antibiotic treatment</textarea>
+      <button class="btn-calc btn-bleu" style="margin-top:12px" onclick="calcCompare()">Compare Both ↗</button>
+    </div>
+  </div>
+  <div class="results" id="compare-results"></div>
+</div>
+
+<script>
+const examples={
+  bleu:{
+    perfect:{cand:'The cat sat on the mat',ref:'The cat sat on the mat'},
+    partial:{cand:'The cat sat on the mat',ref:'The cat is sitting on the mat'},
+    medical:{cand:'Patient has stage three breast cancer with lymph node involvement',ref:'Patient diagnosed with stage three breast cancer and lymph node metastasis'},
+    poor:{cand:'Dog ran quickly through park yesterday',ref:'The cat sat on the mat'}
+  },
+  rouge:{
+    perfect:{cand:'The cat sat on the mat',ref:'The cat sat on the mat'},
+    summary:{cand:'The CEO resigned after the board meeting',ref:'Following an emergency board meeting held on Tuesday, the chief executive officer of the company resigned from his position citing personal reasons'},
+    medical:{cand:'Patient has fever neutropenia and requires broad spectrum antibiotics',ref:'Neutropenic fever detected in patient requiring immediate broad spectrum antibiotic therapy'},
+    poor:{cand:'The weather is nice today',ref:'Patient diagnosed with stage three breast cancer requiring chemotherapy'}
+  }
+};
+
+function setExample(metric,key){
+  if(metric==='bleu'){
+    document.getElementById('bleu-cand').value=examples.bleu[key].cand;
+    document.getElementById('bleu-ref').value=examples.bleu[key].ref;
+  } else {
+    document.getElementById('rouge-cand').value=examples.rouge[key].cand;
+    document.getElementById('rouge-ref').value=examples.rouge[key].ref;
+  }
+}
+
+function tokenize(text){
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(t=>t.length>0);
+}
+
+function getNgrams(tokens,n){
+  const ng=[];
+  for(let i=0;i<=tokens.length-n;i++) ng.push(tokens.slice(i,i+n).join(' '));
+  return ng;
+}
+
+function countMap(arr){
+  const m={};
+  arr.forEach(x=>{m[x]=(m[x]||0)+1});
+  return m;
+}
+
+function clippedCount(candNg,refNg){
+  const cm=countMap(candNg);
+  const rm=countMap(refNg);
+  let matched=0;
+  Object.keys(cm).forEach(k=>{matched+=Math.min(cm[k],rm[k]||0)});
+  return matched;
+}
+
+function calcBleuScore(cand,ref){
+  const ct=tokenize(cand),rt=tokenize(ref);
+  const bp=ct.length<rt.length?Math.exp(1-rt.length/ct.length):1;
+  const logs=[];
+  const details=[];
+  for(let n=1;n<=4;n++){
+    const cn=getNgrams(ct,n);
+    const rn=getNgrams(rt,n);
+    if(cn.length===0){logs.push(-9999);details.push({n,matched:0,total:0,prec:0});continue}
+    const m=clippedCount(cn,rn);
+    const prec=m/cn.length;
+    details.push({n,matched:m,total:cn.length,prec,candNgrams:cn,refNgrams:rn});
+    logs.push(prec>0?Math.log(prec):-9999);
+  }
+  const geom=Math.exp(logs.reduce((a,b)=>a+b,0)/4);
+  const bleu=bp*geom;
+  return{bleu:isNaN(bleu)||!isFinite(bleu)?0:bleu,bp,details,candTokens:ct,refTokens:rt};
+}
+
+function lcs(a,b){
+  const m=a.length,n=b.length;
+  const dp=Array(m+1).fill(null).map(()=>Array(n+1).fill(0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){
+    if(a[i-1]===b[j-1]) dp[i][j]=dp[i-1][j-1]+1;
+    else dp[i][j]=Math.max(dp[i-1][j],dp[i][j-1]);
+  }
+  return dp[m][n];
+}
+
+function calcRougeScore(cand,ref){
+  const ct=tokenize(cand),rt=tokenize(ref);
+  function rougeN(n){
+    const cn=getNgrams(ct,n),rn=getNgrams(rt,n);
+    const m=clippedCount(cn,rn);
+    const p=cn.length?m/cn.length:0;
+    const r=rn.length?m/rn.length:0;
+    const f=(p+r)>0?2*p*r/(p+r):0;
+    return{p,r,f,matched:m,candTotal:cn.length,refTotal:rn.length,candNgrams:cn,refNgrams:rn};
+  }
+  const r1=rougeN(1),r2=rougeN(2);
+  const lcsLen=lcs(ct,rt);
+  const lp=ct.length?lcsLen/ct.length:0;
+  const lr=rt.length?lcsLen/rt.length:0;
+  const lf=(lp+lr)>0?2*lp*lr/(lp+lr):0;
+  return{rouge1:r1,rouge2:r2,rougeL:{p:lp,r:lr,f:lf,lcsLen},candTokens:ct,refTokens:rt};
+}
+
+function pct(v){return(v*100).toFixed(1)+'%'}
+function fmt(v){return v.toFixed(3)}
+
+function gaugeHTML(val,cls,label){
+  return`<div class="gauge-container"><span style="font-size:11px;font-family:'Space Mono',monospace;color:var(--txt3);min-width:60px">${label}</span><div class="gauge-bar"><div class="gauge-fill ${cls}" style="width:${Math.round(val*100)}%"></div></div><span class="gauge-pct" style="color:${cls.includes('bleu')?'var(--bleu)':'var(--rouge)'}">${pct(val)}</span></div>`;
+}
+
+function ngramHTML(candNg,refNg,matchCls,missCls){
+  const rm=countMap(refNg||[]);
+  const used={};
+  return(candNg||[]).slice(0,30).map(ng=>{
+    if(rm[ng]&&(used[ng]||0)<rm[ng]){used[ng]=(used[ng]||0)+1;return`<span class="ngram-chip ${matchCls}">${ng}</span>`}
+    return`<span class="ngram-chip ${missCls}">${ng}</span>`
+  }).join('')
+}
+
+function verdictText(score,metric){
+  if(score>=0.8) return`Excellent ${metric} score — very high overlap with the reference.`;
+  if(score>=0.5) return`Good ${metric} score — substantial overlap. Typical of quality model outputs.`;
+  if(score>=0.25) return`Moderate ${metric} score — partial match. May indicate paraphrasing or information gaps.`;
+  return`Low ${metric} score — minimal overlap. The output may be off-topic or poorly worded.`;
+}
+
+function calcBleu(){
+  const cand=document.getElementById('bleu-cand').value.trim();
+  const ref=document.getElementById('bleu-ref').value.trim();
+  if(!cand||!ref) return;
+  const r=calcBleuScore(cand,ref);
+  const el=document.getElementById('bleu-results');
+  el.className='results visible';
+  const d=r.details;
+  el.innerHTML=`
+    <div class="score-display">
+      <div class="score-card score-bleu"><div class="score-label">BLEU SCORE</div><div class="score-value">${fmt(r.bleu)}</div></div>
+      <div class="score-card score-sub"><div class="score-label">BREVITY PENALTY</div><div class="score-value">${fmt(r.bp)}</div></div>
+      ${d.slice(0,4).map((x,i)=>`<div class="score-card score-sub"><div class="score-label">${i+1}-GRAM PREC</div><div class="score-value" style="color:var(--accent1);font-size:1.1rem">${pct(x.prec)}</div></div>`).join('')}
+    </div>
+    <div class="steps-container">
+      <div class="step step-bleu">
+        <div class="step-num">STEP 01</div>
+        <h3>Tokenize Both Sentences</h3>
+        <div style="color:var(--txt2);font-size:12px;margin-bottom:6px">Candidate tokens:</div>
+        <div class="tokens-display">${r.candTokens.map(t=>`<span class="token token-cand">${t}</span>`).join('')}</div>
+        <div style="color:var(--txt2);font-size:12px;margin:8px 0 6px">Reference tokens:</div>
+        <div class="tokens-display">${r.refTokens.map(t=>`<span class="token token-ref">${t}</span>`).join('')}</div>
+      </div>
+      ${d.slice(0,4).map((x,i)=>`
+        <div class="step step-bleu">
+          <div class="step-num">STEP 0${i+2}</div>
+          <h3>${i+1}-Gram Precision: ${x.matched}/${x.total} = ${pct(x.prec)}</h3>
+          <p style="color:var(--txt2);font-size:12px;margin-bottom:8px">Candidate ${i+1}-grams — <span style="color:var(--bleu)">purple = matched</span>, gray = not found in reference:</p>
+          <div class="ngram-grid">${ngramHTML(x.candNgrams,x.refNgrams,'ngram-match','ngram-miss')}</div>
+        </div>
+      `).join('')}
+      <div class="step step-bleu">
+        <div class="step-num">STEP 06</div>
+        <h3>Brevity Penalty & Final Score</h3>
+        <div class="formula-box">BP = ${fmt(r.bp)} (cand len=${r.candTokens.length}, ref len=${r.refTokens.length})<br>BLEU = BP × exp(Σ log(Pₙ)/4)<br>BLEU = ${fmt(r.bp)} × exp(avg log precisions) = <strong>${fmt(r.bleu)}</strong></div>
+        ${gaugeHTML(r.bleu,'gauge-fill-bleu','BLEU')}
+        <div class="verdict-box verdict-bleu" style="margin-top:12px"><div class="verdict-label">VERDICT</div>${verdictText(r.bleu,'BLEU')}</div>
+      </div>
+    </div>`;
+  setTimeout(()=>el.querySelectorAll('.gauge-fill').forEach(g=>{const w=g.style.width;g.style.width='0';setTimeout(()=>g.style.width=w,50)}),50);
+}
+
+function calcRouge(){
+  const cand=document.getElementById('rouge-cand').value.trim();
+  const ref=document.getElementById('rouge-ref').value.trim();
+  if(!cand||!ref) return;
+  const r=calcRougeScore(cand,ref);
+  const el=document.getElementById('rouge-results');
+  el.className='results visible';
+  el.innerHTML=`
+    <div class="score-display">
+      <div class="score-card score-rouge"><div class="score-label">ROUGE-1 F1</div><div class="score-value">${fmt(r.rouge1.f)}</div></div>
+      <div class="score-card score-rouge"><div class="score-label">ROUGE-2 F1</div><div class="score-value">${fmt(r.rouge2.f)}</div></div>
+      <div class="score-card score-rouge"><div class="score-label">ROUGE-L F1</div><div class="score-value">${fmt(r.rougeL.f)}</div></div>
+    </div>
+    <div class="steps-container">
+      <div class="step step-rouge">
+        <div class="step-num">STEP 01</div>
+        <h3>Tokenize Both Sentences</h3>
+        <div style="color:var(--txt2);font-size:12px;margin-bottom:6px">Candidate tokens:</div>
+        <div class="tokens-display">${r.candTokens.map(t=>`<span class="token token-cand">${t}</span>`).join('')}</div>
+        <div style="color:var(--txt2);font-size:12px;margin:8px 0 6px">Reference tokens:</div>
+        <div class="tokens-display">${r.refTokens.map(t=>`<span class="token token-ref">${t}</span>`).join('')}</div>
+      </div>
+      <div class="step step-rouge">
+        <div class="step-num">STEP 02</div>
+        <h3>ROUGE-1 (Unigram Overlap)</h3>
+        <p style="color:var(--txt2);font-size:12px;margin-bottom:8px">Matched: ${r.rouge1.matched} of ${r.rouge1.refTotal} reference unigrams</p>
+        <div class="ngram-grid">${ngramHTML(r.rouge1.candNgrams,r.rouge1.refNgrams,'ngram-rouge-match','ngram-miss')}</div>
+        <div class="formula-box">Precision = ${r.rouge1.matched}/${r.rouge1.candTotal} = ${pct(r.rouge1.p)}<br>Recall = ${r.rouge1.matched}/${r.rouge1.refTotal} = ${pct(r.rouge1.r)}<br>F1 = 2×P×R/(P+R) = <strong>${fmt(r.rouge1.f)}</strong></div>
+        ${gaugeHTML(r.rouge1.r,'gauge-fill-rouge','RECALL')}
+        ${gaugeHTML(r.rouge1.p,'gauge-fill-rouge','PRECISION')}
+      </div>
+      <div class="step step-rouge">
+        <div class="step-num">STEP 03</div>
+        <h3>ROUGE-2 (Bigram Overlap)</h3>
+        <p style="color:var(--txt2);font-size:12px;margin-bottom:8px">Matched: ${r.rouge2.matched} of ${r.rouge2.refTotal} reference bigrams</p>
+        <div class="ngram-grid">${ngramHTML(r.rouge2.candNgrams,r.rouge2.refNgrams,'ngram-rouge-match','ngram-miss')}</div>
+        <div class="formula-box">Precision = ${r.rouge2.matched}/${r.rouge2.candTotal||1} = ${pct(r.rouge2.p)}<br>Recall = ${r.rouge2.matched}/${r.rouge2.refTotal||1} = ${pct(r.rouge2.r)}<br>F1 = <strong>${fmt(r.rouge2.f)}</strong></div>
+        ${gaugeHTML(r.rouge2.f,'gauge-fill-rouge','F1')}
+      </div>
+      <div class="step step-rouge">
+        <div class="step-num">STEP 04</div>
+        <h3>ROUGE-L (Longest Common Subsequence)</h3>
+        <p style="color:var(--txt2);font-size:12px;margin-bottom:8px">Words don't need to be consecutive — just in order. LCS length = <strong style="color:var(--rouge)">${r.rougeL.lcsLen}</strong></p>
+        <div class="formula-box">LCS = ${r.rougeL.lcsLen} tokens<br>P = ${r.rougeL.lcsLen}/${r.candTokens.length} = ${pct(r.rougeL.p)}<br>R = ${r.rougeL.lcsLen}/${r.refTokens.length} = ${pct(r.rougeL.r)}<br>F1 = <strong>${fmt(r.rougeL.f)}</strong></div>
+        ${gaugeHTML(r.rougeL.f,'gauge-fill-rouge','ROUGE-L')}
+        <div class="verdict-box verdict-rouge" style="margin-top:12px"><div class="verdict-label">VERDICT</div>${verdictText(r.rouge1.f,'ROUGE-1')}</div>
+      </div>
+    </div>`;
+}
+
+function calcCompare(){
+  const ref=document.getElementById('cmp-ref').value.trim();
+  const ca=document.getElementById('cmp-a').value.trim();
+  const cb=document.getElementById('cmp-b').value.trim();
+  if(!ref||!ca||!cb) return;
+  const ba=calcBleuScore(ca,ref);
+  const bb=calcBleuScore(cb,ref);
+  const ra=calcRougeScore(ca,ref);
+  const rb=calcRougeScore(cb,ref);
+  const el=document.getElementById('compare-results');
+  el.className='results visible';
+  const winner=(va,vb,metric)=>{
+    if(Math.abs(va-vb)<0.01) return`<span style="color:var(--txt3)">Tie on ${metric}</span>`;
+    const w=va>vb?'A':'B';
+    const col=w==='A'?'var(--bleu)':'var(--rouge)';
+    return`<span style="color:${col}">Candidate ${w} wins on ${metric} (+${pct(Math.abs(va-vb))})</span>`;
+  };
+  el.innerHTML=`
+    <div class="compare-row">
+      <div class="compare-card">
+        <h4 style="color:#a89fff">CANDIDATE A</h4>
+        <p style="color:var(--txt2);font-size:12px;margin-bottom:10px">"${ca.substring(0,80)}${ca.length>80?'...':''}"</p>
+        ${gaugeHTML(ba.bleu,'gauge-fill-bleu','BLEU')}
+        ${gaugeHTML(ra.rouge1.f,'gauge-fill-rouge','R-1 F1')}
+        ${gaugeHTML(ra.rouge2.f,'gauge-fill-rouge','R-2 F1')}
+        ${gaugeHTML(ra.rougeL.f,'gauge-fill-rouge','R-L F1')}
+      </div>
+      <div class="compare-card">
+        <h4 style="color:#ff99c0">CANDIDATE B</h4>
+        <p style="color:var(--txt2);font-size:12px;margin-bottom:10px">"${cb.substring(0,80)}${cb.length>80?'...':''}"</p>
+        ${gaugeHTML(bb.bleu,'gauge-fill-bleu','BLEU')}
+        ${gaugeHTML(rb.rouge1.f,'gauge-fill-rouge','R-1 F1')}
+        ${gaugeHTML(rb.rouge2.f,'gauge-fill-rouge','R-2 F1')}
+        ${gaugeHTML(rb.rougeL.f,'gauge-fill-rouge','R-L F1')}
+      </div>
+    </div>
+    <div class="step step-bleu" style="margin-top:1rem">
+      <div class="step-num">ANALYSIS</div>
+      <h3>Head-to-Head Summary</h3>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:13px">
+        <div>${winner(ba.bleu,bb.bleu,'BLEU')}</div>
+        <div>${winner(ra.rouge1.f,rb.rouge1.f,'ROUGE-1')}</div>
+        <div>${winner(ra.rouge2.f,rb.rouge2.f,'ROUGE-2')}</div>
+        <div>${winner(ra.rougeL.f,rb.rougeL.f,'ROUGE-L')}</div>
+      </div>
+      <div class="verdict-box verdict-bleu" style="margin-top:12px">
+        <div class="verdict-label">INSIGHT</div>
+        Candidate A scores higher on n-gram precision (BLEU) when it uses similar wording. Candidate B may still score well on ROUGE if it captures the key concepts, even with different phrasing. This reflects a real tension in clinical NLP evaluation.
+      </div>
+    </div>`;
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>{t.className='tab'});
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.className='tab active-'+(name==='theory'||name==='compare'?'bleu':name);
+}
+
+calcBleu();
+</script>

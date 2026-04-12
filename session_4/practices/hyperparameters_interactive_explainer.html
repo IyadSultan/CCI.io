@@ -1,0 +1,363 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c12;--surface:#14141f;--panel:#1c1c2a;--card:#222232;
+  --accent:#a78bfa;--accent2:#22d3ee;--accent3:#f472b6;--warn:#fbbf24;--bad:#f87171;
+  --txt:#f1f5f9;--txt2:#94a3b8;--txt3:#64748b;
+  --border:rgba(255,255,255,0.08);
+}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.55;padding:0;min-height:100vh}
+h1,h2,h3{font-family:'JetBrains Mono',monospace;letter-spacing:-0.02em}
+a.back-fixed{position:fixed;top:12px;left:12px;z-index:9999;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#00897b;text-decoration:none;padding:8px 14px;border-radius:8px;border:1px solid #b2dfdb;background:#e0f2f1;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+a.back-fixed:hover{background:#b2dfdb}
+.hero{padding:2.5rem 1.5rem 1.25rem;text-align:center}
+.hero-badge{display:inline-flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:5px 11px;border-radius:999px;letter-spacing:.06em;border:1px solid var(--border)}
+.badge-lr{background:rgba(167,139,250,.12);color:#c4b5fd;border-color:rgba(167,139,250,.35)}
+.badge-batch{background:rgba(34,211,238,.12);color:#67e8f9;border-color:rgba(34,211,238,.35)}
+.badge-epoch{background:rgba(244,114,182,.12);color:#f9a8d4;border-c['MRN',
+ 'SPECIMEN_SUBMITTED_BY',
+ 'DATE_TIME_SPECIMEN_TAKEN',
+ 'SPECIMEN',
+ 'SURGICAL_WORKLOAD_PROFILE',
+ 'GROSS_DESCRIPTION_CUTTING_DATE',
+ 'GROSS_DESCRIPTION_CUTTING_TYPE',
+ 'GROSS_DESCRIPTION_COUNTED',
+ 'PARAFFIN_BLOCK',
+ 'BRIEF_CLINICAL_HISTORY',
+ 'PREOPERATIVE_DIAGNOSIS',
+ 'OPERATIVE_FINDINGS',
+ 'POSTOPERATIVE_DIAGNOSIS',
+ 'PATHOLOGIST',
+ 'RESIDENT_PATHOLOGIST',
+ 'DATE_REPORT_COMPLETED',
+ 'SURGICAL_PATH_ACC_NUMBER',
+ 'SURGEON_PHYSICIAN',
+ 'PATIENT_LOCATION',
+ 'TYPIST',
+ 'DATE_TIME_SPECIMEN_RECEIVED',
+ 'REPORT_RELEASE_DATE_TIME',
+ 'RELEASED_BY',
+ 'TC_CODE',
+ 'ORIGINAL_RELEASE_DATE',
+ 'PERSON_MODIFYING_TEXT',
+ 'DIAGNOSIS_MODIFIED',
+ 'DELAYED_REPORT_COMMENT',
+ 'COMMENT',
+ 'GROSS_DESCRIPTION',
+ 'MICROSCOPIC_DESCRIPTION',
+ 'SUPPLEMENTARY_REPORT',
+ 'FROZEN_SECTION',
+ 'SURGICAL_PATH_DIAGNOSIS',
+ 'ORGAN_TISSUE',
+ 'DOCUMENT_NUMBER']olor:rgba(244,114,182,.35)}
+.hero h1{font-size:clamp(1.65rem,4vw,2.6rem);background:linear-gradient(120deg,#c4b5fd,#67e8f9,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.hero p{color:var(--txt2);font-size:.95rem;max-width:620px;margin:0 auto}
+.tabs{display:flex;flex-wrap:wrap;gap:0;margin:0 1rem;border-bottom:1px solid var(--border);justify-content:center}
+.tab{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:11px 18px;cursor:pointer;color:var(--txt3);background:none;border:none;border-bottom:2px solid transparent;transition:.2s;letter-spacing:.04em}
+.tab:hover{color:var(--txt)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab.active-cyan{color:var(--accent2);border-bottom-color:var(--accent2)}
+.tab.active-pink{color:var(--accent3);border-bottom-color:var(--accent3)}
+.panel{display:none;padding:1.25rem 1.25rem 2rem;max-width:900px;margin:0 auto;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.card h3{font-size:13px;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em}
+.slider-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0}
+.slider-row label{min-width:140px;font-size:13px;color:var(--txt2);font-weight:500}
+input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
+.val-pill{font-family:'JetBrains Mono',monospace;font-size:12px;padding:4px 10px;border-radius:8px;background:var(--panel);color:var(--accent2);border:1px solid var(--border)}
+.chart-wrap{background:var(--panel);border-radius:12px;padding:12px;border:1px solid var(--border);margin-top:12px}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.insight{font-size:13px;color:var(--txt2);margin-top:12px;padding:12px;border-left:3px solid var(--accent);background:rgba(167,139,250,.06);border-radius:0 8px 8px 0}
+.insight strong{color:var(--txt)}
+.theory-block{margin-bottom:14px;padding:12px 14px;background:var(--card);border-radius:10px;border:1px solid var(--border)}
+.theory-block h4{font-size:12px;color:var(--accent2);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.theory-block p{font-size:13px;color:var(--txt2)}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.preset{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--txt2);cursor:pointer;transition:.15s}
+.preset:hover{border-color:var(--accent);color:var(--txt)}
+ul.hint{font-size:13px;color:var(--txt2);padding-left:1.1rem;margin-top:8px}
+ul.hint li{margin:4px 0}
+</style>
+
+<a class="back-fixed" href="https://IyadSultan.github.io/CCI.io/session-04/">&#8249; Session 4</a>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge badge-lr">Learning rate</span>
+    <span class="badge badge-batch">Batch size</span>
+    <span class="badge badge-epoch">Epochs</span>
+  </div>
+  <h1>Hyperparameters, interactively</h1>
+  <p>Move the sliders. Watch toy training curves and schedules change. This is a teaching simulation — not a real trainer — but it matches the <em>shape</em> of what you see when fine-tuning radiology summarization in Colab.</p>
+</div>
+
+<div class="tabs">
+  <button type="button" class="tab active" data-panel="lr">Learning rate</button>
+  <button type="button" class="tab" data-panel="batch">Batch size</button>
+  <button type="button" class="tab" data-panel="epoch">Epochs &amp; validation</button>
+  <button type="button" class="tab" data-panel="schedule">Warmup &amp; decay</button>
+  <button type="button" class="tab" data-panel="theory">Theory</button>
+  <button type="button" class="tab" data-panel="clinical">Clinical note</button>
+</div>
+
+<div id="panel-lr" class="panel active">
+  <div class="card">
+    <h3>Learning rate (step size each update)</h3>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:8px">Transformer fine-tunes often use <strong>2e-5</strong> to <strong>5e-5</strong> as a starting point. Too large → unstable loss or forgetting pretrained weights. Too small → barely moves.</p>
+    <div class="slider-row">
+      <label for="lr-slider">LR (log scale)</label>
+      <input type="range" id="lr-slider" min="0" max="100" value="42" />
+      <span class="val-pill" id="lr-display">lr = 3.2e-5</span>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="preset" data-lr="28">~2e-5 (common)</button>
+      <button type="button" class="preset" data-lr="42">~3e-5</button>
+      <button type="button" class="preset" data-lr="58">~1e-4 (risky)</button>
+      <button type="button" class="preset" data-lr="8">~1e-6 (tiny)</button>
+    </div>
+    <div class="chart-wrap" id="lr-chart"></div>
+    <div class="insight" id="lr-insight"></div>
+  </div>
+</div>
+
+<div id="panel-batch" class="panel">
+  <div class="card">
+    <h3>Batch size (examples per update)</h3>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:8px">Larger batches give <strong>smoother</strong> gradient estimates; tiny batches are <strong>noisier</strong> but can help escape shallow minima. GPU memory caps how large you can go.</p>
+    <div class="slider-row">
+      <label for="bs-slider">Batch size</label>
+      <input type="range" id="bs-slider" min="0" max="5" value="2" />
+      <span class="val-pill" id="bs-display">batch = 4</span>
+    </div>
+    <div class="chart-wrap" id="batch-chart"></div>
+    <div class="insight" id="batch-insight"></div>
+  </div>
+</div>
+
+<div id="panel-epoch" class="panel">
+  <div class="card">
+    <h3>Epochs &amp; the validation curve</h3>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:8px">One <strong>epoch</strong> = one full pass over the training set. Training loss usually keeps dropping. <strong>Validation</strong> loss often bottoms out then rises — that gap is overfitting.</p>
+    <div class="slider-row">
+      <label for="ep-slider">Max epochs shown</label>
+      <input type="range" id="ep-slider" min="5" max="40" value="18" />
+      <span class="val-pill" id="ep-display">epochs = 18</span>
+    </div>
+    <div class="chart-wrap" id="epoch-chart"></div>
+    <div class="insight" id="epoch-insight"></div>
+  </div>
+</div>
+
+<div id="panel-schedule" class="panel">
+  <div class="card">
+    <h3>Warmup + cosine decay (typical schedule)</h3>
+    <p style="color:var(--txt2);font-size:13px;margin-bottom:8px">Many HF configs <strong>ramp LR up</strong> for the first few hundred steps (warmup), then <strong>decay</strong> toward zero. That avoids huge early updates right after loading pretrained weights.</p>
+    <div class="slider-row">
+      <label for="wu-slider">Warmup % of steps</label>
+      <input type="range" id="wu-slider" min="0" max="30" value="8" />
+      <span class="val-pill" id="wu-display">warmup = 8%</span>
+    </div>
+    <div class="chart-wrap" id="schedule-chart"></div>
+    <div class="insight">The curve shows <strong>multiplier × peak LR</strong> over training steps. Your HuggingFace <code>TrainingArguments</code> can set <code>warmup_ratio</code> or <code>warmup_steps</code> plus <code>lr_scheduler_type=&quot;cosine&quot;</code>.</div>
+  </div>
+</div>
+
+<div id="panel-theory" class="panel">
+  <div class="card">
+    <h3>Quick reference</h3>
+    <div class="theory-block">
+      <h4>Gradient descent intuition</h4>
+      <p>The model’s weights are nudged in the direction that reduces loss. LR controls <strong>how big each nudge</strong> is. Adam/AdamW adapts per-parameter step sizes using moving averages of gradients.</p>
+    </div>
+    <div class="theory-block">
+      <h4>Weight decay</h4>
+      <p>A regularizer that slightly pulls weights toward zero each step. Helps <strong>generalization</strong>. In AdamW, decay is decoupled from the adaptive LR (cleaner than old L2-in-Adam).</p>
+    </div>
+    <div class="theory-block">
+      <h4>Gradient accumulation</h4>
+      <p>If batch size is 2 but you want effective batch 16, accumulate gradients over <strong>8 forward passes</strong> before one optimizer step. Same math as a big batch, less VRAM.</p>
+    </div>
+    <div class="theory-block">
+      <h4>Why summarization is sensitive</h4>
+      <p>Radiology “findings → impression” is a <strong>seq2seq</strong> task. Small data + wrong LR often shows as ROUGE improving on train but flat or worse on validation — always watch <strong>both</strong> curves.</p>
+    </div>
+  </div>
+</div>
+
+<div id="panel-clinical" class="panel">
+  <div class="card">
+    <h3>At KHCC-scale</h3>
+    <ul class="hint">
+      <li>Keep de-identified reports in the Colab runtime you control; do not mix PHI with public logging.</li>
+      <li>Use a <strong>GPU</strong> (T4/L4) for Trainer runs; CPU fine-tunes on transformer heads are painfully slow.</li>
+      <li>Save checkpoints and note learning rate, per-device batch size, and num_train_epochs in your lab write-up — reproducibility matters for audits.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=function(id){ return document.getElementById(id); };
+  const tabs=document.querySelectorAll('.tab');
+  const panels={};
+  document.querySelectorAll('.panel').forEach(function(p){ panels[p.id.replace('panel-','')]=p; });
+  tabs.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var name=btn.getAttribute('data-panel');
+      tabs.forEach(function(t){
+        t.classList.remove('active','active-cyan','active-pink');
+        if(t.getAttribute('data-panel')===name){
+          if(name==='batch') t.classList.add('active-cyan');
+          else if(name==='epoch'||name==='schedule') t.classList.add('active-pink');
+          else t.classList.add('active');
+        }
+      });
+      Object.keys(panels).forEach(function(k){ panels[k].classList.remove('active'); });
+      $('panel-'+name).classList.add('active');
+    });
+  });
+
+  function logLrFromSlider(v){
+    var t=v/100;
+    var logMin=-6,logMax=-2.5;
+    var log=logMin+t*(logMax-logMin);
+    return Math.pow(10,log);
+  }
+
+  function lossSeries(lr,steps){
+    steps=steps||60;
+    var out=[];
+    var norm=Math.log10(lr)+6;
+    var tooHigh=norm>2.85;
+    var tooLow=norm<0.35;
+    var L=2.8;
+    for(var s=0;s<steps;s++){
+      var t=s/(steps-1);
+      var drop=tooLow?0.012:0.045;
+      if(tooHigh) drop=0.08+0.06*Math.sin(s*0.7);
+      else drop*=1+0.4*Math.min(norm,1.5);
+      var noise=(tooHigh?0.35:0.08)*(Math.random()-0.5)*(1+norm);
+      L=L*(1-drop*(0.5+0.5*Math.sqrt(t)))+noise;
+      if(tooHigh&&s>steps*0.35) L+=0.04*(s-steps*0.35);
+      if(tooHigh&&L>3.2) L=3.2+Math.random()*0.15;
+      if(L<0.15) L=0.15+Math.random()*0.02;
+      out.push(+L.toFixed(3));
+    }
+    return out;
+  }
+
+  function drawLineChart(containerId,seriesList,labels,yMax){
+    var W=780,H=220,pL=48,pR=12,pT=14,pB=32;
+    var innerW=W-pL-pR,innerH=H-pT-pB;
+    var paths='';
+    var colors=['#a78bfa','#22d3ee','#f472b6'];
+    seriesList.forEach(function(pts,i){
+      if(!pts.length) return;
+      var d=pts.map(function(y,x){
+        var px=pL+(x/(pts.length-1))*innerW;
+        var py=pT+innerH*(1-Math.min(y,yMax)/yMax);
+        return (x?'L':'M')+px.toFixed(1)+','+py.toFixed(1);
+      }).join(' ');
+      paths+='<path d="'+d+'" fill="none" stroke="'+colors[i%colors.length]+'" stroke-width="2.2" stroke-linecap="round"/>';
+    });
+    var yTicks=[0,yMax/2,yMax].map(function(v){
+      return '<text x="8" y="'+(pT+innerH*(1-v/yMax)+4)+'" fill="#64748b" font-size="11" font-family="JetBrains Mono">'+v.toFixed(1)+'</text>';
+    }).join('');
+    var xLab='<text x="'+(pL+innerW/2)+'" y="'+(H-6)+'" fill="#94a3b8" font-size="11" text-anchor="middle" font-family="JetBrains Mono">training steps (toy)</text>';
+    $(containerId).innerHTML='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'+yTicks+'<rect x="'+pL+'" y="'+pT+'" width="'+innerW+'" height="'+innerH+'" fill="none" stroke="rgba(255,255,255,.06)"/>'+paths+xLab+'</svg><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;font-family:JetBrains Mono;color:#94a3b8">'+labels.map(function(l,i){return '<span><span style="color:'+colors[i]+'">●</span> '+l+'</span>';}).join('')+'</div>';
+  }
+
+  function updateLr(){
+    var pos=+$('lr-slider').value;
+    var lr=logLrFromSlider(pos);
+    $('lr-display').textContent='lr = '+lr.toExponential(1);
+    var series=lossSeries(lr);
+    drawLineChart('lr-chart',[series],['loss (simulated)'],3.2);
+    var logN=Math.log10(lr)+6;
+    var msg='';
+    if(logN<0.45) msg='<strong>Very small LR.</strong> Loss creeps down slowly — safe but you may need more epochs or a scheduler to finish in time.';
+    else if(logN>2.75) msg='<strong>Very large LR.</strong> The curve wobbles or blows up — classic <strong>catastrophic forgetting</strong> risk for pretrained transformers.';
+    else msg='<strong>Sensible zone.</strong> Smooth-ish decay similar to many BART/T5 radiology fine-tunes when paired with warmup.';
+    $('lr-insight').innerHTML=msg;
+  }
+
+  $('lr-slider').addEventListener('input',updateLr);
+  document.querySelectorAll('.preset[data-lr]').forEach(function(b){
+    b.addEventListener('click',function(){$('lr-slider').value=b.getAttribute('data-lr');updateLr();});
+  });
+  updateLr();
+
+  var bsChoices=[1,2,4,8,16,32];
+  function updateBatch(){
+    var i=+$('bs-slider').value;
+    var b=bsChoices[i];
+    $('bs-display').textContent='batch = '+b;
+    var steps=24;
+    var noiseScale=32/b;
+    var pts=[];
+    var v=1;
+    for(var s=0;s<steps;s++){
+      v=0.85*v+noiseScale*0.08*(Math.random()-0.5);
+      pts.push(Math.abs(v));
+    }
+    var smooth=pts.map(function(_,j){
+      return pts.slice(0,j+1).reduce(function(a,c){return a+c;},0)/(j+1);
+    });
+    var ymax=Math.max.apply(null,pts.concat([0.5]))*1.1;
+    drawLineChart('batch-chart',[pts,smooth],['|gradient| noise (toy)','running mean'],ymax);
+    $('batch-insight').innerHTML=b<=2
+      ?'<strong>Small batch.</strong> Noisy updates — can help exploration but needs a stable LR and sometimes gradient clipping.'
+      :b>=16
+      ?'<strong>Large batch.</strong> Smoother gradients — often pairs with slightly higher LR in some recipes; watch GPU memory.'
+      :'<strong>Mid batch.</strong> Common compromise on a T4; combine with gradient accumulation if you need an effective batch of 16+.';
+  }
+  $('bs-slider').addEventListener('input',updateBatch);
+  updateBatch();
+
+  function updateEpoch(){
+    var E=+$('ep-slider').value;
+    $('ep-display').textContent='epochs = '+E;
+    var points=E;
+    var train=[],val=[];
+    var bestAt=Math.max(3,Math.floor(points*0.42));
+    for(var e=0;e<points;e++){
+      var t=e/Math.max(points-1,1);
+      train.push(2.5*Math.exp(-2.8*t)+0.12+0.02*(Math.random()-0.5));
+      var vloss=2.5*Math.exp(-2.2*t)+0.35;
+      if(e>bestAt) vloss+=0.045*(e-bestAt)*(e-bestAt)/(points-bestAt);
+      val.push(vloss+0.04*(Math.random()-0.5));
+    }
+    var ymax=Math.max.apply(null,train.concat(val).concat([0.1]))*1.05;
+    drawLineChart('epoch-chart',[train,val],['train loss (toy)','validation loss (toy)'],ymax);
+    $('epoch-insight').innerHTML='When <strong>validation</strong> turns up while train still drops, stop or save the checkpoint at the valley — that is the signal behind <strong>early stopping</strong> and best-model selection.';
+  }
+  $('ep-slider').addEventListener('input',updateEpoch);
+  updateEpoch();
+
+  function updateSchedule(){
+    var wuPct=+$('wu-slider').value/100;
+    $('wu-display').textContent='warmup = '+Math.round(wuPct*100)+'%';
+    var steps=80;
+    var peak=1;
+    var pts=[];
+    var wuEnd=Math.floor(steps*wuPct);
+    for(var s=0;s<steps;s++){
+      var m;
+      if(s<wuEnd&&wuEnd>0) m=peak*(s/wuEnd);
+      else {
+        var t=(s-wuEnd)/Math.max(steps-wuEnd-1,1);
+        m=0.5*peak*(1+Math.cos(Math.PI*t));
+      }
+      pts.push(m);
+    }
+    drawLineChart('schedule-chart',[pts],['LR multiplier'],1.05);
+  }
+  $('wu-slider').addEventListener('input',updateSchedule);
+  updateSchedule();
+})();
+</script>
