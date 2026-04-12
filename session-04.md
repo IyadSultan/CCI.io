@@ -399,6 +399,9 @@ permalink: /session-04/
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_4/practices/hyperparameters_interactive_explainer.html" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128295;</span> Hyperparameters explainer
       </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_4/references/CCI_Lab3_Technical_Guide_Transformer_Finetuning.pdf" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128196;</span> Lab 3 technical guide (PDF)
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_4/quizzes/quiz_lesson3_radiology_finetuning.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>

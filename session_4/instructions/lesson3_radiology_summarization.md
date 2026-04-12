@@ -15,6 +15,8 @@ permalink: /session-04/lesson-3-instructions/
 
 **Interactive (optional):** [Hyperparameters explainer — LR, batch size, epochs, warmup]({{ site.baseurl }}/session_4/practices/hyperparameters_interactive_explainer.html) — toy curves and notes aligned with HuggingFace `TrainingArguments` (simulation for teaching, not a real trainer).
 
+**Reference (PDF):** [CCI Lab 3 — Technical guide: transformer fine-tuning]({{ site.baseurl }}/session_4/references/CCI_Lab3_Technical_Guide_Transformer_Finetuning.pdf) — deeper background to read alongside the lab and NotebookLM.
+
 ---
 
 ## Instructor Introduction
