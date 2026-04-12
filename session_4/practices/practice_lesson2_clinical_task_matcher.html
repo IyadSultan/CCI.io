@@ -1,0 +1,158 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2 Practice — Clinical Task Matcher</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-04/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 4</a>
+<div id="root"></div>
+<script type="text/babel">
+{% raw %}
+const { useState } = React;
+
+const scenarios = [
+  {
+    id: 1,
+    title: "Extracting Diseases from Pathology Reports",
+    description: "The KHCC tumor registry needs to automatically extract disease names (cancer types, conditions) from pathology report text. Example input: 'Invasive ductal carcinoma, grade 2, ER-positive.'",
+    correctTask: "ner",
+    correctModel: "d4data/biomedical-ner-all",
+    taskOptions: ["text-classification", "ner", "summarization", "text-generation", "question-answering"],
+    modelOptions: ["gpt2", "d4data/biomedical-ner-all", "facebook/bart-large-cnn", "bert-base-uncased"],
+    explanation: "NER (token-classification) extracts individual entities from text. d4data/biomedical-ner-all was trained specifically on biomedical text to recognize diseases, drugs, and procedures."
+  },
+  {
+    id: 2,
+    title: "Summarizing Radiology Reports",
+    description: "Radiologists write detailed findings sections. The department wants to auto-generate a brief impression (2-3 sentences) from the full findings. Example: a 500-word CT chest report needs a 50-word summary.",
+    correctTask: "summarization",
+    correctModel: "google/flan-t5-small",
+    taskOptions: ["text-classification", "ner", "summarization", "text-generation", "question-answering"],
+    modelOptions: ["d4data/biomedical-ner-all", "google/flan-t5-small", "dslim/bert-base-NER", "distilbert-base-uncased"],
+    explanation: "Summarization condenses long text into shorter versions. google/flan-t5-small is a versatile text-to-text model capable of summarization that runs efficiently on a T4 GPU in Colab."
+  },
+  {
+    id: 3,
+    title: "Classifying Clinical Note Types",
+    description: "KHCC receives thousands of clinical notes daily. Each needs to be routed to the correct department. The system must classify each note as: Discharge Summary, Progress Note, Pathology Report, or Radiology Report.",
+    correctTask: "text-classification",
+    correctModel: "emilyalsentzer/Bio_ClinicalBERT",
+    taskOptions: ["text-classification", "ner", "summarization", "text-generation", "question-answering"],
+    modelOptions: ["emilyalsentzer/Bio_ClinicalBERT", "d4data/biomedical-ner-all", "gpt2", "google/flan-t5-small"],
+    explanation: "Text-classification assigns one label to the entire document. Bio_ClinicalBERT, trained on clinical notes, understands the structure and language patterns that distinguish note types."
+  },
+  {
+    id: 4,
+    title: "Answering Questions About a Clinical Note",
+    description: "A nurse pastes a discharge summary and asks: 'What medications was the patient prescribed at discharge?' The system should find and extract the answer from the note text.",
+    correctTask: "question-answering",
+    correctModel: "microsoft/BiomedNLP-BiomedBERT-base",
+    taskOptions: ["text-classification", "ner", "summarization", "text-generation", "question-answering"],
+    modelOptions: ["gpt2", "dslim/bert-base-NER", "microsoft/BiomedNLP-BiomedBERT-base", "facebook/bart-large-cnn"],
+    explanation: "Question-answering extracts a span from the provided context that answers the question. BiomedBERT understands biomedical terminology, making it effective at finding clinical information within notes."
+  },
+  {
+    id: 5,
+    title: "Identifying Drug Names in Prescription Text",
+    description: "The pharmacy department needs to extract all drug names from free-text prescription notes. Example: 'Start tamoxifen 20mg daily, continue ondansetron 8mg PRN, discontinue metformin.'",
+    correctTask: "ner",
+    correctModel: "d4data/biomedical-ner-all",
+    taskOptions: ["text-classification", "ner", "summarization", "text-generation", "question-answering"],
+    modelOptions: ["bert-base-uncased", "google/flan-t5-small", "d4data/biomedical-ner-all", "emilyalsentzer/Bio_ClinicalBERT"],
+    explanation: "Extracting individual drug names from text is NER (token-classification). d4data/biomedical-ner-all recognizes DRUG entities specifically, having been trained on biomedical corpora with annotated drug mentions."
+  }
+];
+
+function Practice() {
+  const [currentScenario, setCurrentScenario] = useState(0);
+  const [selections, setSelections] = useState({ task: '', model: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [scores, setScores] = useState([]);
+
+  const s = scenarios[currentScenario];
+
+  const checkAnswer = () => {
+    let points = 0;
+    if (selections.task === s.correctTask) points++;
+    if (selections.model === s.correctModel) points++;
+    setScores([...scores, points]);
+    setSubmitted(true);
+  };
+
+  const next = () => {
+    setCurrentScenario(c => c + 1);
+    setSelections({ task: '', model: '' });
+    setSubmitted(false);
+  };
+
+  const totalScore = scores.reduce((a, b) => a + b, 0);
+
+  if (currentScenario >= scenarios.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Clinical Task Matcher Complete!</h2>
+        <p style={{ fontSize: 20 }}>You scored {totalScore} / {scenarios.length * 2} points</p>
+        <div style={{ background: totalScore >= 8 ? '#d4edda' : totalScore >= 6 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8 }}>
+          {totalScore >= 8 ? "Excellent! You can match clinical scenarios to the right HuggingFace tasks and models." : totalScore >= 6 ? "Good intuition — review the distinction between NER and text-classification." : "Review the different HuggingFace task types and which clinical models fit each."}
+        </div>
+        <button onClick={() => { setCurrentScenario(0); setScores([]); setSubmitted(false); setSelections({ task: '', model: '' }); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentScenario + 1) / scenarios.length) * 100}%` }} />
+      </div>
+      <h3>Scenario {currentScenario + 1}: {s.title}</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>{s.description}</p>
+
+      <div style={{ marginTop: 16 }}>
+        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: 4 }}>HuggingFace Task Type:</label>
+        <select value={selections.task} onChange={e => setSelections({ ...selections, task: e.target.value })} disabled={submitted} style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc' }}>
+          <option value="">Select task...</option>
+          {s.taskOptions.map(t => <option key={t} value={t}>{t}</option>)}
+        </select>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <label style={{ fontWeight: 'bold', display: 'block', marginBottom: 4 }}>Best Model:</label>
+        <select value={selections.model} onChange={e => setSelections({ ...selections, model: e.target.value })} disabled={submitted} style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc' }}>
+          <option value="">Select model...</option>
+          {s.modelOptions.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      {!submitted && <button onClick={checkAnswer} disabled={!selections.task || !selections.model} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer', opacity: (!selections.task || !selections.model) ? 0.5 : 1 }}>Submit</button>}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Score: {scores[scores.length - 1]} / 2</strong></p>
+          <p>{selections.task === s.correctTask ? 'Correct' : 'Incorrect'} Task: best choice is <strong>{s.correctTask}</strong></p>
+          <p>{selections.model === s.correctModel ? 'Correct' : 'Incorrect'} Model: best choice is <strong>{s.correctModel}</strong></p>
+          <p style={{ marginTop: 8, fontStyle: 'italic', fontSize: 14 }}>{s.explanation}</p>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentScenario + 1 < scenarios.length ? 'Next Scenario' : 'See Final Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Practice />);
+{% endraw %}
+</script>
+</body>
+</html>

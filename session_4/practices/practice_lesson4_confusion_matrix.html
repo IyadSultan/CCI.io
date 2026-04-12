@@ -1,0 +1,164 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4 Practice — Confusion Matrix</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-04/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 4</a>
+<div id="root"></div>
+<script type="text/babel">
+{% raw %}
+const { useState } = React;
+
+const confusionMatrices = [
+  {
+    id: 1,
+    title: "Model A — Pneumonia Screening Tool",
+    context: "Emergency department triage: this model flags X-rays for radiologist review. False negatives mean missed pneumonia. False positives mean extra radiologist reviews.",
+    tp: 420, fp: 80, fn: 10, tn: 90,
+    priorityMetric: "recall",
+    clinicalQuestion: "Is this model safe for ER screening where missing pneumonia is dangerous?",
+    idealAnswer: "Yes — recall is 97.7% (only misses 2.3% of pneumonia cases). The 80 false positives add radiologist workload but are clinically safe."
+  },
+  {
+    id: 2,
+    title: "Model B — Diagnostic Confirmation Tool",
+    context: "Used after initial suspicion to CONFIRM pneumonia diagnosis. False positives lead to unnecessary antibiotics. High precision is needed.",
+    tp: 350, fp: 10, fn: 80, tn: 160,
+    priorityMetric: "precision",
+    clinicalQuestion: "Is this model safe for diagnostic confirmation where false positives lead to unnecessary treatment?",
+    idealAnswer: "Precision is 97.2% (very few false positives), but recall is only 81.4% — it misses 19% of cases. Good for confirmation, but should not be used alone for screening."
+  },
+  {
+    id: 3,
+    title: "Model C — Balanced Clinical Model",
+    context: "General-purpose clinical support. Used as a second opinion alongside radiologist interpretation.",
+    tp: 390, fp: 40, fn: 40, tn: 130,
+    priorityMetric: "f1",
+    clinicalQuestion: "How balanced is this model's performance across both classes?",
+    idealAnswer: "F1 = 0.907, balancing precision (90.7%) and recall (90.7%). Solid general-purpose performance as a second opinion tool, but may need higher recall for standalone screening."
+  }
+];
+
+function Practice() {
+  const [currentMatrix, setCurrentMatrix] = useState(0);
+  const [answers, setAnswers] = useState({ accuracy: '', precision: '', recall: '', f1: '', safe: '' });
+  const [checked, setChecked] = useState(false);
+
+  const m = confusionMatrices[currentMatrix];
+  const total = m.tp + m.fp + m.fn + m.tn;
+  const correctAccuracy = ((m.tp + m.tn) / total * 100).toFixed(1);
+  const correctPrecision = (m.tp / (m.tp + m.fp) * 100).toFixed(1);
+  const correctRecall = (m.tp / (m.tp + m.fn) * 100).toFixed(1);
+  const p = m.tp / (m.tp + m.fp);
+  const r = m.tp / (m.tp + m.fn);
+  const correctF1 = (2 * p * r / (p + r) * 100).toFixed(1);
+
+  const checkTolerance = (userVal, correctVal) => {
+    const uv = parseFloat(userVal);
+    const cv = parseFloat(correctVal);
+    return !isNaN(uv) && Math.abs(uv - cv) < 2;
+  };
+
+  const next = () => {
+    setCurrentMatrix(c => c + 1);
+    setAnswers({ accuracy: '', precision: '', recall: '', f1: '', safe: '' });
+    setChecked(false);
+  };
+
+  if (currentMatrix >= confusionMatrices.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Clinical Metrics Practice Complete!</h2>
+        <p style={{ fontSize: 18 }}>You have evaluated {confusionMatrices.length} clinical models using confusion matrices.</p>
+        <div style={{ background: '#d4edda', padding: 20, borderRadius: 8 }}>
+          Understanding precision vs recall in clinical context is essential. In screening, prioritize recall. In diagnosis confirmation, prioritize precision. Always show the full confusion matrix to clinicians.
+        </div>
+        <button onClick={() => { setCurrentMatrix(0); setChecked(false); setAnswers({ accuracy: '', precision: '', recall: '', f1: '', safe: '' }); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentMatrix + 1) / confusionMatrices.length) * 100}%` }} />
+      </div>
+      <h3>{m.title}</h3>
+      <p style={{ background: '#f8f9fa', padding: 12, borderRadius: 8, fontSize: 14, lineHeight: 1.6 }}>{m.context}</p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, maxWidth: 350, margin: '16px auto', textAlign: 'center' }}>
+        <div style={{ background: '#e8e8e8', padding: 8, fontWeight: 'bold' }}></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <div style={{ background: '#e8e8e8', padding: 8, fontWeight: 'bold', fontSize: 13 }}>Pred: Pneumonia</div>
+          <div style={{ background: '#e8e8e8', padding: 8, fontWeight: 'bold', fontSize: 13 }}>Pred: Normal</div>
+        </div>
+        <div style={{ background: '#e8e8e8', padding: 8, fontWeight: 'bold', fontSize: 13 }}>Actual: Pneumonia</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <div style={{ background: '#d4edda', padding: 12, fontWeight: 'bold' }}>TP = {m.tp}</div>
+          <div style={{ background: '#f8d7da', padding: 12, fontWeight: 'bold' }}>FN = {m.fn}</div>
+        </div>
+        <div style={{ background: '#e8e8e8', padding: 8, fontWeight: 'bold', fontSize: 13 }}>Actual: Normal</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <div style={{ background: '#fff3cd', padding: 12, fontWeight: 'bold' }}>FP = {m.fp}</div>
+          <div style={{ background: '#d4edda', padding: 12, fontWeight: 'bold' }}>TN = {m.tn}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
+        <div>
+          <label style={{ fontWeight: 'bold', fontSize: 14 }}>Accuracy (%):</label>
+          <input type="text" value={answers.accuracy} onChange={e => setAnswers({...answers, accuracy: e.target.value})} disabled={checked} placeholder="(TP+TN)/Total" style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <label style={{ fontWeight: 'bold', fontSize: 14 }}>Precision (%):</label>
+          <input type="text" value={answers.precision} onChange={e => setAnswers({...answers, precision: e.target.value})} disabled={checked} placeholder="TP/(TP+FP)" style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <label style={{ fontWeight: 'bold', fontSize: 14 }}>Recall (%):</label>
+          <input type="text" value={answers.recall} onChange={e => setAnswers({...answers, recall: e.target.value})} disabled={checked} placeholder="TP/(TP+FN)" style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        </div>
+        <div>
+          <label style={{ fontWeight: 'bold', fontSize: 14 }}>F1 Score (%):</label>
+          <input type="text" value={answers.f1} onChange={e => setAnswers({...answers, f1: e.target.value})} disabled={checked} placeholder="2*P*R/(P+R)" style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #ccc', boxSizing: 'border-box' }} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <label style={{ fontWeight: 'bold', fontSize: 14 }}>{m.clinicalQuestion}</label>
+        <textarea value={answers.safe} onChange={e => setAnswers({...answers, safe: e.target.value})} disabled={checked} placeholder="Your clinical assessment..." style={{ width: '100%', minHeight: 60, padding: 8, borderRadius: 6, border: '1px solid #ccc', marginTop: 4, boxSizing: 'border-box' }} />
+      </div>
+
+      {!checked && <button onClick={() => setChecked(true)} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Calculations</button>}
+
+      {checked && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{checkTolerance(answers.accuracy, correctAccuracy) ? 'Correct' : 'Incorrect'} <strong>Accuracy:</strong> {correctAccuracy}%</p>
+          <p>{checkTolerance(answers.precision, correctPrecision) ? 'Correct' : 'Incorrect'} <strong>Precision:</strong> {correctPrecision}%</p>
+          <p>{checkTolerance(answers.recall, correctRecall) ? 'Correct' : 'Incorrect'} <strong>Recall:</strong> {correctRecall}%</p>
+          <p>{checkTolerance(answers.f1, correctF1) ? 'Correct' : 'Incorrect'} <strong>F1:</strong> {correctF1}%</p>
+          <p style={{ marginTop: 8, fontStyle: 'italic', fontSize: 14 }}><strong>Clinical assessment:</strong> {m.idealAnswer}</p>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentMatrix + 1 < confusionMatrices.length ? 'Next Model' : 'See Summary'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Practice />);
+{% endraw %}
+</script>
+</body>
+</html>

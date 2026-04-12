@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+
+const mockModelCard = {
+  name: "emilyalsentzer/Bio_ClinicalBERT",
+  pipeline_tag: "fill-mask",
+  training_data: "MIMIC-III clinical notes (discharge summaries, nursing notes, radiology reports) + PubMed abstracts",
+  base_model: "BioBERT (pre-trained on PubMed)",
+  parameters: "110M",
+  license: "MIT",
+  languages: ["English"],
+  intended_use: "Clinical NLP tasks including named entity recognition, relation extraction, and clinical text classification on English clinical notes",
+  limitations: "Trained only on English clinical notes from a single US hospital (MIMIC-III / Beth Israel Deaconess). May not generalize well to notes from other countries, specialties not well represented in MIMIC-III, or non-English text. Not validated for direct clinical decision-making.",
+  metrics: "Outperforms general BERT on clinical NER (i2b2 2010: F1 0.877 vs 0.847) and clinical NLI (MedNLI: accuracy 0.832 vs 0.782)",
+  last_updated: "2020-04-15"
+};
+
+const questions = [
+  {
+    id: 'training_data',
+    label: 'What clinical data was this model trained on?',
+    options: [
+      'Wikipedia and BookCorpus',
+      'MIMIC-III clinical notes + PubMed abstracts',
+      'Reddit medical forums',
+      'KHCC oncology notes'
+    ],
+    correct: 1,
+    hint: 'Look at the "Training Data" field in the model card.'
+  },
+  {
+    id: 'task_type',
+    label: 'What HuggingFace task type is this model tagged with?',
+    options: [
+      'text-generation',
+      'summarization',
+      'fill-mask (masked language model)',
+      'question-answering'
+    ],
+    correct: 2,
+    hint: 'The pipeline_tag tells you the primary task. Fill-mask models predict missing words — they are the base for fine-tuning on downstream tasks.'
+  },
+  {
+    id: 'limitation',
+    label: 'A KHCC oncologist wants to use this model on Arabic clinical notes. Based on the model card, what is the main concern?',
+    options: [
+      'The model is too large for clinical use',
+      'The license does not permit clinical applications',
+      'It was trained only on English text from a single US hospital — it may not work for Arabic or KHCC-specific notes',
+      'The model has not been updated recently enough'
+    ],
+    correct: 2,
+    hint: 'Check the "Limitations" section — it explicitly mentions language and hospital specificity.'
+  },
+  {
+    id: 'license',
+    label: 'Can KHCC legally use this model in a clinical data pipeline?',
+    options: [
+      'No — clinical models require a medical device license',
+      'Yes — the MIT license permits commercial and clinical use with minimal restrictions',
+      'Only if KHCC pays a licensing fee to the authors',
+      'Only for research, not production'
+    ],
+    correct: 1,
+    hint: 'The MIT license is one of the most permissive open-source licenses.'
+  },
+  {
+    id: 'appropriate',
+    label: 'Overall, is this model appropriate as a STARTING POINT for building a clinical NER system at KHCC for English pathology reports?',
+    options: [
+      'No — it was not trained on oncology data specifically',
+      'Yes — it was trained on clinical notes and outperforms general BERT on clinical NER, making it a strong base for fine-tuning on KHCC oncology data',
+      'No — it is too old (2020) to be useful',
+      'Yes — it can be deployed directly without any adaptation'
+    ],
+    correct: 1,
+    hint: 'Consider that fine-tuning adapts a pre-trained model to your specific domain. A model pre-trained on clinical text is a much better starting point than a general-purpose model.'
+  }
+];
+
+export default function Practice() {
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSelect = (qId, optIdx) => {
+    if (submitted) return;
+    setAnswers({ ...answers, [qId]: optIdx });
+  };
+
+  const getScore = () => questions.filter(q => answers[q.id] === q.correct).length;
+
+  return (
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h2>Practice: Model Card Reader</h2>
+      <p style={{ color: '#666', marginBottom: 12 }}>Read the model card below and answer the questions. This is exactly how you will evaluate models before using them in clinical pipelines.</p>
+
+      <div style={{ background: '#f8f9fa', padding: 20, borderRadius: 8, marginBottom: 24, border: '1px solid #dee2e6' }}>
+        <h3 style={{ marginTop: 0, color: '#0d6efd' }}>{mockModelCard.name}</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '8px 16px', fontSize: 14, lineHeight: 1.6 }}>
+          <strong>Pipeline Tag:</strong> <span>{mockModelCard.pipeline_tag}</span>
+          <strong>Training Data:</strong> <span>{mockModelCard.training_data}</span>
+          <strong>Base Model:</strong> <span>{mockModelCard.base_model}</span>
+          <strong>Parameters:</strong> <span>{mockModelCard.parameters}</span>
+          <strong>License:</strong> <span>{mockModelCard.license}</span>
+          <strong>Languages:</strong> <span>{mockModelCard.languages.join(', ')}</span>
+          <strong>Intended Use:</strong> <span>{mockModelCard.intended_use}</span>
+          <strong>Limitations:</strong> <span>{mockModelCard.limitations}</span>
+          <strong>Metrics:</strong> <span>{mockModelCard.metrics}</span>
+          <strong>Last Updated:</strong> <span>{mockModelCard.last_updated}</span>
+        </div>
+      </div>
+
+      {questions.map((q, qi) => (
+        <div key={q.id} style={{ marginBottom: 20, padding: 16, background: '#fff', borderRadius: 8, border: '1px solid #dee2e6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: 8 }}>{qi + 1}. {q.label}</p>
+          {q.options.map((opt, oi) => (
+            <div key={oi} onClick={() => handleSelect(q.id, oi)} style={{
+              padding: '10px 14px', margin: '6px 0', borderRadius: 6, cursor: submitted ? 'default' : 'pointer',
+              border: `2px solid ${submitted ? (oi === q.correct ? '#198754' : oi === answers[q.id] ? '#dc3545' : '#dee2e6') : answers[q.id] === oi ? '#0d6efd' : '#dee2e6'}`,
+              background: submitted ? (oi === q.correct ? '#d4edda' : oi === answers[q.id] && oi !== q.correct ? '#f8d7da' : '#fff') : '#fff',
+              fontSize: 14
+            }}>{opt}</div>
+          ))}
+          {submitted && answers[q.id] !== q.correct && (
+            <p style={{ fontSize: 13, color: '#666', fontStyle: 'italic', marginTop: 4 }}>Hint: {q.hint}</p>
+          )}
+        </div>
+      ))}
+
+      {!submitted && (
+        <button onClick={() => setSubmitted(true)} disabled={Object.keys(answers).length < questions.length} style={{ padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer', fontSize: 16, opacity: Object.keys(answers).length < questions.length ? 0.5 : 1 }}>
+          Check My Answers
+        </button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 20, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <h3>Score: {getScore()} / {questions.length}</h3>
+          <p>{getScore() >= 4 ? "Excellent model card reading skills! You can evaluate HuggingFace models for clinical appropriateness." : "Review the model card fields — in the lab you will evaluate real models on the HuggingFace Hub."}</p>
+          <button onClick={() => { setAnswers({}); setSubmitted(false); }} style={{ marginTop: 8, padding: '8px 20px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}

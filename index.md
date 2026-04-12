@@ -264,11 +264,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-04/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-04/">
     <div class="cci-num" style="background:#E65100;">4</div>
     <div class="cci-card-body">
-      <p class="title">HuggingFace &amp; Open-Source Models</p>
-      <p class="desc">Model hub, tokenizers, inference pipelines</p>
+      <p class="title">HuggingFace &amp; Open-Source Models <span class="cci-active-badge">Active</span></p>
+      <p class="desc">Model hub, tokenizers, fine-tuning, clinical vision, microGPT</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
