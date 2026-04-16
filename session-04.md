@@ -336,7 +336,7 @@ permalink: /session-04/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_4/quizzes/quiz_lesson1_huggingface_video.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Video Quiz
       </a>
-      <a class="s1-btn s1-btn-resource" href="https://docs.google.com/presentation/d/1UHwp_HqYJALr2FBdDm4q0aZe49B_1j-8LBtrcW0V3AA/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-resource" href="https://docs.google.com/presentation/d/14zko8jqm91IKtCDi2LorUpn3_6u2iZfnX4dH0_tcFdI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Slides: Hugging Face Models
       </a>
     </div>
