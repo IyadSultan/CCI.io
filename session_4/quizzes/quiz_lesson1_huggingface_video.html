@@ -1,0 +1,185 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Quiz — What is Hugging Face?</title>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; background: #fafafa; color: #1a1a2e; }
+    .quiz-wrap { max-width: 740px; margin: 0 auto; padding: 24px 20px 60px; }
+    h2 { font-size: 1.35rem; margin-bottom: 6px; }
+    .source { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+    .source a { color: #0d6efd; text-decoration: none; }
+    .source a:hover { text-decoration: underline; }
+    .progress-bar { background: #e2e8f0; border-radius: 6px; height: 7px; margin-bottom: 22px; }
+    .progress-fill { height: 7px; border-radius: 6px; background: linear-gradient(90deg,#7c3aed,#06b6d4); transition: width .35s ease; }
+    .q-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; }
+    .q-num { font-size: 12px; font-weight: 700; color: #94a3b8; margin-bottom: 6px; }
+    .q-text { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.55; }
+    .ts { font-size: 12px; color: #94a3b8; font-weight: 400; }
+    .opt { display: block; width: 100%; text-align: left; padding: 11px 14px; margin: 6px 0; border-radius: 8px; font-size: 14px; cursor: pointer; border: 2px solid #e2e8f0; background: #fff; transition: .15s; font-family: inherit; }
+    .opt:hover:not(.locked) { border-color: #7c3aed; background: #f5f3ff; }
+    .opt.correct { border-color: #059669; background: #ecfdf5; }
+    .opt.wrong { border-color: #dc2626; background: #fef2f2; }
+    .opt.locked { cursor: default; }
+    .explain { display: none; margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: #f0f4ff; border-left: 4px solid #7c3aed; font-size: 13px; line-height: 1.6; color: #334155; }
+    .explain.show { display: block; }
+    .nav-row { display: flex; justify-content: space-between; margin-top: 18px; }
+    .nav-btn { padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; font-family: inherit; }
+    .nav-btn.primary { background: #7c3aed; color: #fff; }
+    .nav-btn.primary:hover { background: #6d28d9; }
+    .nav-btn.secondary { background: #e2e8f0; color: #334155; }
+    .nav-btn.secondary:hover { background: #cbd5e1; }
+    .result-box { text-align: center; padding: 40px 20px; }
+    .result-box h2 { font-size: 1.6rem; margin-bottom: 10px; }
+    .result-box .score { font-size: 48px; font-weight: 800; color: #7c3aed; }
+    .result-box .msg { font-size: 15px; color: #64748b; margin: 12px 0 24px; max-width: 480px; display: inline-block; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-04/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 4</a>
+
+<div class="quiz-wrap">
+  <h2>Video Quiz &mdash; What is Hugging Face?</h2>
+  <p class="source">Based on: <a href="https://www.youtube.com/watch?v=qP9mbY3wuWk&amp;t=419s" target="_blank" rel="noopener noreferrer">What is Hugging Face? &mdash; Models, Datasets &amp; Spaces</a></p>
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+var questions = [
+  {
+    q: "According to the video, how many models does the Hugging Face Hub host?",
+    ts: "~1:44",
+    opts: ["About 800,000", "Over 2.6 million", "Around 500,000", "Exactly 1 million"],
+    ans: 1,
+    exp: "The presenter shows that there are over 2.6 million models available on the Hub, which has grown far beyond earlier counts."
+  },
+  {
+    q: "The video names three main parts of the Hugging Face ecosystem. What are they?",
+    ts: "~0:19",
+    opts: ["Models, Notebooks, and APIs", "Models, Datasets, and Spaces", "Transformers, Tokenizers, and Trainers", "Hub, Inference, and Fine-Tuning"],
+    ans: 1,
+    exp: "The video is split into three sections: Models (how to find and run them), Datasets (explore and chat with data), and Spaces (web apps that showcase models)."
+  },
+  {
+    q: "What are 'inference providers' in the context of the video?",
+    ts: "~3:44",
+    opts: ["Local GPU drivers that speed up model inference", "Cloud services (like Cerebras, Novita) where models are already hosted so you can call them via API", "A Hugging Face pricing tier for enterprise users", "Special Docker containers for running models"],
+    ans: 1,
+    exp: "Inference providers are third-party cloud services that host models. You call them just like you would call the OpenAI API — even using the OpenAI SDK with a changed base URL and a Hugging Face token."
+  },
+  {
+    q: "The presenter wants to run a model locally. What filter does he apply to find models small enough for a consumer computer?",
+    ts: "~5:10",
+    opts: ["Filters by 'CPU-only' tag", "Filters by size: smaller than 9 billion parameters", "Filters by license: Apache 2.0 only", "Filters by framework: TensorFlow only"],
+    ans: 1,
+    exp: "He filters by parameter count (< 9B) and sorts by downloads to find models people are actually downloading to run locally, landing on Qwen 3 0.6B."
+  },
+  {
+    q: "What is HuggingChat, as described in the video?",
+    ts: "~6:32",
+    opts: ["A fine-tuning interface for custom models", "A ChatGPT-like chat interface that lets you talk to any model available on inference providers", "A paid enterprise messaging tool", "A Slack integration for team model testing"],
+    ans: 1,
+    exp: "HuggingChat is Hugging Face's free chat interface — similar to ChatGPT — where you can select any model available through inference providers and start chatting with it."
+  },
+  {
+    q: "How does the presenter describe Hugging Face Datasets compared to Kaggle datasets?",
+    ts: "~8:51",
+    opts: ["They are identical in purpose and format", "HF datasets are more geared toward training, fine-tuning, and evals, while Kaggle is more about data visualization and data science", "HF datasets only contain text data", "Kaggle datasets are always larger"],
+    ans: 1,
+    exp: "The presenter notes that HF datasets focus on model training, fine-tuning, and evaluation, whereas Kaggle datasets lean more toward data visualization and general data science."
+  },
+  {
+    q: "What does Data Studio allow you to do with a dataset?",
+    ts: "~11:03",
+    opts: ["Automatically fine-tune a model on the dataset", "Chat with the data — ask questions and get AI-generated answers about the dataset contents", "Convert the dataset into a SQL database", "Visualize the data as interactive charts only"],
+    ans: 1,
+    exp: "Data Studio loads a subset of the dataset into an AI agent so you can ask natural-language questions about the data, such as 'What kind of model can I train with this?'"
+  },
+  {
+    q: "What are Spaces, according to the video?",
+    ts: "~12:46",
+    opts: ["Private cloud storage for model weights", "Web applications (free hosting) mostly used to showcase models in action", "A paid GPU cluster for training", "GitHub repositories specifically for datasets"],
+    ans: 1,
+    exp: "Spaces are web apps hosted for free on Hugging Face. They let you see models in action — generate images, compare models in arenas, etc. — and you can deploy your own apps including Gradio, Docker, or even MCP servers."
+  },
+  {
+    q: "What are the 'arenas' the presenter demonstrates?",
+    ts: "~15:10",
+    opts: ["Competitive coding challenges for ML engineers", "Spaces that show two anonymous model outputs side by side, and users vote for the better one to generate ELO rankings", "Paid benchmarking services for enterprise models", "Physical hackathon events organized by Hugging Face"],
+    ans: 1,
+    exp: "Arenas are Spaces that compare two model outputs without revealing which model produced which result. Users vote for the better output, and ELO-style rankings are generated, like the Image Arena and Music Arena shown in the video."
+  },
+  {
+    q: "The presenter mentions you can deploy your own applications to Spaces. What types of applications are supported?",
+    ts: "~18:26",
+    opts: ["Only Gradio applications", "Gradio apps, static sites, or any application that fits into a Docker container — including MCP servers", "Only Python Flask or Django apps", "Only Jupyter notebooks"],
+    ans: 1,
+    exp: "Spaces support Gradio (best integrated), Streamlit, static HTML, or any Docker container. The presenter highlights that you can even deploy MCP servers for free, making it a versatile hosting platform."
+  }
+];
+
+var current = 0;
+var score = 0;
+var answered = new Array(questions.length).fill(false);
+var userAnswers = new Array(questions.length).fill(-1);
+
+function render() {
+  var area = document.getElementById('quiz-area');
+  document.getElementById('prog').style.width = Math.round(((current + 1) / questions.length) * 100) + '%';
+
+  if (current >= questions.length) {
+    var pct = Math.round((score / questions.length) * 100);
+    var msg = pct >= 80 ? "Excellent! You clearly watched the video and understand the HuggingFace ecosystem." :
+              pct >= 50 ? "Good effort! Re-watch sections you missed — timestamps are shown on each question." :
+              "Consider re-watching the video before the lab. The timestamps on each question point to the relevant sections.";
+    area.innerHTML = '<div class="result-box"><h2>Quiz Complete</h2><div class="score">' + score + ' / ' + questions.length + '</div><p class="msg">' + msg + '</p><br/><button class="nav-btn primary" onclick="current=0;score=0;answered=new Array('+questions.length+').fill(false);userAnswers=new Array('+questions.length+').fill(-1);render()">Retry Quiz</button></div>';
+    return;
+  }
+
+  var q = questions[current];
+  var html = '<div class="q-card"><div class="q-num">Question ' + (current + 1) + ' of ' + questions.length + ' <span class="ts">' + q.ts + '</span></div>';
+  html += '<div class="q-text">' + q.q + '</div>';
+  for (var i = 0; i < q.opts.length; i++) {
+    var cls = 'opt';
+    if (answered[current]) {
+      cls += ' locked';
+      if (i === q.ans) cls += ' correct';
+      else if (i === userAnswers[current] && i !== q.ans) cls += ' wrong';
+    }
+    html += '<button class="' + cls + '" data-i="' + i + '">' + q.opts[i] + '</button>';
+  }
+  html += '<div class="explain ' + (answered[current] ? 'show' : '') + '">' + q.exp + '</div>';
+  html += '</div>';
+
+  html += '<div class="nav-row">';
+  if (current > 0) html += '<button class="nav-btn secondary" onclick="current--;render()">&#8249; Previous</button>';
+  else html += '<span></span>';
+  if (answered[current]) html += '<button class="nav-btn primary" onclick="current++;render()">' + (current + 1 < questions.length ? 'Next &#8250;' : 'See Results') + '</button>';
+  html += '</div>';
+
+  area.innerHTML = html;
+
+  if (!answered[current]) {
+    var opts = area.querySelectorAll('.opt');
+    for (var j = 0; j < opts.length; j++) {
+      opts[j].addEventListener('click', function () {
+        if (answered[current]) return;
+        var idx = parseInt(this.getAttribute('data-i'));
+        userAnswers[current] = idx;
+        answered[current] = true;
+        if (idx === questions[current].ans) score++;
+        render();
+      });
+    }
+  }
+}
+
+render();
+</script>
+</body>
+</html>

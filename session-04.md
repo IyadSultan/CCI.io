@@ -330,6 +330,12 @@ permalink: /session-04/
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/blob/main/session4/student/Lab1_HuggingFace_Ecosystem_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
+      <a class="s1-btn s1-btn-resource" href="https://www.youtube.com/watch?v=qP9mbY3wuWk&amp;t=419s" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Video: What is Hugging Face?
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_4/quizzes/quiz_lesson1_huggingface_video.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Video Quiz
+      </a>
     </div>
   </div>
 </div>
@@ -471,7 +477,7 @@ permalink: /session-04/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-04/lesson-5-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/aa5804f8-8680-41ac-be86-f99943e8a0e8" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b1be38a7-8fc5-4600-9dff-9d466e5416c0" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_4/practices/practice_lesson5_transformer_builder.html" target="_blank">

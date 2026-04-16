@@ -37,6 +37,7 @@ Several pre-trained models are particularly relevant to oncology and clinical NL
 
 ### Before Class -- Preparation (15-20 min)
 
+- **Watch (recommended):** [What is Hugging Face? — Models, Datasets & Spaces](https://www.youtube.com/watch?v=qP9mbY3wuWk&t=419s) (~20 min) — a beginner-friendly walkthrough covering the three pillars of the ecosystem. After watching, [take the video quiz]({{ site.baseurl }}/session_4/quizzes/quiz_lesson1_huggingface_video.html) to check your understanding.
 - **Action:** Create a free HuggingFace account at <https://huggingface.co/join> -- you will need it for the labs.
 - **Browse:** Spend 10 minutes exploring the Model Hub at <https://huggingface.co/models>. Filter by task (e.g., "Token Classification" or "Text Classification") and by language (English). Note how many models exist for each task.
 - **Warm-up question:** A radiation oncologist at KHCC asks you to build a tool that extracts tumor locations from Arabic radiology reports. Would you prefer to use the OpenAI API or a locally-run open-source model? List two reasons for your choice, thinking about data privacy and cost.
@@ -78,6 +79,8 @@ In the provided Colab notebook, complete the guided exercises:
 
 | Resource | Link |
 |----------|------|
+| Video: What is Hugging Face? (Models, Datasets & Spaces) | <https://www.youtube.com/watch?v=qP9mbY3wuWk&t=419s> |
+| Video Quiz | [Take the video quiz]({{ site.baseurl }}/session_4/quizzes/quiz_lesson1_huggingface_video.html) |
 | HuggingFace Model Hub | <https://huggingface.co/models> |
 | HuggingFace Datasets Hub | <https://huggingface.co/datasets> |
 | HuggingFace Spaces | <https://huggingface.co/spaces> |
