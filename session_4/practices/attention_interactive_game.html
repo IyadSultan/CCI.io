@@ -1,0 +1,564 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Attention Is All You Need — Interactive Game</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:#0f0f1a;color:#e2e8f0;min-height:100vh}
+.back-link{position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:background .15s}
+.back-link:hover{background:#B2DFDB}
+
+.hero{text-align:center;padding:60px 20px 30px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+.hero h1{font-size:2rem;background:linear-gradient(90deg,#f9d423,#ff4e50);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.hero p{color:#94a3b8;font-size:15px;max-width:620px;margin:0 auto}
+.hero .credit{font-size:12px;color:#64748b;margin-top:10px}
+.hero .credit a{color:#7c3aed;text-decoration:none}
+
+.tabs{display:flex;justify-content:center;gap:6px;padding:16px 10px;background:#1a1a2e;border-bottom:1px solid #334155;flex-wrap:wrap}
+.tab-btn{padding:10px 18px;border-radius:8px;border:2px solid #334155;background:transparent;color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;position:relative}
+.tab-btn:hover{border-color:#7c3aed;color:#e2e8f0}
+.tab-btn.active{border-color:#7c3aed;background:#7c3aed22;color:#c4b5fd}
+.tab-btn .badge{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.badge-locked{background:#475569;color:#94a3b8}
+.badge-done{background:#059669;color:#fff}
+.badge-active{background:#7c3aed;color:#fff}
+
+.container{max-width:800px;margin:0 auto;padding:24px 20px 80px}
+.panel{display:none}
+.panel.active{display:block}
+
+.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:22px;margin-bottom:18px}
+.card h3{font-size:1.1rem;color:#f9d423;margin-bottom:10px}
+.card p,.card li{font-size:14px;line-height:1.7;color:#cbd5e1}
+.card ul{padding-left:18px;margin-top:8px}
+.card li{margin-bottom:6px}
+.highlight{color:#f9d423;font-weight:600}
+.term{color:#c4b5fd;font-weight:600}
+
+/* ── Match game ── */
+.match-area{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap}
+.match-col{flex:1;min-width:200px}
+.match-col h4{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:10px}
+.match-item{padding:12px 14px;border-radius:8px;margin-bottom:8px;font-size:13px;cursor:pointer;transition:.2s;user-select:none;border:2px solid transparent}
+.match-left{background:#1a1a2e;border-color:#475569;color:#e2e8f0;font-weight:600}
+.match-left.selected{border-color:#f9d423;background:#f9d42315;box-shadow:0 0 12px #f9d42333}
+.match-left.matched{border-color:#059669;background:#05966915;opacity:.7;cursor:default}
+.match-right{background:#1a1a2e;border-color:#475569;color:#cbd5e1}
+.match-right:hover:not(.matched){border-color:#7c3aed;background:#7c3aed15}
+.match-right.matched{border-color:#059669;background:#05966915;opacity:.7;cursor:default}
+.match-right.wrong{animation:shake .4s}
+
+/* ── Drag builder ── */
+.builder-zone{min-height:320px;border:2px dashed #475569;border-radius:12px;padding:20px;margin:16px 0;position:relative;background:#0f0f1a}
+.builder-zone h4{color:#64748b;text-align:center;font-size:13px;margin-bottom:14px}
+.arch-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0;min-height:46px;flex-wrap:wrap}
+.arch-label{font-size:12px;color:#64748b;width:100px;text-align:right;flex-shrink:0}
+.arch-slot{min-width:140px;min-height:42px;border:2px dashed #475569;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#64748b;padding:6px 10px;transition:.2s}
+.arch-slot.filled{border-style:solid;border-color:#059669;background:#05966920;color:#6ee7b7}
+.arch-slot.wrong-drop{animation:shake .4s;border-color:#dc2626}
+.parts-tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0}
+.part-chip{padding:10px 16px;border-radius:8px;background:#7c3aed22;border:2px solid #7c3aed;color:#c4b5fd;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;user-select:none}
+.part-chip:hover{background:#7c3aed44;transform:translateY(-1px)}
+.part-chip.used{opacity:.3;cursor:default;pointer-events:none}
+.part-chip.selected{background:#f9d42322;border-color:#f9d423;color:#f9d423;box-shadow:0 0 12px #f9d42333}
+
+/* ── Quiz ── */
+.quiz-q{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;margin-bottom:14px}
+.quiz-q .q-text{font-size:14px;font-weight:600;margin-bottom:12px;line-height:1.6;color:#e2e8f0}
+.quiz-q .q-num{font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px}
+.q-opt{display:block;width:100%;text-align:left;padding:10px 14px;margin:5px 0;border-radius:8px;border:2px solid #334155;background:transparent;color:#cbd5e1;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+.q-opt:hover:not(.locked){border-color:#7c3aed;background:#7c3aed15}
+.q-opt.correct{border-color:#059669;background:#05966920;color:#6ee7b7}
+.q-opt.wrong{border-color:#dc2626;background:#dc262620;color:#fca5a5}
+.q-opt.locked{cursor:default}
+.q-explain{display:none;margin-top:10px;padding:12px;border-radius:8px;background:#7c3aed15;border-left:3px solid #7c3aed;font-size:13px;color:#cbd5e1;line-height:1.6}
+.q-explain.show{display:block}
+
+/* ── Scoreboard ── */
+.scoreboard{text-align:center;padding:28px;background:linear-gradient(135deg,#1e293b,#0f3460);border-radius:14px;margin:20px 0}
+.scoreboard .big{font-size:3rem;font-weight:800;background:linear-gradient(90deg,#f9d423,#ff4e50);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.scoreboard .label{color:#94a3b8;font-size:14px;margin-top:4px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:.15s}
+.btn-primary{background:#7c3aed;color:#fff}
+.btn-primary:hover{background:#6d28d9}
+.btn-gold{background:linear-gradient(90deg,#f9d423,#f97316);color:#1a1a2e}
+.btn-gold:hover{filter:brightness(1.1)}
+.btn-outline{background:transparent;border:2px solid #475569;color:#94a3b8}
+.btn-outline:hover{border-color:#7c3aed;color:#c4b5fd}
+.center{text-align:center}
+.mt{margin-top:18px}
+
+.progress-track{background:#1e293b;border-radius:6px;height:8px;margin:20px 0 10px;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#7c3aed,#06b6d4);transition:width .5s ease}
+
+.formula{background:#0f0f1a;border:1px solid #475569;border-radius:8px;padding:14px 18px;font-family:"Courier New",monospace;font-size:14px;color:#f9d423;margin:12px 0;overflow-x:auto;text-align:center}
+
+.analogy{background:#7c3aed15;border-left:3px solid #7c3aed;padding:14px 16px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px;color:#c4b5fd;line-height:1.65}
+.analogy strong{color:#f9d423}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(max-width:600px){.match-area{flex-direction:column}.arch-label{width:auto;text-align:center}.hero h1{font-size:1.5rem}}
+</style>
+</head>
+<body>
+
+<a class="back-link" href="https://IyadSultan.github.io/CCI.io/session-04/">&#8249; Session 4</a>
+
+<div class="hero">
+  <h1>Attention Is All You Need</h1>
+  <p>An interactive 3-pass game that walks you through the landmark Transformer paper (Vaswani et al., 2017) — the architecture behind GPT, BERT, and every clinical NLP model you'll use.</p>
+  <p class="credit">Based on the 3-pass method by <a href="https://medium.com/@olubusolamiSogunle" target="_blank">Olubusolami Sogunle</a></p>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" onclick="showPass(0)"><span class="badge badge-active">1</span>&nbsp; Pass 1: The Big Idea</button>
+  <button class="tab-btn" onclick="showPass(1)"><span class="badge badge-locked">2</span>&nbsp; Pass 2: Key Concepts</button>
+  <button class="tab-btn" onclick="showPass(2)"><span class="badge badge-locked">3</span>&nbsp; Pass 3: Architecture</button>
+  <button class="tab-btn" onclick="showPass(3)"><span class="badge badge-locked">&#9733;</span>&nbsp; Final Score</button>
+</div>
+
+<div class="container">
+
+<!-- ═══════════ PASS 1 ═══════════ -->
+<div class="panel active" id="pass0">
+  <div class="card">
+    <h3>Pass 1 — Skim: What's the paper about?</h3>
+    <p>Before 2017, the best translation and text-generation models used <span class="term">RNNs</span> (Recurrent Neural Networks) — they read text one word at a time, like reading left-to-right with a finger on the page.</p>
+    <div class="analogy"><strong>Analogy:</strong> Imagine a doctor reading a radiology report one word at a time and forgetting the beginning by the time they reach the end. That's an RNN's problem with long sequences.</div>
+    <p style="margin-top:12px">Vaswani et al. asked: <em>"What if we throw away RNNs entirely and use only <span class="highlight">attention</span>?"</em></p>
+    <ul>
+      <li>They introduced the <span class="highlight">Transformer</span> — a new architecture built <em>solely</em> on attention.</li>
+      <li>It processes all words <strong>in parallel</strong> (like reading the whole page at once), making it dramatically faster.</li>
+      <li>It beat every existing model on translation benchmarks, measured by <span class="term">BLEU scores</span>.</li>
+      <li>Hence the title: <em>"Attention Is All You Need."</em></li>
+    </ul>
+    <div class="analogy"><strong>Why you care at KHCC:</strong> GPT-4, BERT, BioBERT, ClinicalBERT — <em>every</em> model you'll use this session — is a Transformer descendant. Understanding this paper means understanding the engine under the hood.</div>
+  </div>
+
+  <div class="card">
+    <h3>Match the concept to its description</h3>
+    <p style="margin-bottom:6px;font-size:13px;color:#94a3b8">Click a term on the left, then click its matching description on the right. Get all 5 to unlock Pass 2.</p>
+    <div class="match-area">
+      <div class="match-col" id="matchLeft">
+        <h4>Terms</h4>
+      </div>
+      <div class="match-col" id="matchRight">
+        <h4>Descriptions</h4>
+      </div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="match-prog" style="width:0%"></div></div>
+    <p class="center" id="match-status" style="font-size:13px;color:#64748b">0 / 5 matched</p>
+  </div>
+</div>
+
+<!-- ═══════════ PASS 2 ═══════════ -->
+<div class="panel" id="pass1">
+  <div class="card">
+    <h3>Pass 2 — Key Ideas: Old Way vs New Way</h3>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">
+      <div style="flex:1;min-width:220px;background:#dc262615;border:1px solid #dc262644;border-radius:10px;padding:16px">
+        <h4 style="color:#fca5a5;font-size:13px;margin-bottom:8px">The Old Way (RNNs)</h4>
+        <ul style="font-size:13px;color:#fca5a5cc"><li>Sequential — one word at a time</li><li>Slow on GPUs/TPUs</li><li>Forgets long-range context</li><li>Hard to parallelise</li></ul>
+      </div>
+      <div style="flex:1;min-width:220px;background:#05966915;border:1px solid #05966944;border-radius:10px;padding:16px">
+        <h4 style="color:#6ee7b7;font-size:13px;margin-bottom:8px">The New Way (Transformer)</h4>
+        <ul style="font-size:13px;color:#6ee7b7cc"><li>Parallel — all words at once</li><li>Massively faster training</li><li>Captures long-range dependencies</li><li>Uses <em>attention</em> instead of recurrence</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Self-Attention — The Star of the Show</h3>
+    <p>Self-attention lets every word look at <em>every other word</em> in the sentence to decide which ones matter most for understanding context.</p>
+    <div class="analogy"><strong>Analogy:</strong> Imagine a tumor board meeting. Each specialist (word) can ask every other specialist: <em>"How relevant are you to my part of the case?"</em> The answers determine how much weight each opinion gets. That's attention.</div>
+    <p style="margin-top:12px">The math boils down to three matrices:</p>
+    <ul>
+      <li><span class="term">Q (Query)</span> — "What am I looking for?"</li>
+      <li><span class="term">K (Key)</span> — "What do I contain?"</li>
+      <li><span class="term">V (Value)</span> — "What information do I give back?"</li>
+    </ul>
+    <div class="formula">Attention(Q, K, V) = softmax(Q &middot; K&#7488; / &radic;d&#8342;) &middot; V</div>
+    <p style="font-size:13px;color:#94a3b8;margin-top:6px">The &radic;d&#8342; scaling prevents the dot products from getting too large (which would push softmax into regions with tiny gradients).</p>
+  </div>
+
+  <div class="card">
+    <h3>Multi-Head Attention</h3>
+    <p>Instead of one attention calculation, the Transformer runs <strong>8 parallel "heads"</strong> — each learns a different "perspective."</p>
+    <div class="analogy"><strong>Analogy:</strong> 8 radiologists each reading the same CT scan but focusing on different things — one on lung nodules, another on mediastinal lymph nodes, another on bone lesions. Their combined read is far richer than any single opinion.</div>
+  </div>
+
+  <div class="card">
+    <h3>Sort the timeline — drag concepts into the correct order</h3>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:10px">Click items in chronological order (earliest first). What came before the Transformer, and what came after?</p>
+    <div class="parts-tray" id="timeline-tray"></div>
+    <div style="margin-top:12px">
+      <h4 style="font-size:12px;color:#64748b;margin-bottom:8px">Your timeline (earliest → latest):</h4>
+      <div id="timeline-result" style="min-height:42px;border:2px dashed #475569;border-radius:8px;padding:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="timeline-prog" style="width:0%"></div></div>
+    <p class="center" id="timeline-status" style="font-size:13px;color:#64748b">0 / 6 placed</p>
+  </div>
+</div>
+
+<!-- ═══════════ PASS 3 ═══════════ -->
+<div class="panel" id="pass2">
+  <div class="card">
+    <h3>Pass 3 — Architecture Deep Dive</h3>
+    <p>The Transformer has an <span class="term">Encoder</span> (reads the input) and a <span class="term">Decoder</span> (generates the output). Both are stacks of 6 identical layers.</p>
+    <div class="formula">Sublayer output = LayerNorm(x + Sublayer(x))</div>
+    <p style="font-size:13px;color:#94a3b8;margin-top:6px"><span class="term">x + Sublayer(x)</span> is a <em>residual connection</em> (add the input back so gradients flow smoothly). <span class="term">LayerNorm</span> stabilises training.</p>
+  </div>
+
+  <div class="card">
+    <h3>Build the Transformer — place components in the right slots</h3>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:10px">Click a component chip, then click the slot where it belongs. Each Encoder layer has 2 sublayers; each Decoder layer has 3.</p>
+    <div class="builder-zone">
+      <h4>Encoder Layer</h4>
+      <div class="arch-row"><span class="arch-label">Sublayer 1:</span><div class="arch-slot" data-expect="self-attn" id="enc-s1">?</div></div>
+      <div class="arch-row"><span class="arch-label">Sublayer 2:</span><div class="arch-slot" data-expect="ffn" id="enc-s2">?</div></div>
+      <h4 style="margin-top:18px">Decoder Layer</h4>
+      <div class="arch-row"><span class="arch-label">Sublayer 1:</span><div class="arch-slot" data-expect="masked-self-attn" id="dec-s1">?</div></div>
+      <div class="arch-row"><span class="arch-label">Sublayer 2:</span><div class="arch-slot" data-expect="cross-attn" id="dec-s2">?</div></div>
+      <div class="arch-row"><span class="arch-label">Sublayer 3:</span><div class="arch-slot" data-expect="ffn2" id="dec-s3">?</div></div>
+    </div>
+    <div class="parts-tray" id="arch-tray"></div>
+    <div class="progress-track"><div class="progress-fill" id="arch-prog" style="width:0%"></div></div>
+    <p class="center" id="arch-status" style="font-size:13px;color:#64748b">0 / 5 placed</p>
+  </div>
+
+  <div class="card">
+    <h3>Other essential components</h3>
+    <ul>
+      <li><span class="term">Embeddings</span> — convert words to number vectors the model can process.</li>
+      <li><span class="term">Positional Encoding</span> — since attention sees all words at once (no order!), this adds position information so the model knows word order.</li>
+      <li><span class="term">Softmax output</span> — the final layer predicts the probability of each possible next word.</li>
+    </ul>
+    <div class="analogy"><strong>Clinical parallel:</strong> Positional encoding is like the date/time stamp on lab results. Without it, the model can't tell whether a hemoglobin of 7 was the first or last reading — context that changes the clinical decision entirely.</div>
+  </div>
+
+  <div class="card">
+    <h3>Technical quiz — 6 questions</h3>
+    <div id="quiz-area"></div>
+  </div>
+</div>
+
+<!-- ═══════════ FINAL SCORE ═══════════ -->
+<div class="panel" id="pass3">
+  <div class="scoreboard">
+    <div class="big" id="final-score">—</div>
+    <div class="label">Total points earned across all 3 passes</div>
+  </div>
+  <div class="card" id="final-breakdown"></div>
+  <div class="card">
+    <h3>What you learned</h3>
+    <ul>
+      <li><strong>Pass 1:</strong> The Transformer replaced RNNs with pure attention, enabling parallel processing and beating SOTA translation benchmarks.</li>
+      <li><strong>Pass 2:</strong> Self-attention uses Q/K/V matrices; multi-head attention runs 8 parallel perspectives; this is what powers every model on HuggingFace.</li>
+      <li><strong>Pass 3:</strong> The Encoder has 2 sublayers (self-attention + FFN); the Decoder has 3 (masked self-attention + cross-attention + FFN); residual connections and LayerNorm keep training stable.</li>
+    </ul>
+    <div class="analogy"><strong>Next step:</strong> Now that you understand the engine, the rest of Session 4 shows you how to <em>drive</em> it — loading pre-trained Transformers from HuggingFace and fine-tuning them for KHCC clinical tasks.</div>
+  </div>
+  <div class="center mt">
+    <button class="btn btn-gold" onclick="location.reload()">Play Again</button>
+    <a class="btn btn-outline" href="https://IyadSultan.github.io/CCI.io/session-04/" style="text-decoration:none;margin-left:8px">Back to Session 4</a>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+/* ─── STATE ─── */
+var scores = {pass1:0, pass2:0, pass3:0};
+var maxScores = {pass1:5, pass2:6, pass3:11};
+var passUnlocked = [true, false, false, false];
+
+/* ─── TABS ─── */
+function showPass(i) {
+  if (!passUnlocked[i]) return;
+  document.querySelectorAll('.panel').forEach(function(p,j){p.classList.toggle('active',j===i)});
+  document.querySelectorAll('.tab-btn').forEach(function(b,j){b.classList.toggle('active',j===i)});
+}
+function unlockPass(i) {
+  passUnlocked[i] = true;
+  var badges = document.querySelectorAll('.tab-btn .badge');
+  badges[i].className = 'badge badge-active';
+}
+function markDone(i) {
+  var badges = document.querySelectorAll('.tab-btn .badge');
+  badges[i].className = 'badge badge-done';
+  badges[i].textContent = '\u2713';
+}
+
+/* ═══ PASS 1 — MATCH GAME ═══ */
+var matchPairs = [
+  {term:"Transformer", desc:"Architecture built solely on attention, no RNNs or CNNs"},
+  {term:"RNN", desc:"Processes words one at a time, passing state step by step"},
+  {term:"BLEU Score", desc:"Metric that measures translation quality by comparing n-gram overlap"},
+  {term:"Attention", desc:"Mechanism that lets the model focus on relevant parts of the input"},
+  {term:"Parallelisation", desc:"Processing all words simultaneously instead of sequentially"}
+];
+var matchSelected = -1;
+var matchDone = 0;
+function buildMatch() {
+  var left = document.getElementById('matchLeft');
+  var right = document.getElementById('matchRight');
+  var shuffledR = matchPairs.slice().sort(function(){return Math.random()-0.5});
+  left.innerHTML = '<h4>Terms</h4>';
+  right.innerHTML = '<h4>Descriptions</h4>';
+  matchPairs.forEach(function(p,i){
+    var d = document.createElement('div');
+    d.className = 'match-item match-left';
+    d.textContent = p.term;
+    d.setAttribute('data-idx',i);
+    d.onclick = function(){selectLeft(i)};
+    left.appendChild(d);
+  });
+  shuffledR.forEach(function(p){
+    var origIdx = matchPairs.indexOf(p);
+    var d = document.createElement('div');
+    d.className = 'match-item match-right';
+    d.textContent = p.desc;
+    d.setAttribute('data-idx',origIdx);
+    d.onclick = function(){selectRight(origIdx, d)};
+    right.appendChild(d);
+  });
+}
+function selectLeft(i) {
+  var items = document.querySelectorAll('.match-left');
+  items.forEach(function(el){el.classList.remove('selected')});
+  if (items[i].classList.contains('matched')) return;
+  items[i].classList.add('selected');
+  matchSelected = i;
+}
+function selectRight(idx, el) {
+  if (matchSelected < 0 || el.classList.contains('matched')) return;
+  if (idx === matchSelected) {
+    el.classList.add('matched');
+    document.querySelectorAll('.match-left')[matchSelected].classList.remove('selected');
+    document.querySelectorAll('.match-left')[matchSelected].classList.add('matched');
+    matchDone++;
+    scores.pass1 = matchDone;
+    document.getElementById('match-prog').style.width = (matchDone/5*100)+'%';
+    document.getElementById('match-status').textContent = matchDone+' / 5 matched';
+    matchSelected = -1;
+    if (matchDone === 5) {
+      document.getElementById('match-status').textContent = '5 / 5 — Pass 1 complete! +5 pts';
+      document.getElementById('match-status').style.color = '#6ee7b7';
+      markDone(0);
+      unlockPass(1);
+    }
+  } else {
+    el.classList.add('wrong-drop');
+    setTimeout(function(){el.classList.remove('wrong-drop')},400);
+  }
+}
+buildMatch();
+
+/* ═══ PASS 2 — TIMELINE ═══ */
+var timelineItems = [
+  {label:"RNNs (LSTMs/GRUs)", year:1997},
+  {label:"Seq2Seq + Attention", year:2014},
+  {label:"Transformer paper", year:2017},
+  {label:"BERT (encoder-only)", year:2018},
+  {label:"GPT-2 (decoder-only)", year:2019},
+  {label:"Clinical Transformers (BioBERT, ClinicalBERT)", year:2019}
+];
+var timelinePlaced = 0;
+var timelineExpectIdx = 0;
+function buildTimeline() {
+  var tray = document.getElementById('timeline-tray');
+  var shuffled = timelineItems.slice().sort(function(){return Math.random()-0.5});
+  tray.innerHTML = '';
+  shuffled.forEach(function(item){
+    var c = document.createElement('div');
+    c.className = 'part-chip';
+    c.textContent = item.label;
+    c.setAttribute('data-year', item.year);
+    c.setAttribute('data-label', item.label);
+    c.onclick = function(){placeTimeline(c, item)};
+    tray.appendChild(c);
+  });
+}
+function placeTimeline(chip, item) {
+  if (chip.classList.contains('used')) return;
+  var expected = timelineItems[timelineExpectIdx];
+  if (item.label === expected.label) {
+    chip.classList.add('used');
+    var res = document.getElementById('timeline-result');
+    var tag = document.createElement('div');
+    tag.style.cssText = 'padding:8px 12px;border-radius:6px;background:#05966920;border:1px solid #059669;color:#6ee7b7;font-size:12px;font-weight:600';
+    tag.textContent = item.label + ' (' + item.year + ')';
+    res.appendChild(tag);
+    timelinePlaced++;
+    timelineExpectIdx++;
+    scores.pass2 = timelinePlaced;
+    document.getElementById('timeline-prog').style.width = (timelinePlaced/6*100)+'%';
+    document.getElementById('timeline-status').textContent = timelinePlaced+' / 6 placed';
+    if (timelinePlaced === 6) {
+      document.getElementById('timeline-status').textContent = '6 / 6 — Pass 2 complete! +6 pts';
+      document.getElementById('timeline-status').style.color = '#6ee7b7';
+      markDone(1);
+      unlockPass(2);
+    }
+  } else {
+    chip.classList.add('selected');
+    setTimeout(function(){chip.classList.remove('selected')},500);
+  }
+}
+buildTimeline();
+
+/* ═══ PASS 3 — ARCHITECTURE BUILDER ═══ */
+var archParts = [
+  {id:"self-attn", label:"Multi-Head Self-Attention"},
+  {id:"ffn", label:"Feed-Forward Network"},
+  {id:"masked-self-attn", label:"Masked Multi-Head Self-Attention"},
+  {id:"cross-attn", label:"Cross-Attention (Encoder→Decoder)"},
+  {id:"ffn2", label:"Feed-Forward Network (Decoder)"}
+];
+var archPlaced = 0;
+var archSelectedId = null;
+function buildArch() {
+  var tray = document.getElementById('arch-tray');
+  var shuffled = archParts.slice().sort(function(){return Math.random()-0.5});
+  tray.innerHTML = '';
+  shuffled.forEach(function(p){
+    var c = document.createElement('div');
+    c.className = 'part-chip';
+    c.textContent = p.label;
+    c.setAttribute('data-id', p.id);
+    c.onclick = function(){selectArchPart(p.id, c)};
+    tray.appendChild(c);
+  });
+  document.querySelectorAll('.arch-slot').forEach(function(slot){
+    slot.onclick = function(){dropArch(slot)};
+  });
+}
+function selectArchPart(id, chip) {
+  if (chip.classList.contains('used')) return;
+  document.querySelectorAll('#arch-tray .part-chip').forEach(function(c){c.classList.remove('selected')});
+  chip.classList.add('selected');
+  archSelectedId = id;
+}
+function dropArch(slot) {
+  if (!archSelectedId || slot.classList.contains('filled')) return;
+  var expect = slot.getAttribute('data-expect');
+  if (archSelectedId === expect) {
+    slot.classList.add('filled');
+    var label = '';
+    archParts.forEach(function(p){if(p.id===archSelectedId)label=p.label});
+    slot.textContent = label;
+    document.querySelectorAll('#arch-tray .part-chip').forEach(function(c){
+      if(c.getAttribute('data-id')===archSelectedId){c.classList.add('used');c.classList.remove('selected')}
+    });
+    archPlaced++;
+    scores.pass3 = archPlaced;
+    archSelectedId = null;
+    document.getElementById('arch-prog').style.width = (archPlaced/5*100)+'%';
+    document.getElementById('arch-status').textContent = archPlaced+' / 5 placed';
+    if (archPlaced === 5) {
+      document.getElementById('arch-status').textContent = '5 / 5 — Architecture complete! +5 pts';
+      document.getElementById('arch-status').style.color = '#6ee7b7';
+    }
+  } else {
+    slot.classList.add('wrong-drop');
+    setTimeout(function(){slot.classList.remove('wrong-drop')},400);
+  }
+}
+buildArch();
+
+/* ═══ PASS 3 — QUIZ ═══ */
+var quizQs = [
+  {q:"How many layers does each Encoder and Decoder stack have in the original Transformer?",
+   opts:["3","6","8","12"], ans:1,
+   exp:"Both the Encoder and Decoder use N=6 identical layers stacked on top of each other."},
+  {q:"What does 'masking' do in the Decoder's first sublayer?",
+   opts:["Removes padding tokens","Prevents the model from seeing future words during generation","Hides the attention weights for privacy","Reduces computation by skipping some heads"], ans:1,
+   exp:"Masking ensures that when generating word i, the model can only attend to words 1…i (not future words), preventing 'cheating.'"},
+  {q:"What is the purpose of the residual connection (x + Sublayer(x))?",
+   opts:["It doubles the model's parameters","It allows gradients to flow more easily through deep networks","It replaces the need for positional encoding","It compresses the representation"], ans:1,
+   exp:"Residual connections add the input directly to the output, creating a shortcut that helps gradients flow during backpropagation, making deep training stable."},
+  {q:"Why does Scaled Dot-Product Attention divide by sqrt(d_k)?",
+   opts:["To make the model run faster","To normalise scores so softmax doesn't saturate into near-0 or near-1 values","To reduce the number of parameters","To convert attention to a probability distribution"], ans:1,
+   exp:"When d_k is large, dot products grow large too. Dividing by sqrt(d_k) keeps them in a range where softmax produces useful gradients."},
+  {q:"What does Positional Encoding add to the Transformer?",
+   opts:["Information about which GPU to use","Word-order information, since attention has no inherent notion of sequence position","The language of the input text","Confidence scores for each token"], ans:1,
+   exp:"Because attention processes all tokens simultaneously (no recurrence), positional encoding injects position information so the model knows word order."},
+  {q:"Cross-attention in the Decoder allows it to:",
+   opts:["Look at its own previously generated words only","Look at the Encoder's output to connect the input to the generation","Skip the feed-forward network","Run faster by using fewer heads"], ans:1,
+   exp:"Cross-attention lets the Decoder attend to the Encoder's output — this is how the input (e.g., English sentence) informs the output (e.g., German translation)."}
+];
+var quizAnswered = 0;
+var quizScore = 0;
+function buildQuiz() {
+  var area = document.getElementById('quiz-area');
+  area.innerHTML = '';
+  quizQs.forEach(function(q,qi){
+    var div = document.createElement('div');
+    div.className = 'quiz-q';
+    var html = '<div class="q-num">Question '+(qi+1)+' of '+quizQs.length+'</div>';
+    html += '<div class="q-text">'+q.q+'</div>';
+    q.opts.forEach(function(o,oi){
+      html += '<button class="q-opt" data-qi="'+qi+'" data-oi="'+oi+'">'+o+'</button>';
+    });
+    html += '<div class="q-explain" id="qexp-'+qi+'">'+q.exp+'</div>';
+    div.innerHTML = html;
+    area.appendChild(div);
+  });
+  area.querySelectorAll('.q-opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var qi = parseInt(this.getAttribute('data-qi'));
+      var oi = parseInt(this.getAttribute('data-oi'));
+      handleQuiz(qi,oi,this);
+    });
+  });
+}
+function handleQuiz(qi,oi,btn) {
+  var card = btn.parentElement;
+  if (card.querySelector('.q-opt.locked')) return;
+  card.querySelectorAll('.q-opt').forEach(function(b){b.classList.add('locked')});
+  if (oi === quizQs[qi].ans) {
+    btn.classList.add('correct');
+    quizScore++;
+  } else {
+    btn.classList.add('wrong');
+    card.querySelectorAll('.q-opt')[quizQs[qi].ans].classList.add('correct');
+  }
+  document.getElementById('qexp-'+qi).classList.add('show');
+  quizAnswered++;
+  scores.pass3 = archPlaced + quizScore;
+  if (quizAnswered === quizQs.length) {
+    markDone(2);
+    unlockPass(3);
+    buildFinal();
+  }
+}
+buildQuiz();
+
+/* ═══ FINAL SCORE ═══ */
+function buildFinal() {
+  var total = scores.pass1 + scores.pass2 + scores.pass3;
+  var max = maxScores.pass1 + maxScores.pass2 + maxScores.pass3;
+  document.getElementById('final-score').textContent = total + ' / ' + max;
+  var pct = Math.round(total/max*100);
+  var msg = pct >= 85 ? "Outstanding! You've mastered the Transformer architecture." :
+            pct >= 60 ? "Great job! Review the sections you missed for a deeper understanding." :
+            "Good start! Re-read the explanations and try again to solidify the concepts.";
+  document.getElementById('final-breakdown').innerHTML =
+    '<h3>Breakdown</h3>'+
+    '<ul>'+
+    '<li><strong>Pass 1 — Matching:</strong> '+scores.pass1+' / '+maxScores.pass1+'</li>'+
+    '<li><strong>Pass 2 — Timeline:</strong> '+scores.pass2+' / '+maxScores.pass2+'</li>'+
+    '<li><strong>Pass 3 — Architecture:</strong> '+archPlaced+' / 5</li>'+
+    '<li><strong>Pass 3 — Quiz:</strong> '+quizScore+' / 6</li>'+
+    '</ul>'+
+    '<p style="margin-top:12px;color:#94a3b8;font-size:14px">'+msg+'</p>';
+}
+</script>
+</body>
+</html>

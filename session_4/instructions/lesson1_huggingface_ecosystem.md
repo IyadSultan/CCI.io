@@ -82,6 +82,7 @@ In the provided Colab notebook, complete the guided exercises:
 | Video: What is Hugging Face? (Models, Datasets & Spaces) | <https://www.youtube.com/watch?v=qP9mbY3wuWk&t=419s> |
 | Video Quiz | [Take the video quiz]({{ site.baseurl }}/session_4/quizzes/quiz_lesson1_huggingface_video.html) |
 | Slides: Hugging Face Models | [Google Slides](https://docs.google.com/presentation/d/14zko8jqm91IKtCDi2LorUpn3_6u2iZfnX4dH0_tcFdI/edit?usp=sharing) |
+| Game: Attention Is All You Need | [Play the interactive game]({{ site.baseurl }}/session_4/practices/attention_interactive_game.html) |
 | HuggingFace Model Hub | <https://huggingface.co/models> |
 | HuggingFace Datasets Hub | <https://huggingface.co/datasets> |
 | HuggingFace Spaces | <https://huggingface.co/spaces> |
