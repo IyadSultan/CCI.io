@@ -132,6 +132,13 @@ textarea:focus,input[type=text]:focus{outline:none;border-color:rgba(124,111,255
         </div>
       </div>
     </div>
+    <div style="margin-top:14px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:0.05em;cursor:pointer">
+        <input type="checkbox" id="bleu-smooth" checked style="width:16px;height:16px;accent-color:var(--bleu);cursor:pointer" onchange="calcBleu()"/>
+        APPLY SMOOTHING (method1)
+      </label>
+      <span style="font-size:11px;color:var(--txt3);font-family:'DM Sans',sans-serif">Recommended for sentence-level BLEU. Prevents the score from collapsing to 0 when any n-gram order has no matches (standard practice in sacreBLEU, NLTK).</span>
+    </div>
   </div>
   <div class="results" id="bleu-results"></div>
 </div>
@@ -178,6 +185,13 @@ textarea:focus,input[type=text]:focus{outline:none;border-color:rgba(124,111,255
       <span class="info-pill">Brevity penalty</span>
       <span class="info-pill">Range: 0–1</span>
       <span class="info-pill">Lower = worse</span>
+    </div>
+    <div class="verdict-box verdict-bleu" style="margin-top:1rem">
+      <div class="verdict-label" style="color:#ffa94d">⚠ THE ZERO-COLLAPSE PROBLEM</div>
+      <div style="font-size:13px;line-height:1.7">
+        Textbook BLEU uses a <em>geometric mean</em> of 1- through 4-gram precisions. Because log(0) = −∞, <strong>a single n-gram order with 0% precision zeroes out the entire score</strong>. On short sentences, 4-gram overlap is often 0 even when the sentences clearly overlap.<br><br>
+        <strong>Solution — smoothing.</strong> Real-world implementations (sacreBLEU, NLTK's <code>SmoothingFunction</code>, original Papineni corpus-level) apply smoothing. This tool uses <strong>method1 (Chen &amp; Cherry, 2014)</strong>: when matched = 0, replace 0/total with ε/total (ε = 0.1). The smoothing toggle in the BLEU tab is ON by default — turn it off to see the raw textbook formula and understand the zero-collapse issue firsthand.
+      </div>
     </div>
   </div>
   <div class="theory-section">
@@ -287,23 +301,43 @@ function clippedCount(candNg,refNg){
   return matched;
 }
 
-function calcBleuScore(cand,ref){
+function calcBleuScore(cand,ref,smooth){
   const ct=tokenize(cand),rt=tokenize(ref);
   const bp=ct.length<rt.length?Math.exp(1-rt.length/ct.length):1;
-  const logs=[];
   const details=[];
+  // Per NLTK SmoothingFunction.method1 (Chen & Cherry, 2014):
+  // when matched==0, use epsilon/total instead of 0. epsilon default = 0.1.
+  const EPS=0.1;
+  let anyZero=false;
   for(let n=1;n<=4;n++){
     const cn=getNgrams(ct,n);
     const rn=getNgrams(rt,n);
-    if(cn.length===0){logs.push(-9999);details.push({n,matched:0,total:0,prec:0});continue}
+    if(cn.length===0){details.push({n,matched:0,total:0,prec:0,precSmooth:0,smoothed:false});continue}
     const m=clippedCount(cn,rn);
     const prec=m/cn.length;
-    details.push({n,matched:m,total:cn.length,prec,candNgrams:cn,refNgrams:rn});
-    logs.push(prec>0?Math.log(prec):-9999);
+    const precSmooth = m===0 ? EPS/cn.length : prec;
+    if(m===0) anyZero=true;
+    details.push({n,matched:m,total:cn.length,prec,precSmooth,smoothed:m===0,candNgrams:cn,refNgrams:rn});
   }
-  const geom=Math.exp(logs.reduce((a,b)=>a+b,0)/4);
-  const bleu=bp*geom;
-  return{bleu:isNaN(bleu)||!isFinite(bleu)?0:bleu,bp,details,candTokens:ct,refTokens:rt};
+  // Raw (no smoothing): any 0 precision zeroes out the geometric mean.
+  let rawBleu;
+  if(details.some(x=>x.prec===0||x.total===0)) {
+    rawBleu=0;
+  } else {
+    const rawLogs=details.map(x=>Math.log(x.prec));
+    rawBleu=bp*Math.exp(rawLogs.reduce((a,b)=>a+b,0)/4);
+  }
+  // Smoothed score
+  const smoothLogs=details.map(x=>x.total===0?Math.log(EPS):Math.log(x.precSmooth));
+  const smoothBleu=bp*Math.exp(smoothLogs.reduce((a,b)=>a+b,0)/4);
+  const bleu = smooth ? smoothBleu : rawBleu;
+  return{
+    bleu:isNaN(bleu)||!isFinite(bleu)?0:bleu,
+    rawBleu:isNaN(rawBleu)||!isFinite(rawBleu)?0:rawBleu,
+    smoothBleu:isNaN(smoothBleu)||!isFinite(smoothBleu)?0:smoothBleu,
+    bp,details,candTokens:ct,refTokens:rt,
+    anyZero,smoothed:!!smooth
+  };
 }
 
 function lcs(a,b){
@@ -350,7 +384,11 @@ function ngramHTML(candNg,refNg,matchCls,missCls){
   }).join('')
 }
 
-function verdictText(score,metric){
+function verdictText(score,metric,ctx){
+  // If raw BLEU collapsed to 0 but lower-order overlap is substantial, give a nuanced verdict.
+  if(ctx && ctx.rawCollapsed && ctx.lowerOrderAvg>=0.4){
+    return`${metric} raw score collapsed to 0 due to the zero-precision rule, but lower-order overlap is substantial (avg ${pct(ctx.lowerOrderAvg)}). The <strong>smoothed</strong> score is a more realistic signal of quality.`;
+  }
   if(score>=0.8) return`Excellent ${metric} score — very high overlap with the reference.`;
   if(score>=0.5) return`Good ${metric} score — substantial overlap. Typical of quality model outputs.`;
   if(score>=0.25) return`Moderate ${metric} score — partial match. May indicate paraphrasing or information gaps.`;
@@ -361,39 +399,58 @@ function calcBleu(){
   const cand=document.getElementById('bleu-cand').value.trim();
   const ref=document.getElementById('bleu-ref').value.trim();
   if(!cand||!ref) return;
-  const r=calcBleuScore(cand,ref);
+  const smoothEl=document.getElementById('bleu-smooth');
+  const smooth=smoothEl?smoothEl.checked:true;
+  const r=calcBleuScore(cand,ref,smooth);
   const el=document.getElementById('bleu-results');
   el.className='results visible';
   const d=r.details;
+  const mode = smooth ? 'SMOOTHED' : 'RAW';
+  // Warning shown when raw score collapses to 0 despite nontrivial overlap.
+  const collapseWarning = (r.rawBleu===0 && r.details.some(x=>x.prec>0)) ? `
+    <div class="verdict-box" style="margin-top:12px;background:rgba(255,169,77,0.08);border:1px solid rgba(255,169,77,0.3)">
+      <div class="verdict-label" style="color:#ffa94d">⚠ WHY RAW BLEU = 0</div>
+      <div style="font-size:13px;line-height:1.7">
+        At least one n-gram order has <strong>0% precision</strong>, which makes log(0) = −∞ and collapses the geometric mean to 0 — even though lower-order n-grams overlap significantly (${r.details.filter(x=>x.prec>0).map(x=>x.n+'-gram: '+pct(x.prec)).join(', ')}).<br><br>
+        This is the <strong>textbook BLEU formula</strong>, but in practice <em>no one</em> reports raw sentence-level BLEU for this reason. Real-world tools (sacreBLEU, NLTK, original Papineni corpus-level) apply <strong>smoothing</strong> to handle this.<br><br>
+        ${!smooth?'<strong>👉 Turn on the "Apply smoothing" toggle above</strong> for the score you\'d see in a real evaluation pipeline.':''}
+      </div>
+    </div>` : '';
   el.innerHTML=`
     <div class="score-display">
-      <div class="score-card score-bleu"><div class="score-label">BLEU SCORE</div><div class="score-value">${fmt(r.bleu)}</div></div>
+      <div class="score-card score-bleu"><div class="score-label">BLEU (${mode})</div><div class="score-value">${fmt(r.bleu)}</div></div>
+      <div class="score-card score-sub"><div class="score-label">RAW BLEU</div><div class="score-value" style="color:${r.rawBleu===0?'#ffa94d':'var(--accent4)'};font-size:1.3rem">${fmt(r.rawBleu)}</div></div>
+      <div class="score-card score-sub"><div class="score-label">SMOOTHED</div><div class="score-value" style="color:var(--accent3);font-size:1.3rem">${fmt(r.smoothBleu)}</div></div>
       <div class="score-card score-sub"><div class="score-label">BREVITY PENALTY</div><div class="score-value">${fmt(r.bp)}</div></div>
-      ${d.slice(0,4).map((x,i)=>`<div class="score-card score-sub"><div class="score-label">${i+1}-GRAM PREC</div><div class="score-value" style="color:var(--accent1);font-size:1.1rem">${pct(x.prec)}</div></div>`).join('')}
+    </div>
+    <div class="score-display">
+      ${d.slice(0,4).map((x,i)=>`<div class="score-card score-sub"><div class="score-label">${i+1}-GRAM PREC</div><div class="score-value" style="color:${x.prec===0?'#ffa94d':'var(--accent1)'};font-size:1.1rem">${pct(x.prec)}</div>${x.smoothed?`<div style="font-size:9px;color:var(--txt3);font-family:'Space Mono',monospace;margin-top:2px">→ ${pct(x.precSmooth)} smoothed</div>`:''}</div>`).join('')}
     </div>
     <div class="steps-container">
       <div class="step step-bleu">
         <div class="step-num">STEP 01</div>
         <h3>Tokenize Both Sentences</h3>
-        <div style="color:var(--txt2);font-size:12px;margin-bottom:6px">Candidate tokens:</div>
+        <div style="color:var(--txt2);font-size:12px;margin-bottom:6px">Candidate tokens (${r.candTokens.length}):</div>
         <div class="tokens-display">${r.candTokens.map(t=>`<span class="token token-cand">${t}</span>`).join('')}</div>
-        <div style="color:var(--txt2);font-size:12px;margin:8px 0 6px">Reference tokens:</div>
+        <div style="color:var(--txt2);font-size:12px;margin:8px 0 6px">Reference tokens (${r.refTokens.length}):</div>
         <div class="tokens-display">${r.refTokens.map(t=>`<span class="token token-ref">${t}</span>`).join('')}</div>
       </div>
       ${d.slice(0,4).map((x,i)=>`
         <div class="step step-bleu">
           <div class="step-num">STEP 0${i+2}</div>
-          <h3>${i+1}-Gram Precision: ${x.matched}/${x.total} = ${pct(x.prec)}</h3>
+          <h3>${i+1}-Gram Precision: ${x.matched}/${x.total} = ${pct(x.prec)}${x.smoothed?` <span style="color:#ffa94d;font-size:11px">(smoothed → ${pct(x.precSmooth)})</span>`:''}</h3>
           <p style="color:var(--txt2);font-size:12px;margin-bottom:8px">Candidate ${i+1}-grams — <span style="color:var(--bleu)">purple = matched</span>, gray = not found in reference:</p>
           <div class="ngram-grid">${ngramHTML(x.candNgrams,x.refNgrams,'ngram-match','ngram-miss')}</div>
+          ${x.smoothed?`<div style="margin-top:8px;font-size:11px;color:#ffa94d;font-family:'Space Mono',monospace">method1 smoothing: ε=0.1, so 0/${x.total} becomes 0.1/${x.total} = ${pct(x.precSmooth)}</div>`:''}
         </div>
       `).join('')}
       <div class="step step-bleu">
         <div class="step-num">STEP 06</div>
-        <h3>Brevity Penalty & Final Score</h3>
-        <div class="formula-box">BP = ${fmt(r.bp)} (cand len=${r.candTokens.length}, ref len=${r.refTokens.length})<br>BLEU = BP × exp(Σ log(Pₙ)/4)<br>BLEU = ${fmt(r.bp)} × exp(avg log precisions) = <strong>${fmt(r.bleu)}</strong></div>
+        <h3>Brevity Penalty &amp; Final Score (${mode})</h3>
+        <div class="formula-box">BP = exp(1 − r/c) = exp(1 − ${r.refTokens.length}/${r.candTokens.length}) = ${fmt(r.bp)}<br>BLEU = BP × exp(¼ · Σ log(P<sub>n</sub>))<br>Raw BLEU = <strong style="color:${r.rawBleu===0?'#ffa94d':'var(--accent3)'}">${fmt(r.rawBleu)}</strong> · Smoothed BLEU = <strong style="color:var(--accent3)">${fmt(r.smoothBleu)}</strong></div>
         ${gaugeHTML(r.bleu,'gauge-fill-bleu','BLEU')}
-        <div class="verdict-box verdict-bleu" style="margin-top:12px"><div class="verdict-label">VERDICT</div>${verdictText(r.bleu,'BLEU')}</div>
+        ${collapseWarning}
+        <div class="verdict-box verdict-bleu" style="margin-top:12px"><div class="verdict-label">VERDICT (based on ${mode.toLowerCase()} score)</div>${verdictText(r.bleu,'BLEU',{rawCollapsed:r.rawBleu===0,lowerOrderAvg:(r.details.filter(x=>x.prec>0).reduce((a,x)=>a+x.prec,0)/Math.max(1,r.details.filter(x=>x.prec>0).length))})}</div>
       </div>
     </div>`;
   setTimeout(()=>el.querySelectorAll('.gauge-fill').forEach(g=>{const w=g.style.width;g.style.width='0';setTimeout(()=>g.style.width=w,50)}),50);
@@ -454,8 +511,8 @@ function calcCompare(){
   const ca=document.getElementById('cmp-a').value.trim();
   const cb=document.getElementById('cmp-b').value.trim();
   if(!ref||!ca||!cb) return;
-  const ba=calcBleuScore(ca,ref);
-  const bb=calcBleuScore(cb,ref);
+  const ba=calcBleuScore(ca,ref,true);
+  const bb=calcBleuScore(cb,ref,true);
   const ra=calcRougeScore(ca,ref);
   const rb=calcRougeScore(cb,ref);
   const el=document.getElementById('compare-results');
