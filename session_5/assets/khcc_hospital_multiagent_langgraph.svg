@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 920" font-family="'Inter','Segoe UI',system-ui,sans-serif" role="img" aria-labelledby="t d">
-  <title id="t">KHCC Hospital Administration  LangGraph Multi-Agent System</title>
+  <title id="t">KHCC Hospital Administration &#8212; LangGraph Multi-Agent System</title>
   <desc id="d">Architecture diagram for a clinical multi-agent workflow in LangGraph: shared TypedDict state, intake and triage supervisor agents, parallel specialist lanes (lab, radiology, pharmacy), supporting administrative agents (medical records, scheduling, billing), a recommendation synthesizer, a human-in-the-loop physician approval step using interrupt(), an action executor, persistence with SqliteSaver and a long-term store, and stop conditions.</desc>
 
   <defs>
@@ -21,7 +21,7 @@
   <rect width="1220" height="920" fill="#FAFAFA"/>
 
   <!-- ========== TITLE ========== -->
-  <text x="610" y="32" text-anchor="middle" font-size="22" font-weight="800" fill="#1B2A4A">KHCC Hospital Administration  LangGraph Multi-Agent System</text>
+  <text x="610" y="32" text-anchor="middle" font-size="22" font-weight="800" fill="#1B2A4A">KHCC Hospital Administration &#8212; LangGraph Multi-Agent System</text>
   <text x="610" y="55" text-anchor="middle" font-size="13" fill="#546E7A">Clinical workflow with specialist agents, tools, shared state, and physician human-in-the-loop approval</text>
   <line x1="20" y1="73" x2="1200" y2="73" stroke="#E0E0E0"/>
 
@@ -52,17 +52,17 @@
     <rect x="35" y="445" width="210" height="230" rx="6" fill="#FFF8E1" stroke="#FFE082"/>
     <text x="45" y="463" font-size="10.5" font-weight="800" fill="#F57F17" letter-spacing="0.5">STATE RULES</text>
     <g font-size="10" fill="#5D4037">
-      <text x="45" y="482">" Nodes return only the</text>
+      <text x="45" y="482">&#8226; Nodes return only the</text>
       <text x="45" y="496">  keys they changed.</text>
-      <text x="45" y="516">" messages uses the</text>
-      <text x="45" y="530">  add_messages reducer </text>
+      <text x="45" y="516">&#8226; messages uses the</text>
+      <text x="45" y="530">  add_messages reducer &#8212;</text>
       <text x="45" y="544">  appended, never replaced.</text>
-      <text x="45" y="564">" Full state is read, but</text>
+      <text x="45" y="564">&#8226; Full state is read, but</text>
       <text x="45" y="578">  writes are minimal.</text>
-      <text x="45" y="598">" State is persisted per</text>
+      <text x="45" y="598">&#8226; State is persisted per</text>
       <text x="45" y="612">  thread_id by the</text>
       <text x="45" y="626">  checkpointer.</text>
-      <text x="45" y="646">" Compile the graph with</text>
+      <text x="45" y="646">&#8226; Compile the graph with</text>
       <text x="45" y="660">  .compile(checkpointer=...)</text>
     </g>
   </g>
@@ -80,17 +80,17 @@
       <text x="1000" y="182" font-size="10" fill="#546E7A">thread_id = patient_id</text>
 
       <text x="1000" y="210" font-weight="800" fill="#4A148C">Long-term Store</text>
-      <text x="1000" y="228" font-size="10.5">" patient_allergies</text>
-      <text x="1000" y="244" font-size="10.5">" language_prefs</text>
-      <text x="1000" y="260" font-size="10.5">" care_team</text>
+      <text x="1000" y="228" font-size="10.5">&#8226; patient_allergies</text>
+      <text x="1000" y="244" font-size="10.5">&#8226; language_prefs</text>
+      <text x="1000" y="260" font-size="10.5">&#8226; care_team</text>
       <text x="1000" y="276" font-size="10" fill="#546E7A">persists across threads</text>
 
       <text x="1000" y="302" font-weight="800" fill="#4A148C">trim_messages</text>
       <text x="1000" y="320" font-size="10.5">keep system + last 10 turns</text>
-      <text x="1000" y="336" font-size="10.5">max H 4 000 tokens</text>
+      <text x="1000" y="336" font-size="10.5">max &#8776; 4 000 tokens</text>
 
       <text x="1000" y="358" font-weight="800" fill="#4A148C">Resumability</text>
-      <text x="1000" y="376" font-size="10.5">interrupt() í save state</text>
+      <text x="1000" y="376" font-size="10.5">interrupt() &#8594; save state</text>
     </g>
   </g>
 
@@ -128,19 +128,19 @@
     <rect x="985" y="684" width="220" height="6" fill="#455A64"/>
     <text x="1095" y="680" text-anchor="middle" font-size="11.5" font-weight="800" fill="white" letter-spacing="1">MIDDLEWARE / GUARDRAILS</text>
     <g font-size="10.5" fill="#263238">
-      <text x="1000" y="710">" PHI redaction before LLM</text>
-      <text x="1000" y="728">" Audit log on every tool call</text>
-      <text x="1000" y="746">" Rate limit per thread_id</text>
-      <text x="1000" y="764">" Tool error í model recovers</text>
+      <text x="1000" y="710">&#8226; PHI redaction before LLM</text>
+      <text x="1000" y="728">&#8226; Audit log on every tool call</text>
+      <text x="1000" y="746">&#8226; Rate limit per thread_id</text>
+      <text x="1000" y="764">&#8226; Tool error &#8594; model recovers</text>
       <text x="1000" y="782">  (handle_tool_error=True)</text>
-      <text x="1000" y="800">" Separate read vs. write tools</text>
+      <text x="1000" y="800">&#8226; Separate read vs. write tools</text>
     </g>
   </g>
 
   <!-- ========== CENTER: GRAPH TITLE ========== -->
   <text x="625" y="100" text-anchor="middle" font-size="11" font-weight="800" fill="#00695C" letter-spacing="1.2">ORCHESTRATION GRAPH (StateGraph)</text>
 
-  <!-- ========== ROW A: START í Intake ========== -->
+  <!-- ========== ROW A: START to Intake ========== -->
   <circle cx="305" cy="145" r="22" fill="#66BB6A" stroke="#388E3C" stroke-width="1.5" filter="url(#sh)"/>
   <text x="305" y="149" text-anchor="middle" font-size="11" font-weight="800" fill="white">START</text>
   <line x1="330" y1="145" x2="378" y2="145" stroke="#546E7A" stroke-width="1.6" marker-end="url(#arr)"/>
@@ -157,69 +157,60 @@
   <rect x="370" y="218" width="325" height="72" rx="10" fill="#00897B" stroke="#00695C" stroke-width="1.6" filter="url(#sh)"/>
   <text x="532" y="243" text-anchor="middle" font-size="14" font-weight="800" fill="white">[Triage Supervisor Agent]</text>
   <text x="532" y="261" text-anchor="middle" font-size="10.5" font-family="'JetBrains Mono',monospace" fill="#B2DFDB">ChatOpenAI(model="gpt-4o", temperature=0)</text>
-  <text x="532" y="280" text-anchor="middle" font-size="10" fill="#E0F2F1">conditional edge on state["urgency"] í specialists &amp; support</text>
+  <text x="532" y="280" text-anchor="middle" font-size="10" fill="#E0F2F1">conditional edge on state["urgency"] &#8594; specialists &amp; support</text>
 
   <!-- ========== ROW C: TWO COLUMNS OF AGENTS ========== -->
-
-  <!-- Container / labels for each column -->
   <text x="375" y="318" text-anchor="middle" font-size="10.5" font-weight="800" fill="#4527A0" letter-spacing="1">SPECIALIST LANES</text>
   <text x="660" y="318" text-anchor="middle" font-size="10.5" font-weight="800" fill="#6A1B9A" letter-spacing="1">SUPPORTING AGENTS</text>
 
-  <!-- Two fanning arrows from Triage to column heads -->
   <path d="M 440 290 Q 420 305 400 320" stroke="#546E7A" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
   <path d="M 630 290 Q 650 305 660 320" stroke="#546E7A" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
   <text x="305" y="312" font-size="9.5" font-weight="700" fill="#C62828">emergency / urgent</text>
   <text x="700" y="312" font-size="9.5" font-weight="700" fill="#1565C0">on-demand / admin</text>
 
-  <!-- LEFT COLUMN  Specialists -->
+  <!-- LEFT COLUMN - Specialists -->
   <g>
-    <!-- Lab Analyst -->
     <rect x="295" y="328" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">>Í Lab Analyst</text>
+    <text x="377" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Lab Analyst</text>
     <text x="377" y="363" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">fetch_labs()</text>
     <text x="377" y="377" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">check_reference_ranges()</text>
-    <text x="377" y="391" text-anchor="middle" font-size="9" fill="#546E7A">í lab_summary</text>
+    <text x="377" y="391" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; lab_summary</text>
 
-    <!-- Radiology -->
     <rect x="295" y="408" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">>{ Radiology</text>
+    <text x="377" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Radiology</text>
     <text x="377" y="443" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">fetch_imaging_report()</text>
     <text x="377" y="457" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">summarize_findings()</text>
-    <text x="377" y="471" text-anchor="middle" font-size="9" fill="#546E7A">í imaging_summary</text>
+    <text x="377" y="471" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; imaging_summary</text>
 
-    <!-- Pharmacy -->
     <rect x="295" y="488" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">=ä Pharmacy</text>
+    <text x="377" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Pharmacy</text>
     <text x="377" y="523" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">check_drug_interaction()</text>
     <text x="377" y="537" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_formulary_dose()</text>
-    <text x="377" y="551" text-anchor="middle" font-size="9" fill="#546E7A">í medication_list</text>
+    <text x="377" y="551" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; medication_list</text>
   </g>
 
-  <!-- RIGHT COLUMN  Supporting -->
+  <!-- RIGHT COLUMN - Supporting -->
   <g>
-    <!-- Medical Records -->
     <rect x="580" y="328" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">=À Medical Records</text>
+    <text x="662" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Medical Records</text>
     <text x="662" y="363" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_allergies()</text>
     <text x="662" y="377" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_history()</text>
-    <text x="662" y="391" text-anchor="middle" font-size="9" fill="#546E7A">ê long-term Store</text>
+    <text x="662" y="391" text-anchor="middle" font-size="9" fill="#546E7A">&#8592; long-term Store</text>
 
-    <!-- Scheduling -->
     <rect x="580" y="408" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">=≈ Scheduling</text>
+    <text x="662" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Scheduling</text>
     <text x="662" y="443" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">book_appointment()</text>
     <text x="662" y="457" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">find_OR_slot()</text>
     <text x="662" y="471" text-anchor="middle" font-size="9" fill="#546E7A">post-approval action</text>
 
-    <!-- Billing / Insurance -->
     <rect x="580" y="488" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">=≥ Billing / Insurance</text>
+    <text x="662" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Billing / Insurance</text>
     <text x="662" y="523" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">verify_coverage()</text>
     <text x="662" y="537" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">code_ICD10()</text>
     <text x="662" y="551" text-anchor="middle" font-size="9" fill="#546E7A">compliance check</text>
   </g>
 
-  <!-- Convergence arrows: both columns í Synthesizer -->
+  <!-- Convergence arrows -->
   <path d="M 377 557 Q 377 590 470 615" stroke="#546E7A" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
   <path d="M 662 557 Q 662 590 590 615" stroke="#546E7A" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
 
@@ -227,29 +218,27 @@
   <rect x="330" y="615" width="400" height="60" rx="10" fill="#00897B" stroke="#00695C" stroke-width="1.6" filter="url(#sh)"/>
   <text x="530" y="637" text-anchor="middle" font-size="13" font-weight="800" fill="white">[Recommendation Synthesizer]</text>
   <text x="530" y="654" text-anchor="middle" font-size="10" fill="#E0F2F1">merges lab_summary + imaging_summary + medication_list</text>
-  <text x="530" y="668" text-anchor="middle" font-size="10" fill="#E0F2F1">í state["recommendation"]</text>
+  <text x="530" y="668" text-anchor="middle" font-size="10" fill="#E0F2F1">&#8594; state["recommendation"]</text>
 
   <line x1="530" y1="676" x2="530" y2="713" stroke="#546E7A" stroke-width="1.6" marker-end="url(#arr)"/>
 
-  <!-- ========== ROW E: HITL interrupt (hexagon) ========== -->
+  <!-- ========== ROW E: HITL interrupt ========== -->
   <polygon points="335,715 725,715 758,750 725,785 335,785 302,750" fill="#FFF3E0" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
-  <text x="530" y="737" text-anchor="middle" font-size="13" font-weight="800" fill="#E65100">† HUMAN-IN-THE-LOOP  interrupt()</text>
+  <text x="530" y="737" text-anchor="middle" font-size="13" font-weight="800" fill="#E65100">HUMAN-IN-THE-LOOP &#8212; interrupt()</text>
   <text x="530" y="755" text-anchor="middle" font-size="11" fill="#BF360C">Attending Physician Review</text>
   <text x="530" y="773" text-anchor="middle" font-size="10" font-family="'JetBrains Mono',monospace" fill="#5D4037">Command(resume={"approval_status": "approved" | "rejected: ..."})</text>
 
-  <!-- approved path -->
   <line x1="530" y1="786" x2="530" y2="820" stroke="#2E7D32" stroke-width="1.8" marker-end="url(#arr-green)"/>
   <text x="540" y="806" font-size="10" font-weight="700" fill="#2E7D32">approved</text>
 
-  <!-- rejected loop back (dashed red) -->
   <path d="M 758 750 Q 830 750 830 645 L 730 645" stroke="#C62828" stroke-width="1.6" fill="none" stroke-dasharray="6 4" marker-end="url(#arr-red)"/>
   <text x="770" y="700" font-size="10" font-weight="700" fill="#C62828">rejected</text>
   <text x="770" y="713" font-size="9" fill="#C62828">feedback loop</text>
 
-  <!-- ========== ROW F: Action Executor í END ========== -->
+  <!-- ========== ROW F: Action Executor to END ========== -->
   <rect x="335" y="822" width="300" height="60" rx="8" fill="#E3F2FD" stroke="#1976D2" stroke-width="1.6" filter="url(#sh)"/>
   <text x="485" y="843" text-anchor="middle" font-size="13" font-weight="800" fill="#0D47A1">[Action Executor Agent]</text>
-  <text x="485" y="860" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">write_to_EHR()  ∑  send_prescription()</text>
+  <text x="485" y="860" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">write_to_EHR()  send_prescription()</text>
   <text x="485" y="874" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">notify_nurse()</text>
 
   <line x1="637" y1="852" x2="698" y2="852" stroke="#546E7A" stroke-width="1.6" marker-end="url(#arr)"/>
@@ -277,7 +266,7 @@
     </g>
     <g transform="translate(650,906)">
       <rect width="14" height="14" rx="3" fill="#FFF3E0" stroke="#E65100"/>
-      <text x="22" y="11">interrupt()  human approval</text>
+      <text x="22" y="11">interrupt() &#8212; human approval</text>
     </g>
     <g transform="translate(855,906)">
       <rect width="14" height="14" rx="3" fill="#E3F2FD" stroke="#1976D2"/>
