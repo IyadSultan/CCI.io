@@ -1,0 +1,157 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 Practice — Multi-Agent Architect</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="https://IyadSultan.github.io/CCI.io/session-05/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#00897B;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B2DFDB;background:#E0F2F1;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B2DFDB'" onmouseout="this.style.background='#E0F2F1'">&#8249; Session 5</a>
+<div id="root"></div>
+<script type="text/babel">
+{% raw %}
+const { useState } = React;
+
+const systemDesign = {
+  description: "Design a multi-agent clinical system for a cancer center's new patient intake process. A patient arrives, describes their symptoms, and needs to be triaged, evaluated by the right specialist, have their medications checked for interactions, and receive a treatment plan — with human approval for any high-risk recommendations.",
+  agents: [
+    { id: 'triage', name: 'Triage Agent', desc: 'Classifies urgency and identifies the appropriate specialist department' },
+    { id: 'oncology', name: 'Oncology Specialist', desc: 'Reviews cancer-specific symptoms, staging, and treatment history' },
+    { id: 'pharmacy', name: 'Pharmacy Agent', desc: 'Checks drug interactions and validates medication safety' },
+    { id: 'coordinator', name: 'Coordinator/Orchestrator', desc: 'Manages the workflow, dispatches to specialists, synthesizes results' }
+  ],
+  patternQuestion: {
+    text: "Which multi-agent pattern should coordinate these agents?",
+    options: [
+      { label: "Peer-to-peer: agents talk to each other directly with no coordinator", value: "peer" },
+      { label: "Orchestrator-worker: coordinator dispatches to specialists and synthesizes results", value: "orchestrator" },
+      { label: "Sequential chain: triage then oncology then pharmacy in fixed order always", value: "chain" }
+    ],
+    correct: "orchestrator",
+    explanation: "The orchestrator pattern is best here because not every patient needs every specialist. The coordinator decides which agents to involve based on the triage result, collects their outputs, and synthesizes a unified plan."
+  },
+  interruptQuestions: [
+    { action: "Triage agent classifies a patient as 'routine' for a scheduled follow-up", needsInterrupt: false, explanation: "Routine scheduling is low-risk. No human approval needed — the system can book the appointment automatically." },
+    { action: "Oncology agent recommends starting a new chemotherapy regimen", needsInterrupt: true, explanation: "Starting chemotherapy is a high-stakes clinical decision. A human oncologist must review and approve before any treatment begins." },
+    { action: "Pharmacy agent finds a major drug interaction between two prescribed medications", needsInterrupt: true, explanation: "Major drug interactions can be life-threatening. A pharmacist must review and decide whether to modify the prescription or accept the risk with monitoring." },
+    { action: "Coordinator agent generates a summary of the patient's visit for the medical record", needsInterrupt: false, explanation: "Generating a summary is informational and low-risk. It can be generated automatically, though a human might review it later." },
+    { action: "Pharmacy agent recommends substituting a medication with a cheaper generic equivalent", needsInterrupt: true, explanation: "Medication substitution affects the patient's treatment. A clinician should approve the substitution to ensure the generic is appropriate for this patient's specific condition." }
+  ]
+};
+
+function Practice() {
+  const [phase, setPhase] = useState('pattern');
+  const [patternSelected, setPatternSelected] = useState('');
+  const [patternSubmitted, setPatternSubmitted] = useState(false);
+  const [currentInterrupt, setCurrentInterrupt] = useState(0);
+  const [interruptAnswer, setInterruptAnswer] = useState(null);
+  const [interruptSubmitted, setInterruptSubmitted] = useState(false);
+  const [interruptScore, setInterruptScore] = useState(0);
+
+  if (phase === 'pattern') {
+    const pq = systemDesign.patternQuestion;
+    return (
+      <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+        <h2>Multi-Agent Architecture Design</h2>
+        <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>{systemDesign.description}</p>
+
+        <h3 style={{ marginTop: 20 }}>Available Agents:</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
+          {systemDesign.agents.map(a => (
+            <div key={a.id} style={{ padding: 12, background: '#e3f2fd', borderRadius: 8 }}>
+              <strong>{a.name}</strong>
+              <p style={{ fontSize: 13, color: '#555', margin: '4px 0 0' }}>{a.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <h3>{pq.text}</h3>
+        {pq.options.map((opt, i) => (
+          <div key={i} onClick={() => !patternSubmitted && setPatternSelected(opt.value)} style={{
+            padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: patternSubmitted ? 'default' : 'pointer',
+            border: `2px solid ${patternSubmitted ? (opt.value === pq.correct ? '#198754' : opt.value === patternSelected ? '#dc3545' : '#dee2e6') : opt.value === patternSelected ? '#0d6efd' : '#dee2e6'}`,
+            background: patternSubmitted ? (opt.value === pq.correct ? '#d4edda' : opt.value === patternSelected && opt.value !== pq.correct ? '#f8d7da' : '#fff') : '#fff'
+          }}>{opt.label}</div>
+        ))}
+
+        {!patternSubmitted && patternSelected && (
+          <button onClick={() => setPatternSubmitted(true)} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Answer</button>
+        )}
+
+        {patternSubmitted && (
+          <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+            <p>{pq.explanation}</p>
+            <button onClick={() => setPhase('interrupts')} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Continue to Part 2: Human-in-the-Loop Decisions</button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const iq = systemDesign.interruptQuestions;
+
+  if (currentInterrupt >= iq.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Multi-Agent Architecture Complete!</h2>
+        <p style={{ fontSize: 20 }}>Human-in-the-Loop Score: {interruptScore} / {iq.length}</p>
+        <div style={{ background: interruptScore >= 4 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+          {interruptScore >= 4 ? "Excellent! You correctly identified where human approval is needed in a clinical multi-agent system." : "Review which clinical actions are high-risk enough to require human approval."}
+        </div>
+      </div>
+    );
+  }
+
+  const q = iq[currentInterrupt];
+
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentInterrupt + 1) / iq.length) * 100}%` }} />
+      </div>
+      <h2>Part 2: Where Does Human Approval Go? ({currentInterrupt + 1}/{iq.length})</h2>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}><strong>Action:</strong> {q.action}</p>
+
+      <p style={{ fontWeight: 'bold', marginTop: 16 }}>Does this action need interrupt() for human approval?</p>
+      <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+        <button onClick={() => !interruptSubmitted && setInterruptAnswer(true)} disabled={interruptSubmitted} style={{
+          padding: '12px 24px', borderRadius: 8, cursor: interruptSubmitted ? 'default' : 'pointer', fontSize: 16,
+          border: `2px solid ${interruptSubmitted ? (q.needsInterrupt === true ? '#198754' : interruptAnswer === true ? '#dc3545' : '#dee2e6') : interruptAnswer === true ? '#0d6efd' : '#dee2e6'}`,
+          background: interruptSubmitted ? (q.needsInterrupt === true ? '#d4edda' : interruptAnswer === true ? '#f8d7da' : '#fff') : '#fff'
+        }}>Yes — needs human approval</button>
+        <button onClick={() => !interruptSubmitted && setInterruptAnswer(false)} disabled={interruptSubmitted} style={{
+          padding: '12px 24px', borderRadius: 8, cursor: interruptSubmitted ? 'default' : 'pointer', fontSize: 16,
+          border: `2px solid ${interruptSubmitted ? (q.needsInterrupt === false ? '#198754' : interruptAnswer === false ? '#dc3545' : '#dee2e6') : interruptAnswer === false ? '#0d6efd' : '#dee2e6'}`,
+          background: interruptSubmitted ? (q.needsInterrupt === false ? '#d4edda' : interruptAnswer === false ? '#f8d7da' : '#fff') : '#fff'
+        }}>No — safe to automate</button>
+      </div>
+
+      {interruptAnswer !== null && !interruptSubmitted && (
+        <button onClick={() => { setInterruptSubmitted(true); if (interruptAnswer === q.needsInterrupt) setInterruptScore(s => s + 1); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check</button>
+      )}
+
+      {interruptSubmitted && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{q.explanation}</p>
+          <button onClick={() => { setCurrentInterrupt(c => c + 1); setInterruptAnswer(null); setInterruptSubmitted(false); }} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentInterrupt + 1 < iq.length ? 'Next Action' : 'See Results'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Practice />);
+{% endraw %}
+</script>
+</body>
+</html>
