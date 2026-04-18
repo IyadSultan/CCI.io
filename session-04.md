@@ -559,9 +559,7 @@ permalink: /session-04/
     <a href="https://academy.khcc.jo/course/view.php?id=208" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
       Open Assignment on CCI Academy &#8594;
     </a>
-    <a href="https://colab.research.google.com/drive/19pUdKQDMa4eW43KpXHy1G8tQQQySlRYM" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FF8F00;color:#fff;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFA000'" onmouseout="this.style.background='#FF8F00'">
-      &#128209; Reference Notebook (Colab) &#8594;
-    </a>
+    
   </div>
 </div>
 

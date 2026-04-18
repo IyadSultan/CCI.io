@@ -1,0 +1,146 @@
+import React, { useState } from 'react';
+
+const toolPairs = [
+  {
+    scenario: "A nurse asks: 'Does cisplatin interact with warfarin?' The agent needs a drug interaction checker.",
+    optionA: {
+      name: "check",
+      description: "Checks things",
+      params: "drug1: str, drug2: str",
+      label: "Tool A"
+    },
+    optionB: {
+      name: "check_drug_interaction",
+      description: "Check if two medications have known interactions. Returns severity (none/minor/moderate/major/contraindicated), clinical effect, and recommended action.",
+      params: "drug_a: str, drug_b: str",
+      label: "Tool B"
+    },
+    correct: "B",
+    explanation: "Tool B has a descriptive name, detailed description that tells the model exactly what it returns (severity, effect, action), and clear parameter names. Tool A's vague name 'check' and description 'Checks things' gives the model almost no information to decide when or how to use it."
+  },
+  {
+    scenario: "A doctor asks: 'What are the latest vitals for patient 18887304731609?' The agent needs a vitals lookup tool.",
+    optionA: {
+      name: "query_vitals_db",
+      description: "Query the KHCC vista_vitals database for a patient's most recent vital signs. Returns a list of vitals (blood pressure, pulse, temperature, respiration, pulse oximetry) with timestamps.",
+      params: "mrn: str, vital_type: Optional[str] = None",
+      label: "Tool A"
+    },
+    optionB: {
+      name: "get_vitals",
+      description: "Get vitals for a patient",
+      params: "patient_id: int",
+      label: "Tool B"
+    },
+    correct: "A",
+    explanation: "Tool A wins on every dimension: descriptive name referencing the actual database, detailed description listing what vital types are available, Optional vital_type parameter for filtering, and the correct type (str for MRN, not int). Tool B's description is too vague and uses the wrong type for patient ID."
+  },
+  {
+    scenario: "A pharmacist asks: 'Look up the current medications for this patient and check if the new prescription is safe.' This requires two tools working together.",
+    optionA: {
+      name: "lookup_patient_medications",
+      description: "Retrieve the current active medication list for a patient by MRN. Returns medication names, doses, frequencies, and prescribing dates.",
+      params: "mrn: str",
+      label: "Tool: lookup_patient_medications"
+    },
+    optionB: {
+      name: "do_everything",
+      description: "Look up patient medications and check all interactions in one call. Pass the MRN and new drug name.",
+      params: "mrn: str, new_drug: str",
+      label: "Tool: do_everything"
+    },
+    correct: "A",
+    explanation: "Single-responsibility tools are better than 'do everything' tools. Tool A does one thing well — the agent can call it first, then call check_drug_interaction for each current medication against the new drug. Tool B hides the logic inside the tool, making it inflexible and harder to debug. Composable tools let the agent reason about each step."
+  },
+  {
+    scenario: "The agent needs to flag patients with abnormal lab results. Which error handling approach is better?",
+    optionA: {
+      name: "check_lab_result",
+      description: "Check if a lab value is within normal range. Returns status (normal/abnormal/critical) and reference range.",
+      params: "lab_type: str, value: float",
+      label: "Returns error message on invalid input"
+    },
+    optionB: {
+      name: "check_lab_result",
+      description: "Check if a lab value is within normal range.",
+      params: "lab_type: str, value: float",
+      label: "Raises Python exception on invalid input"
+    },
+    correct: "A",
+    explanation: "Returning an error message (e.g., 'Unknown lab type: CBC. Valid types are: WBC, RBC, HGB, PLT') lets the agent read the error and retry with corrected input. A Python exception crashes the agent entirely. In clinical systems, graceful error handling is essential."
+  }
+];
+
+export default function Practice() {
+  const [currentPair, setCurrentPair] = useState(0);
+  const [selected, setSelected] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const pair = toolPairs[currentPair];
+
+  const handleSubmit = () => {
+    if (selected === pair.correct) setScore(s => s + 1);
+    setSubmitted(true);
+  };
+
+  const next = () => {
+    setCurrentPair(c => c + 1);
+    setSelected('');
+    setSubmitted(false);
+  };
+
+  if (currentPair >= toolPairs.length) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Tool Design Workshop Complete!</h2>
+        <p style={{ fontSize: 20 }}>Score: {score} / {toolPairs.length}</p>
+        <div style={{ background: score >= 3 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+          {score >= 3 ? "Excellent tool design instincts! You know what makes a tool effective for an agent." : "Review tool naming, descriptions, and single-responsibility design before the lab."}
+        </div>
+        <button onClick={() => { setCurrentPair(0); setScore(0); setSelected(''); setSubmitted(false); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((currentPair + 1) / toolPairs.length) * 100}%` }} />
+      </div>
+      <h3>Tool Design {currentPair + 1} of {toolPairs.length}</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>{pair.scenario}</p>
+
+      <p style={{ fontWeight: 'bold', marginTop: 16 }}>Which tool design is better?</p>
+
+      {[pair.optionA, pair.optionB].map((opt, i) => {
+        const letter = i === 0 ? 'A' : 'B';
+        return (
+          <div key={letter} onClick={() => !submitted && setSelected(letter)} style={{
+            padding: 16, margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${submitted ? (letter === pair.correct ? '#198754' : letter === selected ? '#dc3545' : '#dee2e6') : letter === selected ? '#0d6efd' : '#dee2e6'}`,
+            background: submitted ? (letter === pair.correct ? '#d4edda' : letter === selected && letter !== pair.correct ? '#f8d7da' : '#fff') : '#fff'
+          }}>
+            <p style={{ fontWeight: 'bold', marginBottom: 4 }}>{opt.label}</p>
+            <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', background: '#f8f9fa', padding: 8, borderRadius: 4 }}>
+{`name: "${opt.name}"
+description: "${opt.description}"
+params: ${opt.params}`}
+            </pre>
+          </div>
+        );
+      })}
+
+      {!submitted && selected && (
+        <button onClick={handleSubmit} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Answer</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{pair.explanation}</p>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{currentPair + 1 < toolPairs.length ? 'Next Comparison' : 'See Final Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}

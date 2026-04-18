@@ -273,11 +273,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-05/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-05/">
     <div class="cci-num" style="background:#C62828;">5</div>
     <div class="cci-card-body">
-      <p class="title">LangChain / LangGraph, Tools &amp; Agents</p>
-      <p class="desc">Chains, agent loops, tool use for clinical workflows</p>
+      <p class="title">LangChain / LangGraph, Tools &amp; Agents <span class="cci-active-badge">Active</span></p>
+      <p class="desc">create_agent, tools, StateGraph, memory, multi-agent HITL</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
