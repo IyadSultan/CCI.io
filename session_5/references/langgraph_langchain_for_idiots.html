@@ -1,0 +1,3139 @@
+---
+layout: default
+title: "LangChain & LangGraph For Idiots"
+permalink: /session_5/references/langgraph_langchain_for_idiots.html
+---
+
+<!-- Hide Jekyll site chrome so the book reads like a book -->
+<style>
+  .site-nav, .site-header, .site-footer { display: none !important; }
+  .page-content { padding: 0 !important; }
+  .wrapper { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+</style>
+
+<!-- Prism.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+<style>
+  /* ===== Book container & typography ===== */
+  :root {
+    --yellow:      #FFCB08;
+    --yellow-dark: #F5B400;
+    --ink:         #111111;
+    --ink-soft:    #1F2937;
+    --paper:       #FFF9E6;
+    --cream:       #FFFDF5;
+    --rule:        #1F2937;
+    --muted:       #6B7280;
+    --accent:      #D92027;
+    --teal:        #00897B;
+    --blue:        #1D4ED8;
+    --green:       #047857;
+    --purple:      #6D28D9;
+  }
+
+  .fidi-book {
+    font-family: 'Georgia','Cambria','Times New Roman',serif;
+    color: var(--ink-soft);
+    background: var(--cream);
+    line-height: 1.65;
+    max-width: none;
+  }
+  .fidi-book *, .fidi-book *::before, .fidi-book *::after { box-sizing: border-box; }
+
+  .fidi-sans {
+    font-family: 'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  }
+
+  .fidi-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 0;
+    min-height: 100vh;
+  }
+
+  /* ===== Sticky TOC sidebar ===== */
+  .fidi-toc {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--ink);
+    color: #fff;
+    padding: 1.2rem 1rem 2rem;
+    font-family: 'Inter','Segoe UI',sans-serif;
+    font-size: 0.82rem;
+    border-right: 6px solid var(--yellow);
+  }
+  .fidi-toc .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid var(--yellow);
+    margin-bottom: 1rem;
+  }
+  .fidi-toc .brand .logo {
+    width: 36px; height: 36px;
+    background: var(--yellow);
+    color: var(--ink);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 1.1rem;
+  }
+  .fidi-toc .brand .title { font-weight: 800; letter-spacing: 0.02em; font-size: 0.88rem; }
+  .fidi-toc h5 {
+    color: var(--yellow);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 1.1rem 0 0.4rem;
+  }
+  .fidi-toc a {
+    display: block;
+    color: #D1D5DB;
+    text-decoration: none;
+    padding: 0.28rem 0.5rem;
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+  }
+  .fidi-toc a:hover { color: #fff; background: #1F2937; border-left-color: var(--yellow); }
+  .fidi-toc a.chapter { font-weight: 600; color: #F3F4F6; }
+  .fidi-toc a.sub { padding-left: 1.5rem; font-size: 0.78rem; color: #9CA3AF; }
+  .fidi-toc .back-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--yellow);
+    text-decoration: none;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--yellow);
+    border-radius: 4px;
+  }
+
+  /* ===== Main reading area ===== */
+  .fidi-main {
+    padding: 0 2.5rem 4rem;
+    max-width: 960px;
+  }
+  @media (max-width: 960px) {
+    .fidi-layout { grid-template-columns: 1fr; }
+    .fidi-toc { position: relative; height: auto; border-right: none; border-bottom: 6px solid var(--yellow); }
+    .fidi-main { padding: 0 1.2rem 3rem; }
+  }
+
+  /* ===== Cover page ===== */
+  .fidi-cover {
+    background: var(--yellow);
+    color: var(--ink);
+    padding: 3rem 2.5rem 2.5rem;
+    margin: 0 -2.5rem 2.5rem;
+    border-bottom: 8px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .fidi-cover::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 240px; height: 240px;
+    background: repeating-linear-gradient(45deg, var(--ink) 0 4px, transparent 4px 16px);
+    opacity: 0.08;
+    border-radius: 50%;
+  }
+  .fidi-cover .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--yellow);
+    padding: 0.2rem 0.7rem;
+    font-family: 'Inter',sans-serif;
+    font-weight: 900;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+  .fidi-cover h1 {
+    font-family: 'Inter','Segoe UI',sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    line-height: 1.05;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .fidi-cover h1 .for-idiots {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 var(--ink);
+    margin-top: 0.4rem;
+  }
+  .fidi-cover .byline {
+    font-family: 'Inter',sans-serif;
+    font-size: 0.95rem;
+    margin: 1rem 0 0;
+    font-weight: 600;
+  }
+  .fidi-cover .sub {
+    font-family: 'Inter',sans-serif;
+    font-size: 0.85rem;
+    margin: 0.3rem 0 0;
+    color: #374151;
+  }
+  .fidi-cover .edition {
+    position: absolute;
+    bottom: 1rem; right: 1.5rem;
+    font-family: 'Inter',sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #1F2937;
+    background: rgba(255,255,255,0.5);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+  }
+
+  /* ===== Headings ===== */
+  .fidi-main h2.part {
+    font-family: 'Inter',sans-serif;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 3rem 0 0.3rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 3px double var(--ink);
+  }
+  .fidi-main h2.chapter {
+    font-family: 'Inter',sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: var(--ink);
+    margin: 0.4rem 0 1.2rem;
+    line-height: 1.15;
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+  .fidi-main h2.chapter .num {
+    background: var(--yellow);
+    color: var(--ink);
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    border: 2px solid var(--ink);
+  }
+  .fidi-main h3 {
+    font-family: 'Inter',sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin: 2rem 0 0.6rem;
+    padding-left: 0.6rem;
+    border-left: 5px solid var(--yellow);
+  }
+  .fidi-main h4 {
+    font-family: 'Inter',sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin: 1.4rem 0 0.4rem;
+  }
+  .fidi-main p { margin: 0.7rem 0; font-size: 1rem; }
+  .fidi-main p.lead { font-size: 1.08rem; color: var(--ink); }
+  .fidi-main strong { color: var(--ink); }
+  .fidi-main a { color: var(--blue); }
+  .fidi-main code {
+    font-family: 'JetBrains Mono','Consolas',monospace;
+    font-size: 0.88em;
+    background: #FEF3C7;
+    color: #78350F;
+    padding: 0.08em 0.35em;
+    border-radius: 3px;
+  }
+  .fidi-main pre { margin: 0.8rem 0 1.2rem; }
+  .fidi-main pre[class*="language-"] {
+    background: #1F2937 !important;
+    border-left: 5px solid var(--yellow);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+    padding: 1rem 1.2rem;
+    overflow-x: auto;
+  }
+  .fidi-main pre code { background: transparent; color: inherit; padding: 0; font-size: inherit; }
+
+  /* ===== "For Dummies" style callout boxes ===== */
+  .fidi-callout {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0.9rem;
+    margin: 1.4rem 0;
+    padding: 0.9rem 1rem 0.9rem 0.9rem;
+    border-radius: 6px;
+    border: 2px solid var(--ink);
+    background: var(--cream);
+    font-size: 0.95rem;
+  }
+  .fidi-callout .icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .fidi-callout .label {
+    font-family: 'Inter',sans-serif;
+    font-weight: 900;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: block;
+    color: var(--accent);
+    margin-bottom: 0.15rem;
+  }
+  .fidi-callout p:first-of-type { margin-top: 0; }
+  .fidi-callout p:last-of-type { margin-bottom: 0; }
+  .fidi-callout.tip      .icon { background: #FEF08A; }
+  .fidi-callout.warning  { border-color: #B91C1C; }
+  .fidi-callout.warning  .icon { background: #FECACA; }
+  .fidi-callout.warning  .label { color: #B91C1C; }
+  .fidi-callout.remember { border-color: #0369A1; }
+  .fidi-callout.remember .icon { background: #BAE6FD; }
+  .fidi-callout.remember .label { color: #0369A1; }
+  .fidi-callout.tech     { border-color: #6D28D9; }
+  .fidi-callout.tech     .icon { background: #DDD6FE; }
+  .fidi-callout.tech     .label { color: #6D28D9; }
+  .fidi-callout.try      { border-color: #047857; }
+  .fidi-callout.try      .icon { background: #A7F3D0; }
+  .fidi-callout.try      .label { color: #047857; }
+
+  /* ===== Tables ===== */
+  .fidi-main table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-family: 'Inter',sans-serif;
+    font-size: 0.88rem;
+    background: #fff;
+    border: 2px solid var(--ink);
+  }
+  .fidi-main th {
+    background: var(--yellow);
+    color: var(--ink);
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    font-weight: 800;
+    border-bottom: 2px solid var(--ink);
+  }
+  .fidi-main td {
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid #E5E7EB;
+    vertical-align: top;
+  }
+  .fidi-main tr:nth-child(even) td { background: #FAFAFA; }
+  .fidi-main table code { background: #FEF3C7; font-size: 0.8rem; }
+
+  /* ===== Wrong / Right code pair ===== */
+  .fidi-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+    margin: 1rem 0;
+  }
+  .fidi-pair > div {
+    border: 2px solid;
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem 0.9rem;
+    background: #fff;
+  }
+  .fidi-pair .wrong { border-color: #B91C1C; background: #FEF2F2; }
+  .fidi-pair .right { border-color: #047857; background: #ECFDF5; }
+  .fidi-pair .tag {
+    display: inline-block;
+    font-family: 'Inter',sans-serif;
+    font-weight: 800;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    padding: 0.15rem 0.5rem;
+    margin: 0.1rem 0 0.4rem;
+    border-radius: 3px;
+  }
+  .fidi-pair .wrong .tag { background: #B91C1C; color: #fff; }
+  .fidi-pair .right .tag { background: #047857; color: #fff; }
+  .fidi-pair pre { margin: 0.3rem 0 0 !important; }
+  @media (max-width: 740px) { .fidi-pair { grid-template-columns: 1fr; } }
+
+  /* ===== Icon row / feature list ===== */
+  .fidi-stack {
+    background: linear-gradient(180deg, #FEF3C7, #FFF9E6);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0 1.5rem;
+    font-family: 'Inter',sans-serif;
+  }
+  .fidi-stack .row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0.8rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #9CA3AF;
+    font-size: 0.9rem;
+  }
+  .fidi-stack .row:last-child { border-bottom: none; }
+  .fidi-stack .row .name {
+    font-weight: 900;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.82rem;
+  }
+
+  /* ===== Chapter opener sidebar ===== */
+  .fidi-in-this-ch {
+    background: var(--ink);
+    color: #FEF3C7;
+    padding: 0.9rem 1.2rem;
+    border-radius: 6px;
+    border-left: 8px solid var(--yellow);
+    margin: 0 0 2rem;
+    font-family: 'Inter',sans-serif;
+    font-size: 0.88rem;
+  }
+  .fidi-in-this-ch h4 {
+    color: var(--yellow);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+  }
+  .fidi-in-this-ch ul { margin: 0; padding-left: 1.3rem; }
+  .fidi-in-this-ch li { margin: 0.2rem 0; }
+
+  /* ===== Mini cheat card ===== */
+  .fidi-cheat {
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    font-family: 'Inter',sans-serif;
+  }
+  .fidi-cheat h4 {
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+    font-family: 'Inter',sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+  }
+  .fidi-cheat ul { margin: 0; padding-left: 1.3rem; font-size: 0.88rem; }
+  .fidi-cheat li { margin: 0.25rem 0; }
+  .fidi-cheat code { background: var(--ink); color: var(--yellow); }
+
+  /* ===== Scroll-to-top button ===== */
+  .fidi-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--yellow);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    display: none;
+  }
+  .fidi-top.show { display: block; }
+
+  @media print {
+    .fidi-toc, .fidi-top { display: none; }
+    .fidi-main { padding: 0; }
+    .fidi-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="fidi-book">
+<div class="fidi-layout">
+
+  <!-- =================================================== -->
+  <!-- ======== STICKY TABLE OF CONTENTS SIDEBAR ========= -->
+  <!-- =================================================== -->
+  <nav class="fidi-toc">
+    <div class="brand">
+      <div class="logo">LL</div>
+      <div>
+        <div class="title">LangChain &amp; LangGraph</div>
+        <div style="font-size:0.7rem;color:#9CA3AF;font-weight:600">FOR IDIOTS &middot; Edition 1</div>
+      </div>
+    </div>
+
+    <h5>Front Matter</h5>
+    <a class="chapter" href="#cover">Cover</a>
+    <a class="chapter" href="#intro">How to Read This Book</a>
+
+    <h5>Part I &middot; Getting Oriented</h5>
+    <a class="chapter" href="#ch1">1. The Layered Picture</a>
+    <a class="chapter" href="#ch2">2. Picking Your Framework</a>
+
+    <h5>Part II &middot; Setting Up Shop</h5>
+    <a class="chapter" href="#ch3">3. Dependencies &amp; Environment</a>
+
+    <h5>Part III &middot; LangChain Basics</h5>
+    <a class="chapter" href="#ch4">4. Agents &amp; Tools</a>
+    <a class="chapter" href="#ch5">5. Middleware &amp; HITL</a>
+    <a class="chapter" href="#ch6">6. Retrieval (RAG)</a>
+
+    <h5>Part IV &middot; LangGraph</h5>
+    <a class="chapter" href="#ch7">7. StateGraph Fundamentals</a>
+    <a class="chapter" href="#ch8">8. Human-in-the-Loop</a>
+    <a class="chapter" href="#ch9">9. Persistence &amp; Memory</a>
+
+    <h5>Part V &middot; Deep Agents</h5>
+    <a class="chapter" href="#ch10">10. The Deep Agent Harness</a>
+    <a class="chapter" href="#ch11">11. Backends &amp; Memory</a>
+    <a class="chapter" href="#ch12">12. Subagents, Todos, HITL</a>
+
+    <h5>Back Matter</h5>
+    <a class="chapter" href="#cheatsheet">Cheat Sheet</a>
+    <a class="chapter" href="#mistakes">Common Mistakes Index</a>
+
+    <a class="back-link" href="{{ site.baseurl }}/session-05/">&larr; Back to Session 5</a>
+  </nav>
+
+  <!-- =================================================== -->
+  <!-- ===============  MAIN READING AREA  =============== -->
+  <!-- =================================================== -->
+  <main class="fidi-main">
+
+    <!-- ============ COVER ============ -->
+    <section id="cover" class="fidi-cover">
+      <span class="tag">CCI &middot; SESSION 5 REFERENCE</span>
+      <h1>LangChain &amp; LangGraph<span class="for-idiots">for Idiots!</span></h1>
+      <p class="byline">A cheerful, painless tour of agents, graphs, memory, and multi-agent workflows</p>
+      <p class="sub">Python edition &middot; For clinicians, researchers, and programming beginners at KHCC</p>
+      <span class="edition">Edition 1 &middot; {{ "now" | date: "%Y" }}</span>
+    </section>
+
+    <!-- ============ INTRO ============ -->
+    <section id="intro">
+      <h2 class="part">Front Matter</h2>
+      <h2 class="chapter"><span class="num">0</span> How to Read This Book</h2>
+
+      <p class="lead">
+        This book hands you <strong>LangChain</strong>, <strong>LangGraph</strong>, and <strong>Deep Agents</strong>
+        in the friendliest way we can manage. No jargon fog. Just enough theory, lots of copy-pasteable
+        Python, and a huge pile of &quot;don&#39;t do this&quot; boxes so you skip the landmines.
+      </p>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">What This Book Is</span>
+          <p>A desk reference you keep open while coding. It mirrors the official LangChain / LangGraph
+          / Deep Agents skills but is reorganized, de-jargoned, and Python-only.</p>
+        </div>
+      </div>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label">Three Layers, Not Three Choices</span>
+          <p>LangChain, LangGraph, and Deep Agents <strong>stack on top of each other</strong>. Picking
+          the higher one doesn&#39;t lock you out of the lower ones. Chapter 1 explains the whole picture.</p>
+        </div>
+      </div>
+
+      <h3>Icon Guide</h3>
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div><span class="label">Tip</span><p>A shortcut, a good default, a &quot;you&#39;ll thank us later.&quot;</p></div>
+      </div>
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div><span class="label">Warning</span><p>Do this wrong and your agent will silently misbehave.</p></div>
+      </div>
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div><span class="label">Remember</span><p>The one thing from this section you&#39;ll want on a sticky note.</p></div>
+      </div>
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div><span class="label">Technical Stuff</span><p>Under-the-hood detail. Skip on first read.</p></div>
+      </div>
+      <div class="fidi-callout try">
+        <div class="icon">&#128736;</div>
+        <div><span class="label">Try This</span><p>A tiny hands-on exercise to lock the concept in.</p></div>
+      </div>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- =============== PART I: GETTING ORIENTED ============= -->
+    <!-- =====================================================  -->
+    <h2 class="part">Part I &middot; Getting Oriented</h2>
+
+    <!-- ============ CH 1 ============ -->
+    <section id="ch1">
+      <h2 class="chapter"><span class="num">Ch 1</span>The Layered Picture</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Seeing how LangChain, LangGraph, and Deep Agents relate</li>
+          <li>Why picking a higher layer doesn&#39;t lock you in</li>
+          <li>The one question that tells you where to start</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        Imagine a three-layer cake. At the bottom is <strong>LangChain</strong> &mdash; the
+        foundation: models, tools, prompts. In the middle is <strong>LangGraph</strong> &mdash;
+        the wiring you use to build workflows with loops, branches, and state. On top is
+        <strong>Deep Agents</strong> &mdash; a batteries-included kit that gives you planning,
+        file management, subagents, and memory for free.
+      </p>
+
+      <div class="fidi-stack">
+        <div class="row">
+          <div class="name">Deep Agents</div>
+          <div>Highest level. <em>Batteries included.</em> Planning, skills, memory, files, subagents, human-in-the-loop &mdash; all configured, not hand-coded.</div>
+        </div>
+        <div class="row">
+          <div class="name">LangGraph</div>
+          <div>Middle level. <em>You own the control flow.</em> Nodes, edges, state, checkpointers. You decide every step and every branch.</div>
+        </div>
+        <div class="row">
+          <div class="name">LangChain</div>
+          <div>Foundation. <em>The building blocks.</em> Models, tools, prompt templates, retrievers, <code>create_agent()</code>.</div>
+        </div>
+      </div>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">The Layers Cooperate</span>
+          <p>Using Deep Agents doesn&#39;t mean abandoning LangChain &mdash; your tools, models, and retrievers
+          are still LangChain objects. Using LangGraph doesn&#39;t lock out LangChain either; nodes call
+          LangChain models and tools freely. <strong>They stack, they don&#39;t compete.</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CH 2 ============ -->
+    <section id="ch2">
+      <h2 class="chapter"><span class="num">Ch 2</span>Picking Your Framework</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Four yes/no questions that pick the right layer for you</li>
+          <li>When to mix layers (and how)</li>
+          <li>The quick reference matrix you&#39;ll keep reopening</li>
+        </ul>
+      </div>
+
+      <h3>The Decision Ladder</h3>
+      <p>Walk down this list. Stop at the first <em>yes</em>.</p>
+
+      <table>
+        <thead><tr><th>Ask yourself&hellip;</th><th>If yes &rarr;</th></tr></thead>
+        <tbody>
+          <tr><td>Does the task need planning, file management, persistent memory, or on-demand skills?</td><td><strong>Deep Agents</strong></td></tr>
+          <tr><td>Does the task need loops, branching, parallel workers, or custom human-in-the-loop?</td><td><strong>LangGraph</strong></td></tr>
+          <tr><td>Is this a single-purpose agent that takes input, runs tools, and returns a result?</td><td><strong>LangChain</strong> (<code>create_agent</code>)</td></tr>
+          <tr><td>Is this a pure model call or retrieval pipeline with no agent loop?</td><td><strong>LangChain</strong> (chain)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Profile: LangChain</h3>
+      <p><strong>Use when:</strong> single-purpose agent, RAG pipeline, or prompt-chain style work.
+      <br><strong>Skip when:</strong> you need many coordinated steps, branching, or memory that survives across sessions.</p>
+
+      <h3>Profile: LangGraph</h3>
+      <p><strong>Use when:</strong> you want total control &mdash; retry-until-correct loops, reflection,
+      map-reduce fan-out, approval gates at specific steps.
+      <br><strong>Skip when:</strong> you want planning and file management handed to you (use Deep Agents).</p>
+
+      <h3>Profile: Deep Agents</h3>
+      <p><strong>Use when:</strong> a long-running, open-ended task needs a todo list, a virtual filesystem, subagents, and
+      skills that load on demand.
+      <br><strong>Skip when:</strong> the job is a single tool call, or you need hand-tuned graph edges.</p>
+
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div>
+          <span class="label">Deep Agents Middleware Stack</span>
+          <p>Deep Agents ships a built-in middleware layer &mdash; you configure, not implement:</p>
+          <ul>
+            <li><code>TodoListMiddleware</code> &mdash; <code>write_todos</code> tool (always on)</li>
+            <li><code>FilesystemMiddleware</code> &mdash; <code>ls</code>, <code>read_file</code>, <code>write_file</code>, <code>edit_file</code>, <code>glob</code>, <code>grep</code> (always on)</li>
+            <li><code>SubAgentMiddleware</code> &mdash; <code>task</code> tool to spawn subagents (always on)</li>
+            <li><code>SkillsMiddleware</code> &mdash; load SKILL.md files on demand (opt-in)</li>
+            <li><code>MemoryMiddleware</code> &mdash; cross-session memory via a <code>Store</code> (opt-in)</li>
+            <li><code>HumanInTheLoopMiddleware</code> &mdash; approval gates before sensitive tool calls (opt-in)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>Mixing Layers (the common pattern)</h3>
+      <p>A Deep Agent orchestrator can register a <strong>compiled LangGraph graph as a subagent</strong>.
+      You get batteries-included coordination up top and surgical graph control inside a specialist.</p>
+
+      <table>
+        <thead><tr><th>Scenario</th><th>Pattern</th></tr></thead>
+        <tbody>
+          <tr><td>Main agent needs planning + memory, one subtask needs tight graph control</td><td>Deep Agents orchestrator &rarr; LangGraph subagent</td></tr>
+          <tr><td>Specialized pipeline (RAG, reflection) called by a broader agent</td><td>LangGraph graph wrapped as a tool or subagent</td></tr>
+          <tr><td>High-level coordination + low-level graph for a specific domain</td><td>Deep Agents + compiled LangGraph graph registered as subagent</td></tr>
+        </tbody>
+      </table>
+
+      <h3>The Quick Reference Matrix</h3>
+      <table>
+        <thead><tr><th></th><th>LangChain</th><th>LangGraph</th><th>Deep Agents</th></tr></thead>
+        <tbody>
+          <tr><td>Control flow</td><td>Fixed tool loop</td><td>Custom graph</td><td>Managed middleware</td></tr>
+          <tr><td>Middleware layer</td><td>Callbacks only</td><td>None</td><td>Explicit, configurable</td></tr>
+          <tr><td>Planning</td><td>&mdash;</td><td>Manual</td><td><code>TodoListMiddleware</code></td></tr>
+          <tr><td>File management</td><td>&mdash;</td><td>Manual</td><td><code>FilesystemMiddleware</code></td></tr>
+          <tr><td>Persistent memory</td><td>&mdash;</td><td>With checkpointer</td><td><code>MemoryMiddleware</code></td></tr>
+          <tr><td>Subagent delegation</td><td>&mdash;</td><td>Manual</td><td><code>SubAgentMiddleware</code></td></tr>
+          <tr><td>On-demand skills</td><td>&mdash;</td><td>&mdash;</td><td><code>SkillsMiddleware</code></td></tr>
+          <tr><td>Human-in-the-loop</td><td>&mdash;</td><td>Manual interrupt</td><td><code>HumanInTheLoopMiddleware</code></td></tr>
+          <tr><td>Custom graph edges</td><td>&mdash;</td><td>Full control</td><td>Limited</td></tr>
+          <tr><td>Setup complexity</td><td>Low</td><td>Medium</td><td>Low</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- =============== PART II: SETTING UP SHOP ============= -->
+    <!-- =====================================================  -->
+    <h2 class="part">Part II &middot; Setting Up Shop</h2>
+
+    <!-- ============ CH 3 ============ -->
+    <section id="ch3">
+      <h2 class="chapter"><span class="num">Ch 3</span>Dependencies &amp; Environment</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Which packages you actually need (and which you don&#39;t)</li>
+          <li>How to pin versions so upgrades don&#39;t explode</li>
+          <li>A copy-paste <code>requirements.txt</code> starter</li>
+        </ul>
+      </div>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">LangChain 1.0 Is the Line</span>
+          <p><strong>Always start new projects on LangChain 1.0+.</strong> The 0.3 branch is
+          maintenance-only. Python 3.10+ is required.</p>
+        </div>
+      </div>
+
+      <h3>Environment Floor</h3>
+      <table>
+        <thead><tr><th>Requirement</th><th>Minimum</th></tr></thead>
+        <tbody>
+          <tr><td>Python</td><td>3.10+</td></tr>
+          <tr><td>LangChain</td><td>1.0 (LTS)</td></tr>
+          <tr><td>LangSmith SDK</td><td>0.3.0+</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Pick One Orchestration Layer</h3>
+      <table>
+        <thead><tr><th>Framework</th><th>When to use</th><th>Package</th></tr></thead>
+        <tbody>
+          <tr><td>LangGraph</td><td>Fine-grained graph control, custom workflows</td><td><code>langgraph</code></td></tr>
+          <tr><td>Deep Agents</td><td>Batteries-included planning / memory / files / skills</td><td><code>deepagents</code> (pulls LangGraph in transitively)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Always-Required Core</h3>
+      <table>
+        <thead><tr><th>Package</th><th>Role</th><th>Min version</th></tr></thead>
+        <tbody>
+          <tr><td><code>langchain</code></td><td>Agents, chains, retrieval</td><td>1.0</td></tr>
+          <tr><td><code>langchain-core</code></td><td>Base types &amp; interfaces (peer dep)</td><td>1.0</td></tr>
+          <tr><td><code>langsmith</code></td><td>Tracing, evaluation, datasets</td><td>0.3.0</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Model Providers (pick the one(s) you use)</h3>
+      <table>
+        <thead><tr><th>Package</th><th>Provider</th></tr></thead>
+        <tbody>
+          <tr><td><code>langchain-openai</code></td><td>OpenAI (GPT-4o, o3&hellip;)</td></tr>
+          <tr><td><code>langchain-anthropic</code></td><td>Anthropic (Claude)</td></tr>
+          <tr><td><code>langchain-google-genai</code></td><td>Google (Gemini)</td></tr>
+          <tr><td><code>langchain-mistralai</code></td><td>Mistral</td></tr>
+          <tr><td><code>langchain-groq</code></td><td>Groq (fast inference)</td></tr>
+          <tr><td><code>langchain-cohere</code></td><td>Cohere</td></tr>
+          <tr><td><code>langchain-ollama</code></td><td>Ollama (local models)</td></tr>
+          <tr><td><code>langchain-aws</code></td><td>AWS Bedrock</td></tr>
+          <tr><td><code>langchain-azure-ai</code></td><td>Azure AI Foundry</td></tr>
+          <tr><td><code>langchain-huggingface</code></td><td>Hugging Face Hub</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Tools &amp; Retrieval Packages</h3>
+      <p>These are common extras. <strong>Prefer dedicated integration packages</strong> over
+      <code>langchain-community</code> when both exist &mdash; they&#39;re independently versioned and
+      better tested.</p>
+      <table>
+        <thead><tr><th>Package</th><th>What it adds</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>langchain-tavily</code></td><td>Tavily web search</td><td>Dedicated, semver, prefer latest</td></tr>
+          <tr><td><code>langchain-text-splitters</code></td><td>Text chunking</td><td>Semver, keep current</td></tr>
+          <tr><td><code>langchain-chroma</code></td><td>Chroma vector store</td><td>Dedicated, semver</td></tr>
+          <tr><td><code>langchain-pinecone</code></td><td>Pinecone vector store</td><td>Dedicated, semver</td></tr>
+          <tr><td><code>langchain-qdrant</code></td><td>Qdrant vector store</td><td>Dedicated, semver</td></tr>
+          <tr><td><code>langchain-weaviate</code></td><td>Weaviate vector store</td><td>Dedicated, semver</td></tr>
+          <tr><td><code>langchain-community</code></td><td>1000+ integrations fallback</td><td><strong>NOT semver</strong> &mdash; pin to minor!</td></tr>
+          <tr><td><code>faiss-cpu</code></td><td>FAISS local vector store</td><td>Via <code>langchain-community</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">langchain-community isn&#39;t semver</span>
+          <p>Minor version bumps can contain breaking changes. Pin it like <code>langchain-community&gt;=0.4.0,&lt;0.5.0</code>,
+          and whenever a dedicated package exists (e.g. <code>langchain-chroma</code> instead of community Chroma), prefer it.</p>
+        </div>
+      </div>
+
+      <h3>Starter Template: LangGraph Project</h3>
+<pre><code class="language-python"># requirements.txt
+langchain>=1.0,<2.0
+langchain-core>=1.0,<2.0
+langgraph>=1.0,<2.0
+langsmith>=0.3.0
+
+# Add your model provider, e.g.:
+langchain-openai
+# langchain-anthropic
+# langchain-google-genai</code></pre>
+
+      <h3>Starter Template: Deep Agents Project</h3>
+<pre><code class="language-python"># requirements.txt
+deepagents              # bundles langgraph internally
+langchain>=1.0,<2.0
+langchain-core>=1.0,<2.0
+langsmith>=0.3.0
+
+# Your model provider:
+langchain-anthropic
+# langchain-openai</code></pre>
+
+      <h3>Starter Template: RAG Project</h3>
+<pre><code class="language-python"># requirements.txt
+langchain>=1.0,<2.0
+langchain-core>=1.0,<2.0
+langgraph>=1.0,<2.0
+langsmith>=0.3.0
+
+# Web search
+langchain-tavily          # prefer latest; partner package, semver
+
+# Vector store — pick one:
+langchain-chroma          # prefer latest; partner package, semver
+# langchain-pinecone
+# langchain-qdrant
+
+# Text processing
+langchain-text-splitters  # prefer latest; semver
+
+# Your model provider:
+langchain-openai</code></pre>
+
+      <h3>Environment Variables</h3>
+<pre><code class="language-bash"># LangSmith (always recommended for observability)
+LANGSMITH_API_KEY=&lt;your-key&gt;
+LANGSMITH_PROJECT=&lt;project-name&gt;   # optional, defaults to "default"
+
+# Model provider — set the one(s) you use
+OPENAI_API_KEY=&lt;your-key&gt;
+ANTHROPIC_API_KEY=&lt;your-key&gt;
+GOOGLE_API_KEY=&lt;your-key&gt;
+
+# Common tool/retrieval services
+TAVILY_API_KEY=&lt;your-key&gt;
+PINECONE_API_KEY=&lt;your-key&gt;</code></pre>
+
+      <h3>Upgrade Strategy Cheatsheet</h3>
+      <table>
+        <thead><tr><th>Package group</th><th>Versioning</th><th>Safe pin</th></tr></thead>
+        <tbody>
+          <tr><td><code>langchain</code>, <code>langchain-core</code></td><td>Semver (1.0 LTS)</td><td><code>&gt;=1.0,&lt;2.0</code></td></tr>
+          <tr><td><code>langgraph</code></td><td>Semver (v1 LTS)</td><td><code>&gt;=1.0,&lt;2.0</code></td></tr>
+          <tr><td><code>langsmith</code></td><td>Semver</td><td><code>&gt;=0.3.0</code></td></tr>
+          <tr><td>Dedicated integrations</td><td>Semver</td><td>Allow minor updates; use latest</td></tr>
+          <tr><td><code>langchain-community</code></td><td>NOT semver</td><td><code>&gt;=0.4.0,&lt;0.5.0</code></td></tr>
+          <tr><td><code>deepagents</code></td><td>Project releases</td><td>Pin exact tested version in prod</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Legacy version</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python"># langchain 0.3 — maintenance only, no new features
+langchain>=0.3,<0.4</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">langchain>=1.0,<2.0</code></pre></div>
+      </div>
+
+      <h4>Unpinned <code>langchain-community</code></h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">langchain-community>=0.4</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">langchain-community>=0.4.0,<0.5.0</code></pre></div>
+      </div>
+
+      <h4>Deprecated community imports</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Pinecone</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from langchain_tavily import TavilySearch
+from langchain_chroma import Chroma
+from langchain_pinecone import PineconeVectorStore</code></pre></div>
+      </div>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- =========== PART III: LANGCHAIN BASICS ============== -->
+    <!-- =====================================================  -->
+    <h2 class="part">Part III &middot; LangChain Basics</h2>
+
+    <!-- ============ CH 4 ============ -->
+    <section id="ch4">
+      <h2 class="chapter"><span class="num">Ch 4</span>Agents &amp; Tools</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>The one function to remember: <code>create_agent()</code></li>
+          <li>Writing tools with the <code>@tool</code> decorator</li>
+          <li>Making your agent remember conversations</li>
+          <li>Structured output with Pydantic</li>
+        </ul>
+      </div>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">The One Rule</span>
+          <p>For LangChain agents in 1.0+, you <strong>must use <code>create_agent()</code></strong>.
+          Middleware is how you add custom flows. Everything else you see in old tutorials is deprecated.</p>
+        </div>
+      </div>
+
+      <h3>Agent Configuration Knobs</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Purpose</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>model</code></td><td>LLM to use</td><td><code>&quot;anthropic:claude-sonnet-4-5&quot;</code> or model instance</td></tr>
+          <tr><td><code>tools</code></td><td>List of tools</td><td><code>[search, calculator]</code></td></tr>
+          <tr><td><code>system_prompt</code></td><td>Agent instructions</td><td><code>&quot;You are a helpful assistant&quot;</code></td></tr>
+          <tr><td><code>checkpointer</code></td><td>State persistence</td><td><code>MemorySaver()</code></td></tr>
+          <tr><td><code>middleware</code></td><td>Processing hooks</td><td><code>[HumanInTheLoopMiddleware(&hellip;)]</code></td></tr>
+          <tr><td><code>response_format</code></td><td>Structured output schema</td><td>A Pydantic model class</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Your First Agent</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from langchain_core.tools import tool
+
+@tool
+def get_weather(location: str) -> str:
+    """Get current weather for a location.
+
+    Args:
+        location: City name
+    """
+    return f"Weather in {location}: Sunny, 72F"
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-4-5",
+    tools=[get_weather],
+    system_prompt="You are a helpful assistant."
+)
+
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "What's the weather in Paris?"}]
+})
+print(result["messages"][-1].content)</code></pre>
+
+      <h3>Give It a Memory</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from langgraph.checkpoint.memory import MemorySaver
+
+checkpointer = MemorySaver()
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-4-5",
+    tools=[search],
+    checkpointer=checkpointer,
+)
+
+config = {"configurable": {"thread_id": "user-123"}}
+agent.invoke({"messages": [{"role": "user", "content": "My name is Alice"}]}, config=config)
+result = agent.invoke({"messages": [{"role": "user", "content": "What's my name?"}]}, config=config)
+# Agent remembers: "Your name is Alice"</code></pre>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label"><code>thread_id</code> = the Conversation</span>
+          <p>Without a <code>thread_id</code>, each <code>invoke</code> is a goldfish &mdash; zero memory.
+          Pass the <em>same</em> <code>thread_id</code> to stay in the same conversation. Give Bob a different
+          <code>thread_id</code> from Alice and they won&#39;t see each other&#39;s history.</p>
+        </div>
+      </div>
+
+      <h3>Defining Tools</h3>
+<pre><code class="language-python">from langchain_core.tools import tool
+
+@tool
+def add(a: float, b: float) -> float:
+    """Add two numbers.
+
+    Args:
+        a: First number
+        b: Second number
+    """
+    return a + b</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Vague tool descriptions = bad tool-calling</span>
+          <p>The LLM only sees the docstring and argument descriptions to decide when to call a tool.
+          <em>&quot;Does stuff&quot;</em> is not going to cut it.</p>
+        </div>
+      </div>
+
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">@tool
+def bad_tool(input: str) -> str:
+    """Does stuff."""
+    return "result"</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">@tool
+def search(query: str) -> str:
+    """Search the web for current information about a topic.
+
+    Use this when you need recent data or facts.
+
+    Args:
+        query: The search query (2-10 words recommended)
+    """
+    return web_search(query)</code></pre></div>
+      </div>
+
+      <h3>Structured Output with Pydantic</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from pydantic import BaseModel, Field
+
+class ContactInfo(BaseModel):
+    name: str
+    email: str
+    phone: str = Field(description="Phone number with area code")
+
+# Option 1: agent-level structured output
+agent = create_agent(model="gpt-4.1", tools=[search], response_format=ContactInfo)
+result = agent.invoke({"messages": [{"role": "user", "content": "Find contact for John"}]})
+print(result["structured_response"])  # ContactInfo(name='John', ...)
+
+# Option 2: model-level structured output (no agent needed)
+from langchain_openai import ChatOpenAI
+model = ChatOpenAI(model="gpt-4.1")
+structured_model = model.with_structured_output(ContactInfo)
+response = structured_model.invoke("Extract: John, john@example.com, 555-1234")
+# ContactInfo(name='John', email='john@example.com', phone='555-1234')</code></pre>
+
+      <h3>Choosing the Model</h3>
+      <p><code>create_agent</code> accepts strings (<code>&quot;anthropic:claude-sonnet-4-5&quot;</code>,
+      <code>&quot;openai:gpt-4.1&quot;</code>) <strong>or</strong> a configured model instance:</p>
+<pre><code class="language-python">from langchain_anthropic import ChatAnthropic
+agent = create_agent(
+    model=ChatAnthropic(model="claude-sonnet-4-5", temperature=0),
+    tools=[...],
+)</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>No checkpointer &rarr; no memory</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_agent(model="anthropic:claude-sonnet-4-5", tools=[search])
+agent.invoke({"messages": [{"role": "user", "content": "I'm Bob"}]})
+agent.invoke({"messages": [{"role": "user", "content": "What's my name?"}]})
+# Agent doesn't remember!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from langgraph.checkpoint.memory import MemorySaver
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-4-5",
+    tools=[search],
+    checkpointer=MemorySaver(),
+)
+config = {"configurable": {"thread_id": "session-1"}}
+agent.invoke({"messages": [{"role": "user", "content": "I'm Bob"}]}, config=config)
+agent.invoke({"messages": [{"role": "user", "content": "What's my name?"}]}, config=config)</code></pre></div>
+      </div>
+
+      <h4>Infinite loop</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">result = agent.invoke({"messages": [("user", "Do research")]})
+# No iteration limit — could loop forever</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">result = agent.invoke(
+    {"messages": [("user", "Do research")]},
+    config={"recursion_limit": 10},
+)</code></pre></div>
+      </div>
+
+      <h4>Wrong way to read results</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">result = agent.invoke({"messages": [{"role": "user", "content": "Hi"}]})
+print(result.content)  # AttributeError!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">result = agent.invoke({"messages": [{"role": "user", "content": "Hi"}]})
+print(result["messages"][-1].content)</code></pre></div>
+      </div>
+    </section>
+
+    <!-- ============ CH 5 ============ -->
+    <section id="ch5">
+      <h2 class="chapter"><span class="num">Ch 5</span>Middleware &amp; Human-in-the-Loop</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Pausing your agent for human approval</li>
+          <li>The three decision types: approve, edit, reject</li>
+          <li>Writing your own middleware hooks</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        Middleware is the seatbelt of your agent. It intercepts the agent loop so you can add
+        human approval, retry logic, logging, or anything else &mdash; <em>without</em> rewriting the agent itself.
+      </p>
+
+      <h3>The HITL Setup</h3>
+      <p><strong>Always needs:</strong> a <code>checkpointer</code> + a <code>thread_id</code>. No exceptions.</p>
+
+<pre><code class="language-python">from langchain.agents import create_agent
+from langchain.agents.middleware import HumanInTheLoopMiddleware
+from langgraph.checkpoint.memory import MemorySaver
+from langchain.tools import tool
+
+@tool
+def send_email(to: str, subject: str, body: str) -> str:
+    """Send an email."""
+    return f"Email sent to {to}"
+
+agent = create_agent(
+    model="gpt-4.1",
+    tools=[send_email],
+    checkpointer=MemorySaver(),  # Required for HITL
+    middleware=[
+        HumanInTheLoopMiddleware(
+            interrupt_on={
+                "send_email": {"allowed_decisions": ["approve", "edit", "reject"]},
+            }
+        )
+    ],
+)</code></pre>
+
+      <h3>Running With Interrupts</h3>
+<pre><code class="language-python">from langgraph.types import Command
+
+config = {"configurable": {"thread_id": "session-1"}}
+
+# Step 1: Agent runs until it wants to call the tool
+result1 = agent.invoke({
+    "messages": [{"role": "user", "content": "Send email to john@example.com"}]
+}, config=config)
+
+# Step 2: Detect the pause
+if "__interrupt__" in result1:
+    print(f"Waiting for approval: {result1['__interrupt__']}")
+
+# Step 3: Human approves
+result2 = agent.invoke(
+    Command(resume={"decisions": [{"type": "approve"}]}),
+    config=config
+)</code></pre>
+
+      <h3>The Three Decisions</h3>
+
+      <h4>Approve</h4>
+<pre><code class="language-python">agent.invoke(Command(resume={"decisions": [{"type": "approve"}]}), config=config)</code></pre>
+
+      <h4>Edit the arguments before the tool runs</h4>
+<pre><code class="language-python">agent.invoke(
+    Command(resume={
+        "decisions": [{
+            "type": "edit",
+            "edited_action": {
+                "name": "send_email",
+                "args": {
+                    "to": "alice@company.com",   # fixed email
+                    "subject": "Project Meeting - Updated",
+                    "body": "...",
+                },
+            },
+        }]
+    }),
+    config=config
+)</code></pre>
+
+      <h4>Reject with feedback</h4>
+<pre><code class="language-python">agent.invoke(
+    Command(resume={
+        "decisions": [{
+            "type": "reject",
+            "feedback": "Cannot delete customer data without manager approval",
+        }]
+    }),
+    config=config
+)</code></pre>
+
+      <h3>Different Policies per Tool</h3>
+<pre><code class="language-python">agent = create_agent(
+    model="gpt-4.1",
+    tools=[send_email, read_email, delete_email],
+    checkpointer=MemorySaver(),
+    middleware=[
+        HumanInTheLoopMiddleware(
+            interrupt_on={
+                "send_email":  {"allowed_decisions": ["approve", "edit", "reject"]},
+                "delete_email": {"allowed_decisions": ["approve", "reject"]},  # no edit
+                "read_email":  False,  # no HITL for reading
+            }
+        )
+    ],
+)</code></pre>
+
+      <h3>Custom Middleware Hooks</h3>
+      <p>Two hook patterns:</p>
+      <ul>
+        <li><strong>Wrap hooks</strong> &mdash; <code>wrap_tool_call</code>, <code>wrap_model_call</code>:
+          signature <code>(request, handler)</code>. Call <code>handler(request)</code> to proceed, or return early to short-circuit.</li>
+        <li><strong>Before/after hooks</strong> &mdash; <code>before_model</code>, <code>after_model</code>,
+          <code>before_agent</code>, <code>after_agent</code>: signature <code>(state, runtime)</code>.
+          Inspect / modify state. Return <code>None</code> or a dict of updates.</li>
+      </ul>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Don&#39;t <code>yield</code> in <code>@wrap_tool_call</code></span>
+          <p>Using <code>yield</code> makes the hook a generator and throws <code>NotImplementedError</code>.
+          Always <code>return handler(request)</code>.</p>
+        </div>
+      </div>
+
+<pre><code class="language-python">from langchain.agents.middleware import wrap_tool_call
+
+@wrap_tool_call
+def retry_middleware(request, handler):
+    for attempt in range(3):
+        try:
+            return handler(request)
+        except Exception:
+            if attempt == 2:
+                raise
+
+@wrap_tool_call
+def guard_middleware(request, handler):
+    if request.tool_call["name"] == "dangerous_tool":
+        return "This tool is disabled"  # short-circuit
+    return handler(request)</code></pre>
+
+<pre><code class="language-python">from langchain.agents.middleware import before_model, after_model
+
+@before_model
+def log_calls(state, runtime):
+    print(f"Calling model with {len(state['messages'])} messages")
+
+@after_model
+def check_output(state, runtime):
+    print("Model responded")</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Missing checkpointer</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_agent(
+    model="gpt-4.1",
+    tools=[send_email],
+    middleware=[HumanInTheLoopMiddleware({...})],
+)</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_agent(
+    model="gpt-4.1",
+    tools=[send_email],
+    checkpointer=MemorySaver(),     # required!
+    middleware=[HumanInTheLoopMiddleware({...})],
+)</code></pre></div>
+      </div>
+
+      <h4>Wrong resume syntax</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent.invoke({"resume": {"decisions": [...]}})</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from langgraph.types import Command
+agent.invoke(Command(resume={"decisions": [{"type": "approve"}]}), config=config)</code></pre></div>
+      </div>
+    </section>
+
+    <!-- ============ CH 6 ============ -->
+    <section id="ch6">
+      <h2 class="chapter"><span class="num">Ch 6</span>Retrieval (RAG)</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>What RAG is, in 30 seconds</li>
+          <li>The 5-step pipeline you&#39;ll use every time</li>
+          <li>Picking a vector store that isn&#39;t a footgun</li>
+          <li>Sane chunk sizes, overlaps, and metadata filters</li>
+        </ul>
+      </div>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">RAG in 30 Seconds</span>
+          <p>The LLM doesn&#39;t know your documents. So: chop them up, turn each chunk into a vector,
+          store those vectors. At query time, vectorize the question, find the closest chunks, stuff
+          them into the prompt, and let the LLM answer.</p>
+        </div>
+      </div>
+
+      <h3>The Pipeline</h3>
+      <ol>
+        <li><strong>Index</strong> &mdash; load &rarr; split &rarr; embed &rarr; store</li>
+        <li><strong>Retrieve</strong> &mdash; query &rarr; embed &rarr; search &rarr; return docs</li>
+        <li><strong>Generate</strong> &mdash; docs + query &rarr; LLM &rarr; response</li>
+      </ol>
+
+      <h3>Pick a Vector Store</h3>
+      <table>
+        <thead><tr><th>Store</th><th>Use Case</th><th>Persistence</th></tr></thead>
+        <tbody>
+          <tr><td><code>InMemoryVectorStore</code></td><td>Testing</td><td>Memory only</td></tr>
+          <tr><td><code>FAISS</code></td><td>Local, high performance</td><td>Disk</td></tr>
+          <tr><td><code>Chroma</code></td><td>Development</td><td>Disk</td></tr>
+          <tr><td><code>Pinecone</code></td><td>Production, managed</td><td>Cloud</td></tr>
+        </tbody>
+      </table>
+
+      <h3>End-to-End Example</h3>
+<pre><code class="language-python">from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import InMemoryVectorStore
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+
+# 1. Load documents
+docs = [
+    Document(page_content="LangChain is a framework for LLM apps.", metadata={}),
+    Document(page_content="RAG = Retrieval Augmented Generation.", metadata={}),
+]
+
+# 2. Split
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+splits = splitter.split_documents(docs)
+
+# 3. Embed + store
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = InMemoryVectorStore.from_documents(splits, embeddings)
+
+# 4. Retriever
+retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+
+# 5. Use in RAG
+model = ChatOpenAI(model="gpt-4.1")
+query = "What is RAG?"
+relevant_docs = retriever.invoke(query)
+
+context = "\n\n".join([doc.page_content for doc in relevant_docs])
+response = model.invoke([
+    {"role": "system", "content": f"Use this context:\n\n{context}"},
+    {"role": "user", "content": query},
+])</code></pre>
+
+      <h3>Loading Real Documents</h3>
+<pre><code class="language-python"># PDF
+from langchain_community.document_loaders import PyPDFLoader
+loader = PyPDFLoader("./document.pdf")
+docs = loader.load()
+
+# Web page
+from langchain_community.document_loaders import WebBaseLoader
+loader = WebBaseLoader("https://docs.langchain.com")
+docs = loader.load()
+
+# Directory of text files
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+loader = DirectoryLoader("path/to/documents", glob="**/*.txt", loader_cls=TextLoader)
+docs = loader.load()</code></pre>
+
+      <h3>Splitting Text Sensibly</h3>
+<pre><code class="language-python">from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,        # characters per chunk
+    chunk_overlap=200,      # overlap to preserve context
+    separators=["\n\n", "\n", " ", ""],  # split priority
+)
+splits = splitter.split_documents(docs)</code></pre>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label">Sane Defaults</span>
+          <p><strong>Chunk size 500&ndash;1500</strong>, <strong>overlap ~10&ndash;20%</strong> of chunk size.
+          Tiny chunks lose context. Huge chunks hit token limits and blur relevance.</p>
+        </div>
+      </div>
+
+      <h3>Persistent Vector Stores</h3>
+<pre><code class="language-python"># Chroma (persisted on disk)
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
+
+vectorstore = Chroma.from_documents(
+    documents=splits,
+    embedding=OpenAIEmbeddings(),
+    persist_directory="./chroma_db",
+    collection_name="my-collection",
+)
+
+# Reload later
+vectorstore = Chroma(
+    persist_directory="./chroma_db",
+    embedding_function=OpenAIEmbeddings(),
+    collection_name="my-collection",
+)</code></pre>
+
+<pre><code class="language-python"># FAISS (local files)
+from langchain_community.vectorstores import FAISS
+
+vectorstore = FAISS.from_documents(splits, embeddings)
+vectorstore.save_local("./faiss_index")
+
+loaded = FAISS.load_local(
+    "./faiss_index",
+    embeddings,
+    allow_dangerous_deserialization=True,   # required
+)</code></pre>
+
+      <h3>Retrieval Variants</h3>
+<pre><code class="language-python"># Basic similarity
+results = vectorstore.similarity_search(query, k=5)
+
+# With scores
+for doc, score in vectorstore.similarity_search_with_score(query, k=5):
+    print(score, doc.page_content)
+
+# MMR — balances relevance and diversity
+retriever = vectorstore.as_retriever(
+    search_type="mmr",
+    search_kwargs={"fetch_k": 20, "lambda_mult": 0.5, "k": 5},
+)
+
+# Metadata filtering
+docs = [
+    Document(page_content="Python programming guide",
+             metadata={"language": "python", "topic": "programming"}),
+]
+results = vectorstore.similarity_search("programming", k=5,
+                                         filter={"language": "python"})</code></pre>
+
+      <h3>RAG as an Agent Tool</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from langchain.tools import tool
+
+@tool
+def search_docs(query: str) -> str:
+    """Search documentation for relevant information."""
+    docs = retriever.invoke(query)
+    return "\n\n".join([d.page_content for d in docs])
+
+agent = create_agent(model="gpt-4.1", tools=[search_docs])
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "How do I create an agent?"}]
+})</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Chunk size too small or too large</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">RecursiveCharacterTextSplitter(chunk_size=50)
+RecursiveCharacterTextSplitter(chunk_size=10000)</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)</code></pre></div>
+      </div>
+
+      <h4>In-memory store in production</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">vectorstore = InMemoryVectorStore.from_documents(docs, embeddings)  # lost on restart</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">vectorstore = Chroma.from_documents(
+    docs, embeddings, persist_directory="./chroma_db"
+)</code></pre></div>
+      </div>
+
+      <h4>Different embeddings for index vs query</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">vectorstore = Chroma.from_documents(docs, OpenAIEmbeddings(model="text-embedding-3-small"))
+retriever = vectorstore.as_retriever(
+    embeddings=OpenAIEmbeddings(model="text-embedding-3-large")   # incompatible!
+)</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+vectorstore = Chroma.from_documents(docs, embeddings)
+retriever = vectorstore.as_retriever()</code></pre></div>
+      </div>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- =========== PART IV: LANGGRAPH ======================= -->
+    <!-- =====================================================  -->
+    <h2 class="part">Part IV &middot; LangGraph</h2>
+
+    <!-- ============ CH 7 ============ -->
+    <section id="ch7">
+      <h2 class="chapter"><span class="num">Ch 7</span>StateGraph Fundamentals</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Thinking about workflows as graphs</li>
+          <li>State, nodes, edges &mdash; the holy trinity</li>
+          <li>Conditional routing, <code>Command</code>, and the <code>Send</code> fan-out pattern</li>
+          <li>Running and streaming a graph</li>
+          <li>The 4-tier error handling plan</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        LangGraph models your workflow as a <strong>directed graph</strong>. You describe shared
+        <em>state</em>, write <em>nodes</em> that update state, and connect them with <em>edges</em>.
+        You must <code>compile()</code> the graph before running it.
+      </p>
+
+      <h3>The 5-Step Design Methodology</h3>
+      <ol>
+        <li><strong>Map discrete steps</strong> &mdash; sketch a flowchart; each step becomes a node.</li>
+        <li><strong>Identify what each step does</strong> &mdash; LLM step? data step? action step? user input?</li>
+        <li><strong>Design your state</strong> &mdash; store raw data, not formatted prompts.</li>
+        <li><strong>Build your nodes</strong> &mdash; each returns a partial update dict.</li>
+        <li><strong>Wire it together</strong> &mdash; add edges, conditional routing, compile with a checkpointer if needed.</li>
+      </ol>
+
+      <h3>State: Shared Memory for Nodes</h3>
+      <table>
+        <thead><tr><th>Need</th><th>Solution</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Overwrite value</td><td>No reducer (default)</td><td>Counters, flags</td></tr>
+          <tr><td>Append to list</td><td>Reducer <code>operator.add</code></td><td>Message history, logs</td></tr>
+          <tr><td>Custom merge logic</td><td>Custom reducer function</td><td>Complex merging</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-python">from typing_extensions import TypedDict, Annotated
+import operator
+
+class State(TypedDict):
+    name: str                                      # overwrites on update
+    messages: Annotated[list, operator.add]        # appends to list
+    total: Annotated[int, operator.add]            # sums integers</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Forget the reducer &rarr; lose data</span>
+          <p>If two nodes both return <code>{&quot;messages&quot;: [x]}</code> and you didn&#39;t annotate
+          <code>messages</code> with a reducer, <strong>the second overwrites the first</strong>. The default
+          behavior is &quot;last write wins.&quot;</p>
+        </div>
+      </div>
+
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">class State(TypedDict):
+    messages: list   # no reducer!
+
+# Node 1 returns: {"messages": ["A"]}
+# Node 2 returns: {"messages": ["B"]}
+# Final: {"messages": ["B"]}  — "A" is lost!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from typing import Annotated
+import operator
+
+class State(TypedDict):
+    messages: Annotated[list, operator.add]
+# Final: {"messages": ["A", "B"]}</code></pre></div>
+      </div>
+
+      <h4>Nodes must return partial updates, not full state</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">def my_node(state: State) -> State:
+    state["field"] = "updated"
+    return state   # don't mutate and return!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">def my_node(state: State) -> dict:
+    return {"field": "updated"}</code></pre></div>
+      </div>
+
+      <h3>Node Function Signatures</h3>
+      <table>
+        <thead><tr><th>Signature</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td><code>def node(state)</code></td><td>Simple node</td></tr>
+          <tr><td><code>def node(state, config)</code></td><td>Need <code>thread_id</code> or configurable values</td></tr>
+          <tr><td><code>def node(state, runtime)</code></td><td>Need runtime context, store, or stream writer</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-python">from langchain_core.runnables import RunnableConfig
+from langgraph.runtime import Runtime
+
+def plain_node(state: State):
+    return {"results": "done"}
+
+def node_with_config(state: State, config: RunnableConfig):
+    thread_id = config["configurable"]["thread_id"]
+    return {"results": f"Thread: {thread_id}"}
+
+def node_with_runtime(state: State, runtime: Runtime[Context]):
+    user_id = runtime.context.user_id
+    return {"results": f"User: {user_id}"}</code></pre>
+
+      <h3>Edges: Fixed vs Conditional vs Command vs Send</h3>
+      <table>
+        <thead><tr><th>Need</th><th>Edge Type</th></tr></thead>
+        <tbody>
+          <tr><td>Always same next node</td><td><code>add_edge()</code></td></tr>
+          <tr><td>Route based on state</td><td><code>add_conditional_edges()</code></td></tr>
+          <tr><td>Update state AND route in one return</td><td><code>Command</code></td></tr>
+          <tr><td>Fan-out to many workers</td><td><code>Send</code></td></tr>
+        </tbody>
+      </table>
+
+      <h4>Basic two-node graph</h4>
+<pre><code class="language-python">from langgraph.graph import StateGraph, START, END
+from typing_extensions import TypedDict
+
+class State(TypedDict):
+    input: str
+    output: str
+
+def process_input(state: State) -> dict:
+    return {"output": f"Processed: {state['input']}"}
+
+def finalize(state: State) -> dict:
+    return {"output": state["output"].upper()}
+
+graph = (
+    StateGraph(State)
+    .add_node("process", process_input)
+    .add_node("finalize", finalize)
+    .add_edge(START, "process")
+    .add_edge("process", "finalize")
+    .add_edge("finalize", END)
+    .compile()
+)
+
+result = graph.invoke({"input": "hello"})
+print(result["output"])  # "PROCESSED: HELLO"</code></pre>
+
+      <h4>Conditional routing</h4>
+<pre><code class="language-python">from typing import Literal
+from langgraph.graph import StateGraph, START, END
+
+class State(TypedDict):
+    query: str
+    route: str
+    result: str
+
+def classify(state: State) -> dict:
+    if "weather" in state["query"].lower():
+        return {"route": "weather"}
+    return {"route": "general"}
+
+def route_query(state: State) -> Literal["weather", "general"]:
+    return state["route"]
+
+graph = (
+    StateGraph(State)
+    .add_node("classify", classify)
+    .add_node("weather", lambda s: {"result": "Sunny, 72F"})
+    .add_node("general", lambda s: {"result": "General response"})
+    .add_edge(START, "classify")
+    .add_conditional_edges("classify", route_query, ["weather", "general"])
+    .add_edge("weather", END)
+    .add_edge("general", END)
+    .compile()
+)</code></pre>
+
+      <h3>Command: Update State AND Route</h3>
+      <p><code>Command</code> has three fields:</p>
+      <ul>
+        <li><code>update</code> &mdash; state updates to apply (like a node&#39;s return dict)</li>
+        <li><code>goto</code> &mdash; next node name(s)</li>
+        <li><code>resume</code> &mdash; for resuming after an <code>interrupt()</code> (Ch 8)</li>
+      </ul>
+
+<pre><code class="language-python">from langgraph.types import Command
+from typing import Literal
+
+class State(TypedDict):
+    count: int
+    result: str
+
+def node_a(state: State) -> Command[Literal["node_b", "node_c"]]:
+    new_count = state["count"] + 1
+    if new_count > 5:
+        return Command(update={"count": new_count}, goto="node_c")
+    return Command(update={"count": new_count}, goto="node_b")</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Static edges still run</span>
+          <p><code>Command</code> only adds a <strong>dynamic</strong> edge. If <code>node_a</code> returns
+          <code>Command(goto=&quot;node_c&quot;)</code> and you also wrote <code>graph.add_edge(&quot;node_a&quot;, &quot;node_b&quot;)</code>,
+          <strong>both</strong> <code>node_b</code> and <code>node_c</code> will run.</p>
+        </div>
+      </div>
+
+      <h3>Send: Orchestrator / Worker Fan-Out</h3>
+<pre><code class="language-python">from langgraph.types import Send
+from typing import Annotated
+import operator
+
+class OrchestratorState(TypedDict):
+    tasks: list[str]
+    results: Annotated[list, operator.add]   # reducer REQUIRED
+    summary: str
+
+def orchestrator(state: OrchestratorState):
+    return [Send("worker", {"task": task}) for task in state["tasks"]]
+
+def worker(state: dict) -> dict:
+    return {"results": [f"Completed: {state['task']}"]}
+
+def synthesize(state: OrchestratorState) -> dict:
+    return {"summary": f"Processed {len(state['results'])} tasks"}
+
+graph = (
+    StateGraph(OrchestratorState)
+    .add_node("worker", worker)
+    .add_node("synthesize", synthesize)
+    .add_conditional_edges(START, orchestrator, ["worker"])
+    .add_edge("worker", "synthesize")
+    .add_edge("synthesize", END)
+    .compile()
+)
+
+result = graph.invoke({"tasks": ["Task A", "Task B", "Task C"]})</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Workers need a reducer</span>
+          <p>Without <code>Annotated[list, operator.add]</code> on the results field, only the last worker&#39;s output survives.</p>
+        </div>
+      </div>
+
+      <h3>Running: <code>invoke</code> &amp; <code>stream</code></h3>
+<pre><code class="language-python"># Run to completion
+result = graph.invoke({"input": "hello"})
+# With config (persistence, tags)
+result = graph.invoke(
+    {"input": "hello"},
+    {"configurable": {"thread_id": "1"}},
+)</code></pre>
+
+      <table>
+        <thead><tr><th>Stream Mode</th><th>What It Streams</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>values</code></td><td>Full state after each step</td><td>Monitor complete state</td></tr>
+          <tr><td><code>updates</code></td><td>State deltas</td><td>Track incremental updates</td></tr>
+          <tr><td><code>messages</code></td><td>LLM tokens + metadata</td><td>Chat UIs</td></tr>
+          <tr><td><code>custom</code></td><td>User-defined data</td><td>Progress indicators</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-python"># Stream LLM tokens for a chat UI
+for chunk in graph.stream(
+    {"messages": [HumanMessage("Hello")]},
+    stream_mode="messages"
+):
+    token, metadata = chunk
+    if hasattr(token, "content"):
+        print(token.content, end="", flush=True)</code></pre>
+
+<pre><code class="language-python"># Emit custom progress updates from inside a node
+from langgraph.config import get_stream_writer
+
+def my_node(state):
+    writer = get_stream_writer()
+    writer("Processing step 1...")
+    # do work
+    writer("Complete!")
+    return {"result": "done"}
+
+for chunk in graph.stream({"data": "test"}, stream_mode="custom"):
+    print(chunk)</code></pre>
+
+      <h3>Error Handling: The 4-Tier Strategy</h3>
+      <table>
+        <thead><tr><th>Error type</th><th>Who fixes it</th><th>Strategy</th></tr></thead>
+        <tbody>
+          <tr><td>Transient (network, rate limits)</td><td>System</td><td><code>RetryPolicy(max_attempts=3)</code></td></tr>
+          <tr><td>LLM-recoverable (tool failures)</td><td>LLM</td><td><code>ToolNode(tools, handle_tool_errors=True)</code></td></tr>
+          <tr><td>User-fixable (missing info)</td><td>Human</td><td><code>interrupt({&quot;message&quot;: ...})</code> (Ch 8)</td></tr>
+          <tr><td>Unexpected</td><td>Developer</td><td>Let it bubble up</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-python"># Transient: retry policy
+from langgraph.types import RetryPolicy
+
+workflow.add_node(
+    "search_documentation",
+    search_documentation,
+    retry_policy=RetryPolicy(max_attempts=3, initial_interval=1.0),
+)</code></pre>
+
+<pre><code class="language-python"># LLM-recoverable: ToolNode returns error as ToolMessage
+from langgraph.prebuilt import ToolNode
+
+tool_node = ToolNode(tools, handle_tool_errors=True)
+workflow.add_node("tools", tool_node)</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Forgot to compile</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">builder.invoke({"input": "test"})  # AttributeError!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">graph = builder.compile()
+graph.invoke({"input": "test"})</code></pre></div>
+      </div>
+
+      <h4>Infinite loop &mdash; no exit</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">builder.add_edge("node_a", "node_b")
+builder.add_edge("node_b", "node_a")   # loops forever</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">def should_continue(state):
+    return END if state["count"] > 10 else "node_b"
+builder.add_conditional_edges("node_a", should_continue)</code></pre></div>
+      </div>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Other Traps</span>
+          <ul>
+            <li>Don&#39;t route back to <code>START</code> &mdash; it&#39;s entry-only. Use a named entry node.</li>
+            <li>Router must return names of nodes that <em>already exist</em> in the graph.</li>
+            <li>Reducer types must match &mdash; don&#39;t return a string for a list reducer.</li>
+            <li><code>Command</code> return types need a <code>Literal[...]</code> annotation declaring valid destinations.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CH 8 ============ -->
+    <section id="ch8">
+      <h2 class="chapter"><span class="num">Ch 8</span>Human-in-the-Loop</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li><code>interrupt()</code> + <code>Command(resume=&hellip;)</code> &mdash; the pause/resume pattern</li>
+          <li>Approval, edit, reject, validation loops</li>
+          <li>Why code <em>before</em> an interrupt must be idempotent</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        LangGraph lets you <em>pause</em> a running graph, show something to a human, wait for a decision,
+        and <em>resume</em> where it stopped. That&#39;s <code>interrupt()</code>. You resume with
+        <code>Command(resume=...)</code>.
+      </p>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">The Three Requirements</span>
+          <ol>
+            <li>A <strong>checkpointer</strong> (dev: <code>InMemorySaver</code>; prod: <code>PostgresSaver</code>)</li>
+            <li>A <strong><code>thread_id</code></strong> on every <code>invoke</code>/<code>stream</code> call</li>
+            <li>A <strong>JSON-serializable</strong> payload passed to <code>interrupt()</code></li>
+          </ol>
+        </div>
+      </div>
+
+      <h3>Basic Pause &amp; Resume</h3>
+<pre><code class="language-python">from langgraph.types import interrupt, Command
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import StateGraph, START, END
+from typing_extensions import TypedDict
+
+class State(TypedDict):
+    approved: bool
+
+def approval_node(state: State):
+    approved = interrupt("Do you approve this action?")
+    return {"approved": approved}
+
+checkpointer = InMemorySaver()
+graph = (
+    StateGraph(State)
+    .add_node("approval", approval_node)
+    .add_edge(START, "approval")
+    .add_edge("approval", END)
+    .compile(checkpointer=checkpointer)
+)
+
+config = {"configurable": {"thread_id": "thread-1"}}
+
+# Initial run — hits interrupt and pauses
+result = graph.invoke({"approved": False}, config)
+print(result["__interrupt__"])
+# [Interrupt(value='Do you approve this action?')]
+
+# Resume with the human's response
+result = graph.invoke(Command(resume=True), config)
+print(result["approved"])  # True</code></pre>
+
+      <h3>Approval Workflow with Routing</h3>
+<pre><code class="language-python">from langgraph.types import interrupt, Command
+from langgraph.graph import END
+from typing import Literal
+
+class EmailAgentState(TypedDict):
+    email_content: str
+    draft_response: str
+    classification: dict
+
+def human_review(state: EmailAgentState) -> Command[Literal["send_reply", "__end__"]]:
+    classification = state.get("classification", {})
+
+    # interrupt() must come first — any code before it will re-run on resume
+    human_decision = interrupt({
+        "email_id": state.get("email_content", ""),
+        "draft_response": state.get("draft_response", ""),
+        "urgency": classification.get("urgency"),
+        "action": "Please review and approve/edit this response",
+    })
+
+    if human_decision.get("approved"):
+        return Command(
+            update={"draft_response": human_decision.get("edited_response", state.get("draft_response", ""))},
+            goto="send_reply",
+        )
+    else:
+        return Command(update={}, goto=END)</code></pre>
+
+      <h3>Validation Loop</h3>
+<pre><code class="language-python">from langgraph.types import interrupt
+
+def get_age_node(state):
+    prompt = "What is your age?"
+
+    while True:
+        answer = interrupt(prompt)
+
+        if isinstance(answer, int) and answer > 0:
+            break
+        else:
+            prompt = f"'{answer}' is not a valid age. Please enter a positive number."
+
+    return {"age": answer}</code></pre>
+
+<pre><code class="language-python">config = {"configurable": {"thread_id": "form-1"}}
+first = graph.invoke({"age": None}, config)
+# __interrupt__: "What is your age?"
+
+retry = graph.invoke(Command(resume="thirty"), config)
+# __interrupt__: "'thirty' is not a valid age..."
+
+final = graph.invoke(Command(resume=30), config)
+print(final["age"])  # 30</code></pre>
+
+      <h3>Multiple Parallel Interrupts</h3>
+<pre><code class="language-python">from typing import Annotated, TypedDict
+import operator
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import START, END, StateGraph
+from langgraph.types import Command, interrupt
+
+class State(TypedDict):
+    vals: Annotated[list[str], operator.add]
+
+def node_a(state):
+    answer = interrupt("question_a")
+    return {"vals": [f"a:{answer}"]}
+
+def node_b(state):
+    answer = interrupt("question_b")
+    return {"vals": [f"b:{answer}"]}
+
+graph = (
+    StateGraph(State)
+    .add_node("a", node_a)
+    .add_node("b", node_b)
+    .add_edge(START, "a")
+    .add_edge(START, "b")
+    .add_edge("a", END)
+    .add_edge("b", END)
+    .compile(checkpointer=InMemorySaver())
+)
+
+config = {"configurable": {"thread_id": "1"}}
+
+# Both parallel nodes pause
+result = graph.invoke({"vals": []}, config)
+
+# Resume all pending interrupts at once using a map of id -> value
+resume_map = {
+    i.id: f"answer for {i.value}"
+    for i in result["__interrupt__"]
+}
+result = graph.invoke(Command(resume=resume_map), config)</code></pre>
+
+      <h3>The Idempotency Rule</h3>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Code Before <code>interrupt()</code> Re-Runs</span>
+          <p>When the graph resumes, the <strong>entire node runs again from the top</strong>. Any side
+          effect you did before <code>interrupt()</code> &mdash; DB inserts, list appends, emails sent &mdash;
+          will happen <strong>a second time</strong>.</p>
+        </div>
+      </div>
+
+      <h4>Rules of thumb</h4>
+      <ul>
+        <li><strong>Do</strong> use <em>upsert</em> (not insert) before <code>interrupt()</code>.</li>
+        <li><strong>Do</strong> put side effects <em>after</em> the interrupt if you can.</li>
+        <li><strong>Do</strong> split side effects into their own nodes.</li>
+        <li><strong>Don&#39;t</strong> create new records before <code>interrupt()</code>.</li>
+        <li><strong>Don&#39;t</strong> append to lists before <code>interrupt()</code>.</li>
+      </ul>
+
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">def node_a(state: State):
+    audit_id = db.create_audit_log({  # duplicates on each resume!
+        "user_id": state["user_id"],
+        "action": "pending_approval",
+    })
+    approved = interrupt("Approve this change?")
+    return {"approved": approved}</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">def node_a(state: State):
+    # Upsert is idempotent — safe before interrupt
+    db.upsert_user(user_id=state["user_id"], status="pending_approval")
+    approved = interrupt("Approve this change?")
+    return {"approved": approved}
+
+# OR: put the side effect AFTER interrupt
+def node_a(state: State):
+    approved = interrupt("Approve this change?")
+    if approved:
+        db.create_audit_log(user_id=state["user_id"], action="approved")
+    return {"approved": approved}</code></pre></div>
+      </div>
+
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div>
+          <span class="label">Subgraphs Amplify This</span>
+          <p>If a subgraph contains an <code>interrupt()</code>, resuming re-executes <strong>both</strong>
+          the parent node <em>and</em> the subgraph node. Stay idempotent at every layer.</p>
+        </div>
+      </div>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>No checkpointer</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">graph = builder.compile()</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">graph = builder.compile(checkpointer=InMemorySaver())</code></pre></div>
+      </div>
+
+      <h4>Resuming with a plain dict</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">graph.invoke({"resume_data": "approve"}, config)</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">graph.invoke(Command(resume="approve"), config)</code></pre></div>
+      </div>
+    </section>
+
+    <!-- ============ CH 9 ============ -->
+    <section id="ch9">
+      <h2 class="chapter"><span class="num">Ch 9</span>Persistence &amp; Memory</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Checkpointers &mdash; short-term thread memory</li>
+          <li>The <code>Store</code> &mdash; long-term cross-thread memory</li>
+          <li>Time-travel, state history, and forking</li>
+          <li>How to scope a subgraph&#39;s checkpointer correctly</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        Two kinds of memory, very different jobs:
+      </p>
+      <ul>
+        <li><strong>Short-term (checkpointer)</strong> &mdash; thread-scoped conversation history</li>
+        <li><strong>Long-term (<code>Store</code>)</strong> &mdash; user preferences and facts that survive across threads</li>
+      </ul>
+
+      <h3>Pick a Checkpointer</h3>
+      <table>
+        <thead><tr><th>Checkpointer</th><th>Use Case</th><th>Production Ready?</th></tr></thead>
+        <tbody>
+          <tr><td><code>InMemorySaver</code></td><td>Testing, development</td><td>No</td></tr>
+          <tr><td><code>SqliteSaver</code></td><td>Local dev</td><td>Partial</td></tr>
+          <tr><td><code>PostgresSaver</code></td><td>Production</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Basic Persistence</h3>
+<pre><code class="language-python">from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph import StateGraph, START, END
+from typing_extensions import TypedDict, Annotated
+import operator
+
+class State(TypedDict):
+    messages: Annotated[list, operator.add]
+
+def add_message(state: State) -> dict:
+    return {"messages": ["Bot response"]}
+
+checkpointer = InMemorySaver()
+
+graph = (
+    StateGraph(State)
+    .add_node("respond", add_message)
+    .add_edge(START, "respond")
+    .add_edge("respond", END)
+    .compile(checkpointer=checkpointer)   # pass at compile time
+)
+
+config = {"configurable": {"thread_id": "conversation-1"}}
+
+result1 = graph.invoke({"messages": ["Hello"]}, config)
+print(len(result1["messages"]))   # 2
+
+result2 = graph.invoke({"messages": ["How are you?"]}, config)
+print(len(result2["messages"]))   # 4 — previous + new</code></pre>
+
+      <h3>Postgres for Production</h3>
+<pre><code class="language-python">from langgraph.checkpoint.postgres import PostgresSaver
+
+with PostgresSaver.from_conn_string(
+    "postgresql://user:pass@localhost/db"
+) as checkpointer:
+    checkpointer.setup()   # only the first time, to create tables
+    graph = builder.compile(checkpointer=checkpointer)</code></pre>
+
+      <h3>Threads Are Conversations</h3>
+<pre><code class="language-python">alice_config = {"configurable": {"thread_id": "user-alice"}}
+bob_config   = {"configurable": {"thread_id": "user-bob"}}
+
+graph.invoke({"messages": ["Hi from Alice"]}, alice_config)
+graph.invoke({"messages": ["Hi from Bob"]}, bob_config)
+
+# Alice and Bob have fully isolated state</code></pre>
+
+      <h3>Time Travel &amp; Forking</h3>
+<pre><code class="language-python">config = {"configurable": {"thread_id": "session-1"}}
+
+result = graph.invoke({"messages": ["start"]}, config)
+
+# Browse checkpoint history
+states = list(graph.get_state_history(config))
+
+# Replay from a past checkpoint (None = resume)
+past = states[-2]
+result = graph.invoke(None, past.config)
+
+# Fork: edit a past checkpoint, then resume
+fork_config = graph.update_state(past.config, {"messages": ["edited"]})
+result = graph.invoke(None, fork_config)</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label"><code>update_state</code> goes through reducers</span>
+          <p>With <code>Annotated[list, operator.add]</code>, <code>update_state(config, {&quot;items&quot;: [&quot;C&quot;]})</code>
+          <strong>appends</strong> to the list. To replace, use <code>Overwrite</code>:</p>
+        </div>
+      </div>
+
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">APPENDS</span>
+<pre><code class="language-python"># Current state: {"items": ["A", "B"]}
+graph.update_state(config, {"items": ["C"]})
+# Result: ["A", "B", "C"]</code></pre></div>
+        <div class="right"><span class="tag">REPLACES</span>
+<pre><code class="language-python">from langgraph.types import Overwrite
+
+graph.update_state(config, {"items": Overwrite(["C"])})
+# Result: ["C"]</code></pre></div>
+      </div>
+
+      <h3>Subgraph Checkpointer Scoping</h3>
+      <table>
+        <thead><tr><th>Feature</th><th><code>checkpointer=False</code></th><th>Default (<code>None</code>)</th><th><code>checkpointer=True</code></th></tr></thead>
+        <tbody>
+          <tr><td>Interrupts (HITL)</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+          <tr><td>Multi-turn memory</td><td>No</td><td>No</td><td>Yes</td></tr>
+          <tr><td>Multiple calls (different subgraphs)</td><td>Yes</td><td>Yes</td><td>Warning: namespace conflicts possible</td></tr>
+          <tr><td>Multiple calls (same subgraph)</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+          <tr><td>State inspection</td><td>No</td><td>Warning: current invocation only</td><td>Yes</td></tr>
+        </tbody>
+      </table>
+
+      <h4>When to use each</h4>
+      <ul>
+        <li><strong><code>checkpointer=False</code></strong> &mdash; subgraph needs nothing extra. Simplest, least overhead.</li>
+        <li><strong>default (omit)</strong> &mdash; subgraph needs <code>interrupt()</code> but not cross-invocation memory. Parallel calls work.</li>
+        <li><strong><code>checkpointer=True</code></strong> &mdash; subgraph needs to remember across invocations (multi-turn conversation).</li>
+      </ul>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Stateful subgraphs can&#39;t be called twice in parallel</span>
+          <p>Two calls to the same <code>checkpointer=True</code> subgraph inside one node fight for the
+          same namespace. Wrap each in its own <code>StateGraph</code> with a unique node name to keep
+          namespaces stable.</p>
+        </div>
+      </div>
+
+<pre><code class="language-python">from langgraph.graph import MessagesState, StateGraph
+
+def create_sub_agent(model, *, name, **kwargs):
+    agent = create_agent(model=model, name=name, **kwargs)
+    return (
+        StateGraph(MessagesState)
+        .add_node(name, agent)          # unique name = stable namespace
+        .add_edge("__start__", name)
+        .compile()
+    )
+
+fruit_agent  = create_sub_agent("gpt-4.1-mini", name="fruit_agent",
+                                tools=[fruit_info], prompt="...", checkpointer=True)
+veggie_agent = create_sub_agent("gpt-4.1-mini", name="veggie_agent",
+                                tools=[veggie_info], prompt="...", checkpointer=True)</code></pre>
+
+      <h3>Long-Term Memory with the Store</h3>
+<pre><code class="language-python">from langgraph.store.memory import InMemoryStore
+from langgraph.runtime import Runtime
+
+store = InMemoryStore()
+
+# Save a preference — available across ALL threads
+store.put(("alice", "preferences"), "language", {"preference": "short responses"})
+
+def respond(state, runtime: Runtime):
+    prefs = runtime.store.get((state["user_id"], "preferences"), "language")
+    return {"response": f"Using preference: {prefs.value}"}
+
+# Compile with BOTH checkpointer AND store
+graph = builder.compile(checkpointer=checkpointer, store=store)
+
+# Both threads see the same long-term memory
+graph.invoke({"user_id": "alice"}, {"configurable": {"thread_id": "thread-1"}})
+graph.invoke({"user_id": "alice"}, {"configurable": {"thread_id": "thread-2"}})</code></pre>
+
+<pre><code class="language-python"># Store operations
+store.put(("user-123", "facts"), "location", {"city": "San Francisco"})
+item    = store.get(("user-123", "facts"), "location")
+results = store.search(("user-123", "facts"), filter={"city": "San Francisco"})
+store.delete(("user-123", "facts"), "location")</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Forgot <code>thread_id</code></h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">graph.invoke({"messages": ["Hello"]})
+graph.invoke({"messages": ["What did I say?"]})   # doesn't remember!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">config = {"configurable": {"thread_id": "session-1"}}
+graph.invoke({"messages": ["Hello"]}, config)
+graph.invoke({"messages": ["What did I say?"]}, config)</code></pre></div>
+      </div>
+
+      <h4>InMemorySaver in production</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">checkpointer = InMemorySaver()   # lost on restart!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from langgraph.checkpoint.postgres import PostgresSaver
+with PostgresSaver.from_conn_string("postgresql://...") as checkpointer:
+    checkpointer.setup()
+    graph = builder.compile(checkpointer=checkpointer)</code></pre></div>
+      </div>
+
+      <h4>Accessing store directly in a node</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">def my_node(state):
+    store.put(...)   # NameError!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">from langgraph.runtime import Runtime
+
+def my_node(state, runtime: Runtime):
+    runtime.store.put(...)</code></pre></div>
+      </div>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- =========== PART V: DEEP AGENTS ===================== -->
+    <!-- =====================================================  -->
+    <h2 class="part">Part V &middot; Deep Agents</h2>
+
+    <!-- ============ CH 10 ============ -->
+    <section id="ch10">
+      <h2 class="chapter"><span class="num">Ch 10</span>The Deep Agent Harness</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>What <code>create_deep_agent()</code> hands you for free</li>
+          <li>Configuration knobs</li>
+          <li>Writing and loading skills (SKILL.md)</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        Deep Agents is an opinionated framework on top of LangChain / LangGraph. You get a loaded
+        harness out of the box: task planning, virtual filesystem, subagents, long-term memory, human-in-the-loop,
+        and on-demand skills. <strong>You configure it. You don&#39;t implement it.</strong>
+      </p>
+
+      <h3>Deep Agents vs. LangChain&#39;s <code>create_agent</code></h3>
+      <table>
+        <thead><tr><th>Use Deep Agents when&hellip;</th><th>Use LangChain <code>create_agent</code> when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>Multi-step tasks requiring planning</td><td>Simple, single-purpose tasks</td></tr>
+          <tr><td>Large context requiring file management</td><td>Context fits in a single prompt</td></tr>
+          <tr><td>Need for specialized subagents</td><td>Single agent is sufficient</td></tr>
+          <tr><td>Persistent memory across sessions</td><td>Ephemeral, single-session work</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Built-In Tools (Always Available)</h3>
+      <ul>
+        <li><strong>Planning:</strong> <code>write_todos</code> &mdash; track multi-step tasks</li>
+        <li><strong>Filesystem:</strong> <code>ls</code>, <code>read_file</code>, <code>write_file</code>, <code>edit_file</code>, <code>glob</code>, <code>grep</code></li>
+        <li><strong>Delegation:</strong> <code>task</code> &mdash; spawn specialized subagents</li>
+      </ul>
+
+      <h3>A Basic Deep Agent</h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from langchain.tools import tool
+
+@tool
+def get_weather(city: str) -> str:
+    """Get the weather for a given city."""
+    return f"It is always sunny in {city}"
+
+agent = create_deep_agent(
+    model="claude-sonnet-4-5-20250929",
+    tools=[get_weather],
+    system_prompt="You are a helpful assistant",
+)
+
+config = {"configurable": {"thread_id": "user-123"}}
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "What's the weather in Tokyo?"}]
+}, config=config)</code></pre>
+
+      <h3>Fully-Loaded Configuration</h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.store.memory import InMemoryStore
+
+agent = create_deep_agent(
+    name="my-assistant",
+    model="claude-sonnet-4-5-20250929",
+    tools=[custom_tool1, custom_tool2],
+    system_prompt="Custom instructions",
+    subagents=[research_agent, code_agent],
+    backend=FilesystemBackend(root_dir=".", virtual_mode=True),
+    interrupt_on={"write_file": True},
+    skills=["./skills/"],
+    checkpointer=MemorySaver(),
+    store=InMemoryStore(),
+)</code></pre>
+
+      <h3>SKILL.md Format</h3>
+      <p>Skills use <strong>progressive disclosure</strong> &mdash; the agent only loads a skill&#39;s content when
+      the description matches what the user is asking.</p>
+
+<pre><code class="language-text">skills/
+&#9492;&#9472;&#9472; my-skill/
+    &#9500;&#9472;&#9472; SKILL.md        # required: main skill file
+    &#9500;&#9472;&#9472; examples.py     # optional: supporting files
+    &#9492;&#9472;&#9472; templates/      # optional: templates</code></pre>
+
+<pre><code class="language-markdown">---
+name: my-skill
+description: Clear, specific description of what this skill does
+---
+
+# Skill Name
+
+## Overview
+Brief explanation of the skill's purpose.
+
+## When to Use
+Conditions when this skill applies.
+
+## Instructions
+Step-by-step guidance for the agent.</code></pre>
+
+      <h3>Skills vs. Memory (AGENTS.md)</h3>
+      <table>
+        <thead><tr><th>Skills</th><th>Memory (AGENTS.md)</th></tr></thead>
+        <tbody>
+          <tr><td>On-demand loading</td><td>Always loaded at startup</td></tr>
+          <tr><td>Task-specific instructions</td><td>General preferences</td></tr>
+          <tr><td>Large documentation</td><td>Compact context</td></tr>
+          <tr><td>SKILL.md in directories</td><td>Single AGENTS.md file</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Skills + Filesystem Backend</h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+from langgraph.checkpoint.memory import MemorySaver
+
+agent = create_deep_agent(
+    backend=FilesystemBackend(root_dir=".", virtual_mode=True),
+    skills=["./skills/"],
+    checkpointer=MemorySaver(),
+)
+
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "Use the python-testing skill"}]
+}, config={"configurable": {"thread_id": "session-1"}})</code></pre>
+
+      <h3>Skills + Store Backend (No Local Filesystem)</h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from deepagents.backends import StoreBackend
+from deepagents.backends.utils import create_file_data
+from langgraph.store.memory import InMemoryStore
+
+store = InMemoryStore()
+
+skill_content = """---
+name: python-testing
+description: Best practices for Python testing with pytest
+---
+# Python Testing Skill
+..."""
+
+store.put(
+    namespace=("filesystem",),
+    key="/skills/python-testing/SKILL.md",
+    value=create_file_data(skill_content),
+)
+
+agent = create_deep_agent(
+    backend=lambda rt: StoreBackend(rt),
+    store=store,
+    skills=["/skills/"],
+)</code></pre>
+
+      <h3>What You Can vs. Cannot Configure</h3>
+      <table>
+        <thead><tr><th>CAN configure</th><th>CANNOT configure</th></tr></thead>
+        <tbody>
+          <tr><td>Model selection and parameters</td><td>Core middleware removal (TodoList, Filesystem, SubAgent always present)</td></tr>
+          <tr><td>Additional custom tools</td><td>Tool names (<code>write_todos</code>, <code>task</code>, filesystem tools)</td></tr>
+          <tr><td>System prompt customization</td><td>SKILL.md frontmatter format</td></tr>
+          <tr><td>Backend storage strategy</td><td></td></tr>
+          <tr><td>Which tools require approval</td><td></td></tr>
+          <tr><td>Custom subagents with specialized tools</td><td></td></tr>
+        </tbody>
+      </table>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Interrupts without a checkpointer</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(interrupt_on={"write_file": True})</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    interrupt_on={"write_file": True},
+    checkpointer=MemorySaver(),
+)</code></pre></div>
+      </div>
+
+      <h4>StoreBackend without a Store</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(backend=lambda rt: StoreBackend(rt))</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    backend=lambda rt: StoreBackend(rt),
+    store=InMemoryStore(),
+)</code></pre></div>
+      </div>
+
+      <h4>Skills without a backend</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(skills=["./skills/"])</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    backend=FilesystemBackend(root_dir=".", virtual_mode=True),
+    skills=["./skills/"],
+)</code></pre></div>
+      </div>
+
+      <h4>Vague skill descriptions</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-markdown">---
+name: helper
+description: Helpful skill
+---</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-markdown">---
+name: python-testing
+description: Python testing best practices with pytest fixtures, mocking, and async patterns
+---</code></pre></div>
+      </div>
+    </section>
+
+    <!-- ============ CH 11 ============ -->
+    <section id="ch11">
+      <h2 class="chapter"><span class="num">Ch 11</span>Backends &amp; Memory</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Four backends, four different jobs</li>
+          <li>Hybrid routing with <code>CompositeBackend</code></li>
+          <li>Saving user preferences across sessions</li>
+        </ul>
+      </div>
+
+      <h3>Backend Selection</h3>
+      <table>
+        <thead><tr><th>Use Case</th><th>Backend</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Temporary working files</td><td><code>StateBackend</code></td><td>Default, no setup</td></tr>
+          <tr><td>Local dev CLI</td><td><code>FilesystemBackend</code></td><td>Direct disk access</td></tr>
+          <tr><td>Cross-session memory</td><td><code>StoreBackend</code></td><td>Persists across threads</td></tr>
+          <tr><td>Hybrid storage</td><td><code>CompositeBackend</code></td><td>Mix ephemeral + persistent</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Default: <code>StateBackend</code></h3>
+      <p>Ephemeral files inside a single thread. Lost when the thread ends.</p>
+
+<pre><code class="language-python">from deepagents import create_deep_agent
+
+agent = create_deep_agent()  # default: StateBackend
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "Write notes to /draft.txt"}]
+}, config={"configurable": {"thread_id": "thread-1"}})
+# /draft.txt is lost when thread ends</code></pre>
+
+      <h3>Hybrid Routing with <code>CompositeBackend</code></h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from deepagents.backends import CompositeBackend, StateBackend, StoreBackend
+from langgraph.store.memory import InMemoryStore
+
+store = InMemoryStore()
+
+composite_backend = lambda rt: CompositeBackend(
+    default=StateBackend(rt),
+    routes={"/memories/": StoreBackend(rt)},
+)
+
+agent = create_deep_agent(backend=composite_backend, store=store)
+
+# /draft.txt         -> ephemeral (StateBackend)
+# /memories/prefs.txt -> persistent (StoreBackend)</code></pre>
+
+      <h3>Cross-Session Memory</h3>
+<pre><code class="language-python">config1 = {"configurable": {"thread_id": "thread-1"}}
+agent.invoke({"messages": [{"role": "user", "content": "Save to /memories/style.txt"}]}, config=config1)
+
+config2 = {"configurable": {"thread_id": "thread-2"}}
+agent.invoke({"messages": [{"role": "user", "content": "Read /memories/style.txt"}]}, config=config2)
+# Thread 2 can read the file saved by Thread 1</code></pre>
+
+      <h3>Local Development with <code>FilesystemBackend</code></h3>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from deepagents.backends import FilesystemBackend
+from langgraph.checkpoint.memory import MemorySaver
+
+agent = create_deep_agent(
+    backend=FilesystemBackend(root_dir=".", virtual_mode=True),  # restrict access
+    interrupt_on={"write_file": True, "edit_file": True},
+    checkpointer=MemorySaver(),
+)
+
+# Agent can read/write actual files on disk</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Security</span>
+          <p><strong>Never use <code>FilesystemBackend</code> in a web server.</strong> An LLM with real
+          disk write access + any prompt injection = disaster. Use <code>StateBackend</code> or a sandbox.</p>
+        </div>
+      </div>
+
+      <h3>Using the Store from Custom Tools</h3>
+<pre><code class="language-python">from langchain.tools import tool, ToolRuntime
+from langchain.agents import create_agent
+from langgraph.store.memory import InMemoryStore
+
+@tool
+def get_user_preference(key: str, runtime: ToolRuntime) -> str:
+    """Get a user preference from long-term storage."""
+    store = runtime.store
+    result = store.get(("user_prefs",), key)
+    return str(result.value) if result else "Not found"
+
+@tool
+def save_user_preference(key: str, value: str, runtime: ToolRuntime) -> str:
+    """Save a user preference to long-term storage."""
+    store = runtime.store
+    store.put(("user_prefs",), key, {"value": value})
+    return f"Saved {key}={value}"
+
+store = InMemoryStore()
+
+agent = create_agent(
+    model="gpt-4.1",
+    tools=[get_user_preference, save_user_preference],
+    store=store,
+)</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4><code>StoreBackend</code> without a store</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(backend=lambda rt: StoreBackend(rt))</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    backend=lambda rt: StoreBackend(rt),
+    store=InMemoryStore(),
+)</code></pre></div>
+      </div>
+
+      <h4>StateBackend files don&#39;t persist across threads</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python"># thread-2 can't read file written by thread-1
+agent.invoke({...}, config={"configurable": {"thread_id": "thread-1"}})  # write
+agent.invoke({...}, config={"configurable": {"thread_id": "thread-2"}})  # FileNotFound</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python"># Use the same thread_id, OR use StoreBackend/CompositeBackend routes</code></pre></div>
+      </div>
+
+      <h4>Path prefix doesn&#39;t match a route</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">EPHEMERAL</span>
+<pre><code class="language-python"># With routes={"/memories/": StoreBackend(rt)}:
+agent.invoke(...)   # /prefs.txt  -> no route match -> ephemeral</code></pre></div>
+        <div class="right"><span class="tag">PERSISTENT</span>
+<pre><code class="language-python">agent.invoke(...)   # /memories/prefs.txt -> matches route -> persistent</code></pre></div>
+      </div>
+
+      <h4>InMemoryStore in production</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">store = InMemoryStore()   # lost on restart</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">store = PostgresStore(connection_string="postgresql://...")</code></pre></div>
+      </div>
+
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div>
+          <span class="label">Longest-Prefix Match</span>
+          <p><code>CompositeBackend</code> picks the <strong>longest</strong> matching route.
+          With <code>{&quot;/mem/&quot;: StoreBackend, &quot;/mem/temp/&quot;: StateBackend}</code>:
+          <code>/mem/file.txt</code> hits the Store; <code>/mem/temp/file.txt</code> hits StateBackend.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CH 12 ============ -->
+    <section id="ch12">
+      <h2 class="chapter"><span class="num">Ch 12</span>Subagents, Todos, and HITL</h2>
+
+      <div class="fidi-in-this-ch">
+        <h4>In This Chapter</h4>
+        <ul>
+          <li>Delegating work with the <code>task</code> tool</li>
+          <li>Automatic task planning with <code>write_todos</code></li>
+          <li>Human approval workflows at scale</li>
+        </ul>
+      </div>
+
+      <p class="lead">
+        Deep Agents ships with three orchestration capabilities, automatic on every agent: <strong>SubAgentMiddleware</strong>
+        for delegation, <strong>TodoListMiddleware</strong> for planning, and <strong>HumanInTheLoopMiddleware</strong>
+        for approval gates.
+      </p>
+
+      <h3>Subagents</h3>
+      <table>
+        <thead><tr><th>Use subagents when&hellip;</th><th>Use the main agent when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>Task needs specialized tools</td><td>General-purpose tools are enough</td></tr>
+          <tr><td>You want to isolate complex work</td><td>Single-step operation</td></tr>
+          <tr><td>Need clean context for the main agent</td><td>Context bloat is acceptable</td></tr>
+        </tbody>
+      </table>
+
+      <h4>How it works</h4>
+      <p>Main agent has the <code>task</code> tool &rarr; creates a fresh subagent &rarr; subagent executes
+      autonomously with its own tools and context &rarr; returns a final report. The main agent sees only the report.</p>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">The Default &quot;general-purpose&quot; Subagent</span>
+          <p>You always have a <em>general-purpose</em> subagent available &mdash; it inherits the main agent&#39;s
+          tools, model, and config. Custom subagents <strong>don&#39;t</strong> inherit skills; you declare them explicitly.</p>
+        </div>
+      </div>
+
+      <h4>Custom subagent</h4>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from langchain.tools import tool
+
+@tool
+def search_papers(query: str) -> str:
+    """Search academic papers."""
+    return f"Found 10 papers about {query}"
+
+agent = create_deep_agent(
+    subagents=[
+        {
+            "name": "researcher",
+            "description": "Conduct web research and compile findings",
+            "system_prompt": "Search thoroughly, return concise summary",
+            "tools": [search_papers],
+        }
+    ]
+)
+
+# Main agent delegates: task(agent="researcher", instruction="Research AI trends")</code></pre>
+
+      <h4>Subagent with its own approval gate</h4>
+<pre><code class="language-python">from deepagents import create_deep_agent
+from langgraph.checkpoint.memory import MemorySaver
+
+agent = create_deep_agent(
+    subagents=[
+        {
+            "name": "code-deployer",
+            "description": "Deploy code to production",
+            "system_prompt": "You deploy code after tests pass.",
+            "tools": [run_tests, deploy_to_prod],
+            "interrupt_on": {"deploy_to_prod": True},   # require approval
+        }
+    ],
+    checkpointer=MemorySaver(),   # required for interrupts
+)</code></pre>
+
+      <div class="fidi-callout warning">
+        <div class="icon">&#9888;</div>
+        <div>
+          <span class="label">Subagents Are Stateless</span>
+          <p>Each <code>task()</code> call starts a fresh subagent. It won&#39;t remember the previous call.
+          Give it <strong>complete instructions upfront</strong>.</p>
+        </div>
+      </div>
+
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python"># These behave like two different agents
+# task(agent='research', instruction='Find data')
+# task(agent='research', instruction='What did you find?')  # starts fresh!</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python"># task(agent='research',
+#      instruction='Find data on AI, save to /research/, return a summary')</code></pre></div>
+      </div>
+
+      <h3>Todo Lists: Automatic Planning</h3>
+
+      <table>
+        <thead><tr><th>Use TodoList when&hellip;</th><th>Skip it when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>Complex multi-step tasks</td><td>Simple single-action tasks</td></tr>
+          <tr><td>Long-running operations</td><td>Quick operations (&lt; 3 steps)</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-text">write_todos(todos: list[dict]) -> None
+
+Each todo item has:
+  content: description of the task
+  status:  "pending" | "in_progress" | "completed"</code></pre>
+
+<pre><code class="language-python">from deepagents import create_deep_agent
+
+agent = create_deep_agent()   # TodoListMiddleware is included by default
+
+result = agent.invoke({
+    "messages": [{
+        "role": "user",
+        "content": "Create a REST API: design models, implement CRUD, add auth, write tests",
+    }]
+}, config={"configurable": {"thread_id": "session-1"}})
+
+# Agent's internal plan via write_todos:
+# [
+#   {"content": "Design data models",        "status": "in_progress"},
+#   {"content": "Implement CRUD endpoints", "status": "pending"},
+#   {"content": "Add authentication",       "status": "pending"},
+#   {"content": "Write tests",              "status": "pending"},
+# ]
+
+# Access after invoke
+todos = result.get("todos", [])
+for todo in todos:
+    print(f"[{todo['status']}] {todo['content']}")</code></pre>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label"><code>thread_id</code> Again</span>
+          <p>Todos are part of graph state. Without a <code>thread_id</code>, each invoke is fresh. Use the same
+          <code>thread_id</code> to keep the todo list across calls.</p>
+        </div>
+      </div>
+
+      <h3>Human-in-the-Loop Approval</h3>
+
+      <table>
+        <thead><tr><th>Use HITL when&hellip;</th><th>Skip HITL when&hellip;</th></tr></thead>
+        <tbody>
+          <tr><td>High-stakes operations (DB writes, deployments)</td><td>Read-only operations</td></tr>
+          <tr><td>Compliance requires human oversight</td><td>Fully automated workflows</td></tr>
+        </tbody>
+      </table>
+
+<pre><code class="language-python">from deepagents import create_deep_agent
+from langgraph.checkpoint.memory import MemorySaver
+
+agent = create_deep_agent(
+    interrupt_on={
+        "write_file":  True,                                        # all decisions allowed
+        "execute_sql": {"allowed_decisions": ["approve", "reject"]},
+        "read_file":   False,                                       # no interrupts
+    },
+    checkpointer=MemorySaver(),     # REQUIRED
+)</code></pre>
+
+      <h4>Full approval workflow</h4>
+<pre><code class="language-python">from langgraph.types import Command
+
+agent = create_deep_agent(
+    interrupt_on={"write_file": True},
+    checkpointer=MemorySaver(),
+)
+
+config = {"configurable": {"thread_id": "session-1"}}
+
+# Step 1: agent proposes write_file; execution pauses
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "Write config to /prod.yaml"}]
+}, config=config)
+
+# Step 2: check for interrupts
+state = agent.get_state(config)
+if state.next:
+    print("Pending action")
+
+# Step 3: approve and resume
+result = agent.invoke(
+    Command(resume={"decisions": [{"type": "approve"}]}),
+    config=config,
+)</code></pre>
+
+<pre><code class="language-python"># Reject with feedback
+agent.invoke(
+    Command(resume={"decisions": [{
+        "type": "reject",
+        "message": "Run tests first",
+    }]}),
+    config=config,
+)</code></pre>
+
+<pre><code class="language-python"># Edit before execution
+agent.invoke(
+    Command(resume={"decisions": [{
+        "type": "edit",
+        "edited_action": {
+            "name": "execute_sql",
+            "args": {"query": "DELETE FROM users WHERE last_login < '2020-01-01' LIMIT 100"},
+        },
+    }]}),
+    config=config,
+)</code></pre>
+
+      <h3>Common Mistakes</h3>
+
+      <h4>Interrupt without checkpointer</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(interrupt_on={"write_file": True})</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    interrupt_on={"write_file": True},
+    checkpointer=MemorySaver(),
+)</code></pre></div>
+      </div>
+
+      <h4>No <code>thread_id</code> on resume</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent.invoke({"messages": [...]})</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">config = {"configurable": {"thread_id": "session-1"}}
+agent.invoke({...}, config=config)
+# Resume with the SAME config
+agent.invoke(Command(resume={"decisions": [{"type": "approve"}]}), config=config)</code></pre></div>
+      </div>
+
+      <h4>Custom subagents don&#39;t inherit skills</h4>
+      <div class="fidi-pair">
+        <div class="wrong"><span class="tag">DON&#39;T</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    skills=["/main-skills/"],
+    subagents=[{"name": "helper", ...}]   # no skills!
+)</code></pre></div>
+        <div class="right"><span class="tag">DO</span>
+<pre><code class="language-python">agent = create_deep_agent(
+    skills=["/main-skills/"],
+    subagents=[{
+        "name": "helper",
+        "skills": ["/helper-skills/"],
+        ...
+    }],
+)</code></pre></div>
+      </div>
+
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div>
+          <span class="label">Interrupts Happen <em>Between</em> <code>invoke()</code> Calls</span>
+          <p>Check for interrupts on the result dict, then call <code>invoke</code> again with <code>Command(resume=...)</code>.
+          There is no mid-call callback.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================  -->
+    <!-- ================ BACK MATTER ======================== -->
+    <!-- =====================================================  -->
+    <h2 class="part">Back Matter</h2>
+
+    <!-- ============ CHEAT SHEET ============ -->
+    <section id="cheatsheet">
+      <h2 class="chapter"><span class="num">CS</span>Cheat Sheet</h2>
+
+      <div class="fidi-cheat">
+        <h4>Imports You&#39;ll Paste Weekly</h4>
+        <ul>
+          <li><code>from langchain.agents import create_agent</code></li>
+          <li><code>from langchain_core.tools import tool</code></li>
+          <li><code>from langgraph.graph import StateGraph, START, END</code></li>
+          <li><code>from langgraph.checkpoint.memory import InMemorySaver</code></li>
+          <li><code>from langgraph.types import Command, Send, interrupt</code></li>
+          <li><code>from deepagents import create_deep_agent</code></li>
+          <li><code>from deepagents.backends import FilesystemBackend, StoreBackend, CompositeBackend, StateBackend</code></li>
+        </ul>
+      </div>
+
+      <div class="fidi-cheat">
+        <h4>Always / Never Rules</h4>
+        <ul>
+          <li><strong>Always</strong> pass <code>thread_id</code> when you want memory or interrupts.</li>
+          <li><strong>Always</strong> use a <code>checkpointer</code> with <code>interrupt_on</code> / HITL.</li>
+          <li><strong>Always</strong> <code>compile()</code> before calling <code>invoke</code>.</li>
+          <li><strong>Always</strong> annotate list fields with a reducer if two nodes might write them.</li>
+          <li><strong>Never</strong> mutate state inside a node &mdash; return a partial update dict.</li>
+          <li><strong>Never</strong> use <code>InMemorySaver</code> or <code>InMemoryStore</code> in production.</li>
+          <li><strong>Never</strong> insert rows or append to lists <em>before</em> an <code>interrupt()</code> &mdash; it&#39;ll re-run.</li>
+          <li><strong>Never</strong> route back to <code>START</code>.</li>
+          <li><strong>Never</strong> give <code>FilesystemBackend</code> disk access in a public web server.</li>
+        </ul>
+      </div>
+
+      <div class="fidi-cheat">
+        <h4>Stream Modes at a Glance</h4>
+        <ul>
+          <li><code>values</code> &mdash; full state after each step (monitoring)</li>
+          <li><code>updates</code> &mdash; just the deltas</li>
+          <li><code>messages</code> &mdash; LLM tokens (chat UIs)</li>
+          <li><code>custom</code> &mdash; your progress strings via <code>get_stream_writer()</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ MISTAKES INDEX ============ -->
+    <section id="mistakes">
+      <h2 class="chapter"><span class="num">IX</span>Common Mistakes Index</h2>
+
+      <p class="lead">When something isn&#39;t working, check this list first. Each entry points to the chapter with the full fix.</p>
+
+      <h3>Setup &amp; Dependencies</h3>
+      <ul>
+        <li>Starting a new project on LangChain 0.3 (maintenance only) &rarr; <a href="#ch3">Ch 3</a></li>
+        <li>Unpinned <code>langchain-community</code> &rarr; <a href="#ch3">Ch 3</a></li>
+        <li>Using deprecated community imports (<code>TavilySearchResults</code>, community <code>Chroma</code>&hellip;) &rarr; <a href="#ch3">Ch 3</a></li>
+        <li>Python &lt; 3.10 &rarr; <a href="#ch3">Ch 3</a></li>
+      </ul>
+
+      <h3>LangChain</h3>
+      <ul>
+        <li>Missing or vague tool descriptions &rarr; <a href="#ch4">Ch 4</a></li>
+        <li>Agent with no checkpointer (forgets between calls) &rarr; <a href="#ch4">Ch 4</a></li>
+        <li>Infinite agent loop (no <code>recursion_limit</code>) &rarr; <a href="#ch4">Ch 4</a></li>
+        <li>Reading <code>result.content</code> instead of <code>result[&quot;messages&quot;][-1].content</code> &rarr; <a href="#ch4">Ch 4</a></li>
+        <li>HITL middleware without a checkpointer &rarr; <a href="#ch5">Ch 5</a></li>
+        <li>Resuming with a plain dict instead of <code>Command(resume=&hellip;)</code> &rarr; <a href="#ch5">Ch 5</a></li>
+        <li><code>yield</code> inside <code>@wrap_tool_call</code> &rarr; <a href="#ch5">Ch 5</a></li>
+        <li>Chunk size too small / too large in RAG &rarr; <a href="#ch6">Ch 6</a></li>
+        <li>Different embeddings for index and query &rarr; <a href="#ch6">Ch 6</a></li>
+        <li>In-memory vector store in production &rarr; <a href="#ch6">Ch 6</a></li>
+      </ul>
+
+      <h3>LangGraph</h3>
+      <ul>
+        <li>Forgot to <code>compile()</code> &rarr; <a href="#ch7">Ch 7</a></li>
+        <li>Forgot reducer on a list field (values overwritten) &rarr; <a href="#ch7">Ch 7</a></li>
+        <li>Mutating state instead of returning a partial dict &rarr; <a href="#ch7">Ch 7</a></li>
+        <li>Infinite loop without a conditional exit to <code>END</code> &rarr; <a href="#ch7">Ch 7</a></li>
+        <li>Routing back to <code>START</code> &rarr; <a href="#ch7">Ch 7</a></li>
+        <li><code>Send</code> fan-out without a reducer on results &rarr; <a href="#ch7">Ch 7</a></li>
+        <li>Interrupt without checkpointer or without <code>thread_id</code> &rarr; <a href="#ch8">Ch 8</a></li>
+        <li>Resuming with a plain dict instead of <code>Command</code> &rarr; <a href="#ch8">Ch 8</a></li>
+        <li>Non-idempotent side effects before <code>interrupt()</code> &rarr; <a href="#ch8">Ch 8</a></li>
+        <li>Forgot <code>thread_id</code> (no memory) &rarr; <a href="#ch9">Ch 9</a></li>
+        <li><code>InMemorySaver</code> in production &rarr; <a href="#ch9">Ch 9</a></li>
+        <li><code>update_state</code> unexpectedly appends (reducer passthrough) &rarr; <a href="#ch9">Ch 9</a></li>
+        <li>Accessing store directly in a node instead of via <code>runtime.store</code> &rarr; <a href="#ch9">Ch 9</a></li>
+      </ul>
+
+      <h3>Deep Agents</h3>
+      <ul>
+        <li>Interrupts without a checkpointer &rarr; <a href="#ch10">Ch 10</a></li>
+        <li><code>StoreBackend</code> without a <code>store</code> instance &rarr; <a href="#ch10">Ch 10</a> / <a href="#ch11">Ch 11</a></li>
+        <li>Skills without a backend &rarr; <a href="#ch10">Ch 10</a></li>
+        <li>Vague skill descriptions &rarr; <a href="#ch10">Ch 10</a></li>
+        <li>StateBackend files don&#39;t persist across threads &rarr; <a href="#ch11">Ch 11</a></li>
+        <li>Wrong path prefix for <code>CompositeBackend</code> route &rarr; <a href="#ch11">Ch 11</a></li>
+        <li>Treating subagents as stateful &rarr; <a href="#ch12">Ch 12</a></li>
+        <li>Custom subagents don&#39;t inherit skills &rarr; <a href="#ch12">Ch 12</a></li>
+      </ul>
+
+      <div class="fidi-callout try">
+        <div class="icon">&#127881;</div>
+        <div>
+          <span class="label">You Made It!</span>
+          <p>That&#39;s the whole reference. Keep it open while you code Session 5. When you hit a wall,
+          search this page for the error you&#39;re seeing &mdash; odds are there&#39;s a &quot;DO/DON&#39;T&quot; box waiting.</p>
+        </div>
+      </div>
+
+      <p style="text-align:center;margin-top:2rem;font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--muted)">
+        LangChain &amp; LangGraph For Idiots &middot; Edition 1 &middot;
+        <a href="{{ site.baseurl }}/session-05/">&larr; Back to Session 5</a>
+      </p>
+    </section>
+
+  </main>
+</div><!-- /fidi-layout -->
+</div><!-- /fidi-book -->
+
+<button class="fidi-top" id="fidiTop" aria-label="Back to top">&#8593;</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+  (function(){
+    var btn = document.getElementById('fidiTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function(){
+      if (window.scrollY > 400) btn.classList.add('show');
+      else btn.classList.remove('show');
+    });
+    btn.addEventListener('click', function(){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  })();
+</script>

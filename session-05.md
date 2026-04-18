@@ -522,6 +522,9 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.svg" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128202;</span> Architecture diagram (SVG)
       </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_5/references/langgraph_langchain_for_idiots.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128216;</span> LangChain &amp; LangGraph For Idiots (reference book)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> LangGraph docs
       </a>
