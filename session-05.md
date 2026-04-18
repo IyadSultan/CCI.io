@@ -247,6 +247,17 @@ permalink: /session-05/
     transform: translateY(-1px);
   }
 
+  .s1-btn-skill {
+    background: #FFF3E0;
+    border-color: #FFB74D;
+    color: #BF360C !important;
+  }
+
+  .s1-btn-skill:hover {
+    background: #FFE0B2;
+    transform: translateY(-1px);
+  }
+
   .s1-btn-icon {
     font-size: 0.9rem;
     line-height: 1;
@@ -524,6 +535,9 @@ permalink: /session-05/
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_5/references/langgraph_langchain_for_idiots.html" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128216;</span> LangChain &amp; LangGraph For Idiots (reference book)
+      </a>
+      <a class="s1-btn s1-btn-skill" href="{{ site.baseurl }}/session_5/assets/langchain_graph_skill.zip" download>
+        <span class="s1-btn-icon">&#11088;</span> Download Claude Skill (.zip)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> LangGraph docs
