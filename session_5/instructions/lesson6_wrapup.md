@@ -123,6 +123,32 @@ Return a single self-contained .py file.
 
 ---
 
+## Bonus — LangChain / LangGraph Claude Skill
+
+We packaged all of Session 5's LangChain + LangGraph knowledge into a reusable **Claude Skill**. Once uploaded to your Claude workspace, Claude will automatically invoke it whenever you ask it to build, debug, or explain a LangChain / LangGraph project — giving you much better code than a cold prompt.
+
+<div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:0.6rem;padding:1rem 1.25rem;margin:1rem 0;">
+  <p style="margin:0 0 0.75rem;font-weight:700;color:#F57F17;">&#11088; Get the skill</p>
+  <a href="{{ site.baseurl }}/session_5/assets/langchain_graph_skill.zip" download style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;border-radius:0.45rem;transition:all .15s;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
+    &#11015; Download langchain_graph_skill.zip
+  </a>
+</div>
+
+**How to install it in Claude (one-time setup):**
+
+1. Click **Download** above to save `langchain_graph_skill.zip` to your computer — **do not unzip it**.
+2. Open **[claude.ai](https://claude.ai)** and sign in.
+3. Go to **Settings → Capabilities → Skills** (on some plans this lives under **Settings → Features → Skills**).
+4. Click **Upload skill** (or **Add skill**) and select the `.zip` file you just downloaded.
+5. Confirm the skill appears in your list and is toggled **On**.
+6. Start a new chat and ask something like *"Using my LangGraph skill, build a two-agent supervisor pattern with an `interrupt()` for physician sign-off."* Claude will auto-load the skill and follow its conventions.
+
+> **Note:** Skill uploads are a Pro / Team / Enterprise feature. If your plan does not show the *Skills* tab, you can still use the skill contents manually by unzipping the file and pasting the most relevant reference doc into the chat.
+
+**What is inside the skill?** Structured reference docs covering `create_agent`, `@tool`, `StateGraph`, `MemorySaver` / `SqliteSaver`, `interrupt()` / `Command(resume=...)`, multi-agent supervisor/orchestrator patterns, and common pitfalls — the exact material we taught in Lessons 1–5, formatted so Claude can consume it as ground truth.
+
+---
+
 ## What is next
 
 **Session 6** layers **Retrieval-Augmented Generation (RAG)** on top of the agents you built here: embeddings, vector stores, and clinical document retrieval so your agents can cite KHCC guidelines, NCCN protocols, and patient records instead of relying on the model's pretraining alone.
