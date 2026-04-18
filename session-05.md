@@ -519,6 +519,9 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session5/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.png" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128202;</span> Architecture infographic
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> LangGraph docs
       </a>
