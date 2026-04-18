@@ -49,8 +49,8 @@ Use your **Session 5 NotebookLM** (linked from the Session 5 main page) with sou
 
 Below is a reference architecture that stitches together everything from Lessons 1–5 into a single clinical system. Use it as a mental model for the session assignment, and as a **prompt asset** for an LLM when you want to scaffold code quickly.
 
-<a href="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.png" target="_blank" rel="noopener noreferrer">
-  <img src="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.png" alt="KHCC Hospital Administration — LangGraph Multi-Agent System" style="width:100%;max-width:960px;border:1px solid #E0E0E0;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin:0.5rem 0 1rem"/>
+<a href="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.svg" target="_blank" rel="noopener noreferrer">
+  <img src="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.svg" alt="KHCC Hospital Administration — LangGraph Multi-Agent System" style="width:100%;max-width:1100px;border:1px solid #E0E0E0;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin:0.5rem 0 1rem;background:#FAFAFA"/>
 </a>
 
 **What the diagram shows**
