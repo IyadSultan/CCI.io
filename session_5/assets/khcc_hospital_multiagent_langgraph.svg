@@ -171,19 +171,19 @@
   <!-- LEFT COLUMN - Specialists -->
   <g>
     <rect x="295" y="328" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Lab Analyst</text>
+    <text x="377" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">&#129514; Lab Analyst</text>
     <text x="377" y="363" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">fetch_labs()</text>
     <text x="377" y="377" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">check_reference_ranges()</text>
     <text x="377" y="391" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; lab_summary</text>
 
     <rect x="295" y="408" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Radiology</text>
+    <text x="377" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">&#129659; Radiology</text>
     <text x="377" y="443" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">fetch_imaging_report()</text>
     <text x="377" y="457" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">summarize_findings()</text>
     <text x="377" y="471" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; imaging_summary</text>
 
     <rect x="295" y="488" width="165" height="68" rx="8" fill="#EDE7F6" stroke="#7E57C2" stroke-width="1.5" filter="url(#sh)"/>
-    <text x="377" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">Pharmacy</text>
+    <text x="377" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#4527A0">&#128138; Pharmacy</text>
     <text x="377" y="523" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">check_drug_interaction()</text>
     <text x="377" y="537" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_formulary_dose()</text>
     <text x="377" y="551" text-anchor="middle" font-size="9" fill="#546E7A">&#8594; medication_list</text>
@@ -192,19 +192,19 @@
   <!-- RIGHT COLUMN - Supporting -->
   <g>
     <rect x="580" y="328" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Medical Records</text>
+    <text x="662" y="347" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">&#128203; Medical Records</text>
     <text x="662" y="363" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_allergies()</text>
     <text x="662" y="377" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">get_history()</text>
     <text x="662" y="391" text-anchor="middle" font-size="9" fill="#546E7A">&#8592; long-term Store</text>
 
     <rect x="580" y="408" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Scheduling</text>
+    <text x="662" y="427" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">&#128197; Scheduling</text>
     <text x="662" y="443" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">book_appointment()</text>
     <text x="662" y="457" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">find_OR_slot()</text>
     <text x="662" y="471" text-anchor="middle" font-size="9" fill="#546E7A">post-approval action</text>
 
     <rect x="580" y="488" width="165" height="68" rx="8" fill="#F3E5F5" stroke="#AB47BC" stroke-width="1.3" filter="url(#sh)"/>
-    <text x="662" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">Billing / Insurance</text>
+    <text x="662" y="507" text-anchor="middle" font-size="12" font-weight="800" fill="#6A1B9A">&#128179; Billing / Insurance</text>
     <text x="662" y="523" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">verify_coverage()</text>
     <text x="662" y="537" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono',monospace" fill="#424242">code_ICD10()</text>
     <text x="662" y="551" text-anchor="middle" font-size="9" fill="#546E7A">compliance check</text>
@@ -224,7 +224,7 @@
 
   <!-- ========== ROW E: HITL interrupt ========== -->
   <polygon points="335,715 725,715 758,750 725,785 335,785 302,750" fill="#FFF3E0" stroke="#E65100" stroke-width="2" filter="url(#sh)"/>
-  <text x="530" y="737" text-anchor="middle" font-size="13" font-weight="800" fill="#E65100">HUMAN-IN-THE-LOOP &#8212; interrupt()</text>
+  <text x="530" y="737" text-anchor="middle" font-size="13" font-weight="800" fill="#E65100">&#9888; HUMAN-IN-THE-LOOP &#8212; interrupt()</text>
   <text x="530" y="755" text-anchor="middle" font-size="11" fill="#BF360C">Attending Physician Review</text>
   <text x="530" y="773" text-anchor="middle" font-size="10" font-family="'JetBrains Mono',monospace" fill="#5D4037">Command(resume={"approval_status": "approved" | "rejected: ..."})</text>
 
