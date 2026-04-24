@@ -528,10 +528,10 @@ permalink: /session-05/
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
       </a>
       <a class="s1-btn s1-btn-resource" href="https://youtu.be/IVts6ztrkFg?si=eo0_y9z0LluIqhKw" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#9654;</span> Recap video (1)
+        <span class="s1-btn-icon">&#9654;</span> What are Deep Agents?
       </a>
       <a class="s1-btn s1-btn-resource" href="https://youtu.be/5tn6O0uXYEg?si=pHkgC4ckI0lc64Lz" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#9654;</span> Recap video (2)
+        <span class="s1-btn-icon">&#9654;</span> Build a Research Agent with Deep Agents
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session5/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
