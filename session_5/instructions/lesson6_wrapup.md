@@ -41,7 +41,27 @@ permalink: /session-05/lesson-6-instructions/
 
 ## NotebookLM review
 
-Use your **Session 5 NotebookLM** (linked from the Session 5 main page) with sources such as this curriculum, the LangChain/LangGraph docs, and your Colab notebooks. Try *Audio Overview* and self-quiz in the chat about when to reach for `create_agent` vs a full `StateGraph`.
+Open the **Session 5** notebooks below (one per lesson). Each notebook is grounded on that lesson’s materials — use *Audio Overview*, flashcards, and chat self-quiz to revisit concepts before the assignment.
+
+| Lesson | Topic | NotebookLM |
+|--------|-------|------------|
+| 1 | LangChain v1 Foundations | [Open notebook](https://notebooklm.google.com/notebook/87a0a4d3-b31a-4f2c-8b38-6dad25a7969d) |
+| 2 | Tools & the Agent Loop | [Open notebook](https://notebooklm.google.com/notebook/447ba678-75e8-4eb0-8b64-b917b0c5261a) |
+| 3 | LangGraph — Stateful Workflows | [Open notebook](https://notebooklm.google.com/notebook/ef66a671-f570-4e96-990c-a23de0de2bbd) |
+| 4 | Memory & Persistence | [Open notebook](https://notebooklm.google.com/notebook/b8898366-a3e2-476e-bf1e-d72597573a41) |
+| 5 | Multi-Agent & Human-in-the-Loop | [Open notebook](https://notebooklm.google.com/notebook/1cb8c75b-674b-40b8-bee6-80c04b33795b) |
+| 6 | Wrap-Up — Review & Consolidation | [Open notebook](https://notebooklm.google.com/notebook/b520f921-2314-418b-8d69-7e6450bd68d7) |
+
+**Tip:** Ask the chat when to reach for `create_agent` vs a full `StateGraph`, and to explain common pitfalls (vague `@tool` docstrings, missing checkpointers, `interrupt()` without persistence).
+
+---
+
+## Session recap videos (YouTube)
+
+Short walkthroughs you can watch while reviewing:
+
+- [Session recap (part 1)](https://youtu.be/IVts6ztrkFg?si=eo0_y9z0LluIqhKw)
+- [Session recap (part 2)](https://youtu.be/5tn6O0uXYEg?si=pHkgC4ckI0lc64Lz)
 
 ---
 
