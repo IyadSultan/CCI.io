@@ -56,12 +56,12 @@ Open the **Session 5** notebooks below (one per lesson). Each notebook is ground
 
 ---
 
-## Session recap videos (YouTube)
+## Related videos (YouTube)
 
-Short walkthroughs you can watch while reviewing:
+Titles match what you see on YouTube:
 
-- [Session recap (part 1)](https://youtu.be/IVts6ztrkFg?si=eo0_y9z0LluIqhKw)
-- [Session recap (part 2)](https://youtu.be/5tn6O0uXYEg?si=pHkgC4ckI0lc64Lz)
+- [What are Deep Agents?](https://youtu.be/IVts6ztrkFg?si=eo0_y9z0LluIqhKw)
+- [Build a Research Agent with Deep Agents](https://youtu.be/5tn6O0uXYEg?si=pHkgC4ckI0lc64Lz)
 
 ---
 
