@@ -329,7 +329,7 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-1-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/87a0a4d3-b31a-4f2c-8b38-6dad25a7969d" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson1_framework_decision.html" target="_blank">
@@ -368,7 +368,7 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-2-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/447ba678-75e8-4eb0-8b64-b917b0c5261a" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson2_tool_design.html" target="_blank">
@@ -407,7 +407,7 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-3-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/ef66a671-f570-4e96-990c-a23de0de2bbd" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson3_workflow_designer.html" target="_blank">
@@ -446,7 +446,7 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-4-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b8898366-a3e2-476e-bf1e-d72597573a41" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson4_memory_architect.html" target="_blank">
@@ -485,7 +485,7 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-5-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/1cb8c75b-674b-40b8-bee6-80c04b33795b" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson5_multiagent_architect.html" target="_blank">
@@ -524,8 +524,14 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-05/lesson-6-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Review
       </a>
-      <a class="s1-btn s1-btn-notebook" href="#" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b520f921-2314-418b-8d69-7e6450bd68d7" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://youtu.be/IVts6ztrkFg?si=eo0_y9z0LluIqhKw" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Recap video (1)
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://youtu.be/5tn6O0uXYEg?si=pHkgC4ckI0lc64Lz" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Recap video (2)
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session5/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
@@ -533,8 +539,8 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/assets/khcc_hospital_multiagent_langgraph.svg" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128202;</span> Architecture diagram (SVG)
       </a>
-      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_5/references/langgraph_langchain_for_idiots.html" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128216;</span> LangChain &amp; LangGraph For Idiots (reference book)
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_5/references/langgraph_langchain_for_doctors.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128216;</span> LangChain &amp; LangGraph For doctors (reference book)
       </a>
       <a class="s1-btn s1-btn-skill" href="{{ site.baseurl }}/session_5/assets/langchain_graph_skill.zip" download>
         <span class="s1-btn-icon">&#11088;</span> Download Claude Skill (.zip)
