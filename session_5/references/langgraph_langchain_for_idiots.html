@@ -481,6 +481,7 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
     <h5>Front Matter</h5>
     <a class="chapter" href="#cover">Cover</a>
     <a class="chapter" href="#intro">How to Read This Book</a>
+    <a class="chapter" href="#glossary">Plain Language Glossary</a>
 
     <h5>Part I &middot; Getting Oriented</h5>
     <a class="chapter" href="#ch1">1. The Layered Picture</a>
@@ -532,8 +533,10 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
 
       <p class="lead">
         This book hands you <strong>LangChain</strong>, <strong>LangGraph</strong>, and <strong>Deep Agents</strong>
-        in the friendliest way we can manage. No jargon fog. Just enough theory, lots of copy-pasteable
-        Python, and a huge pile of &quot;don&#39;t do this&quot; boxes so you skip the landmines.
+        in the friendliest way we can manage. Dense words still appear &mdash; that is how the libraries name things.
+        When <em>Runnable</em>, <em>middleware</em>, or <em>versioning</em> make your eyes cross, jump to the
+        <a href="#glossary"><strong>Plain Language Glossary</strong></a> (right after this chapter) for bedside-table
+        explanations, then come back.
       </p>
 
       <div class="fidi-callout remember">
@@ -574,6 +577,111 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
       <div class="fidi-callout try">
         <div class="icon">&#128736;</div>
         <div><span class="label">Try This</span><p>A tiny hands-on exercise to lock the concept in.</p></div>
+      </div>
+    </section>
+
+    <!-- ============ GLOSSARY ============ -->
+    <section id="glossary">
+      <h2 class="part">Front Matter</h2>
+      <h2 class="chapter"><span class="num">0A</span>Plain Language Glossary</h2>
+
+      <p class="lead">
+        Think of this as the &quot;decoder ring&quot; for vocabulary that shows up in docs, error messages, and the chapters
+        below. You do <strong>not</strong> need to memorise definitions &mdash; you need a mental picture so the code snippets
+        stop feeling like random spells.
+      </p>
+
+      <h3 id="glossary-runnable">Runnable</h3>
+      <p>
+        In LangChain, a <strong>Runnable</strong> is any building block that follows the <em>same simple contract</em>:
+        you hand it input, you get output. The magic word for &quot;run it&quot; is <code>.invoke(...)</code> (batch and stream
+        variants exist, but <code>invoke</code> is the one you will see first).
+      </p>
+      <p>
+        <strong>Clinical analogy:</strong> a Runnable is like a <em>orderable clinical module</em> &mdash; &quot;CBC
+        interpretation&quot;, &quot;drug interaction check&quot;, &quot;summarise discharge note&quot; &mdash; each module knows how to
+        accept a standard requisition and return a standard result. LangChain wires those modules in sequence because they
+        all share the same plug shape.
+      </p>
+      <p>
+        A chat model, a prompt template, a retriever, an agent, and even an entire LangGraph <code>CompiledStateGraph</code>
+        can all behave as Runnables. That is why you keep seeing <code>model.invoke(...)</code>,
+        <code>retriever.invoke(...)</code>, and <code>agent.invoke(...)</code> &mdash; same verb, different &quot;specialty.&quot;
+      </p>
+
+      <h3 id="glossary-invoke"><code>invoke()</code> and <code>RunnableConfig</code></h3>
+      <p>
+        <code>invoke</code> means &quot;execute <strong>one</strong> logical step with this payload.&quot; For agents and graphs,
+        the payload is usually a dictionary (for example <code>{&quot;messages&quot;: [...]}</code>). For a bare model it might
+        just be a string or a list of messages.
+      </p>
+      <p>
+        <strong>RunnableConfig</strong> is the optional second argument carrying <em>runtime settings</em> &mdash; not part
+        of the medical chart, but part of <em>how the run is wired</em>: which conversation thread (<code>thread_id</code>),
+        tracing tags, recursion limits, and other tunables. Chapter&nbsp;7 shows <code>def node(state, config)</code> when a
+        graph node needs to read those settings (for example to log the active <code>thread_id</code>).
+      </p>
+
+      <h3 id="glossary-versioning">Versioning, semver, and &quot;pinning&quot;</h3>
+      <p>
+        Python libraries publish <strong>version numbers</strong> so you know what code you installed. LangChain splits
+        functionality across several packages (<code>langchain</code>, <code>langchain-core</code>, <code>langgraph</code>,
+        provider packages like <code>langchain-openai</code>, etc.). They do <strong>not</strong> all move in lockstep.
+      </p>
+      <p>
+        <strong>Semver</strong> (semantic versioning) is a polite promise about compatibility: versions look like
+        <code>MAJOR.MINOR.PATCH</code> (for example <code>1.2.3</code>). When the <strong>major</strong> number changes, the
+        authors are warning you that breaking changes are allowed. When only <strong>minor</strong> or <strong>patch</strong>
+        changes, upgrades are meant to be gentler.
+      </p>
+      <p>
+        <strong>Pinning</strong> means writing your <code>requirements.txt</code> so <code>pip</code> installs a <em>known
+        safe band</em>, e.g. <code>langchain&gt;=1.0,&lt;2.0</code> (&quot;1.x series only&quot;). That prevents a silent
+        <code>pip install --upgrade</code> from jumping you to a future 2.0 that renames half the imports overnight.
+      </p>
+      <p>
+        <strong>Why the book fusses about <code>langchain-community</code>:</strong> that mega-package historically did
+        <em>not</em> obey semver strictly. Treat it like blood products &mdash; only upgrade on purpose, pin to a minor
+        range, and prefer smaller dedicated packages when they exist. Chapter&nbsp;3 lists concrete pins.
+      </p>
+
+      <h3 id="glossary-middleware">Middleware (agent middleware)</h3>
+      <p>
+        <strong>Middleware</strong> is code that sits <em>around</em> the model step of an agent &mdash; not replacing the
+        model, but intercepting the loop so you can add cross-cutting behaviour: logging, guardrails, retries, human
+        approval, token trimming, and so on.
+      </p>
+      <p>
+        <strong>Clinical analogy:</strong> middleware is like the safety checks around high-risk orders: pharmacy
+        verification, dual sign-off for chemotherapy, or an EHR alert that fires <em>before</em> the order is committed.
+        The clinician (the LLM) still writes the order, but the workflow can pause, ask questions, or attach mandatory
+        context.
+      </p>
+      <p>
+        LangChain 1.0 agents expect you to attach middleware as a list on <code>create_agent(..., middleware=[...])</code>.
+        Hooks such as <code>before_model</code> / <code>after_model</code> are just named interception points &mdash;
+        &quot;run this snippet before the LLM is called&quot; or &quot;right after the LLM responds.&quot; Chapter&nbsp;5 walks through
+        human-in-the-loop middleware in detail.
+      </p>
+
+      <h3>Quick map: where each idea shows up</h3>
+      <table>
+        <thead><tr><th>Term</th><th>First deep dive</th></tr></thead>
+        <tbody>
+          <tr><td>Runnable / <code>invoke</code></td><td>Chapters 4&ndash;6 (agents, RAG), everywhere in examples</td></tr>
+          <tr><td>Versioning / pins</td><td>Chapter 3</td></tr>
+          <tr><td>Middleware</td><td>Chapters 2 (matrix), 4 (knobs), 5 (HITL)</td></tr>
+          <tr><td><code>RunnableConfig</code> in graphs</td><td>Chapter 7 (node signatures)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label">How to use this page</span>
+          <p>Skim once, bookmark it, then ignore it until a word annoys you. That is exactly how pocket reference cards
+          are meant to work in clinic.</p>
+        </div>
       </div>
     </section>
 
@@ -673,7 +781,10 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
         <div class="icon">&#129504;</div>
         <div>
           <span class="label">Deep Agents Middleware Stack</span>
-          <p>Deep Agents ships a built-in middleware layer &mdash; you configure, not implement:</p>
+          <p>Deep Agents ships a built-in middleware layer &mdash; you configure, not implement. If the word
+          <em>middleware</em> still sounds like enterprise IT, read
+          <a href="#glossary-middleware">Glossary &rarr; Middleware</a> first; then the list below will read like a stack of
+          optional safety rails rather than random buzzwords.</p>
           <ul>
             <li><code>TodoListMiddleware</code> &mdash; <code>write_todos</code> tool (always on)</li>
             <li><code>FilesystemMiddleware</code> &mdash; <code>ls</code>, <code>read_file</code>, <code>write_file</code>, <code>edit_file</code>, <code>glob</code>, <code>grep</code> (always on)</li>
@@ -699,6 +810,12 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
       </table>
 
       <h3>The Quick Reference Matrix</h3>
+      <p class="fidi-sans" style="font-size:0.92rem;color:var(--muted);margin-bottom:0.75rem;">
+        <strong>Middleware</strong> in the Deep Agents column means &quot;batteries-included hooks&quot; (planning, files,
+        human approval) that ship as pre-built interceptors &mdash; see the
+        <a href="#glossary-middleware">glossary &rarr; Middleware</a> for the plain-language picture before you stare at the
+        feature names.
+      </p>
       <table>
         <thead><tr><th></th><th>LangChain</th><th>LangGraph</th><th>Deep Agents</th></tr></thead>
         <tbody>
@@ -740,6 +857,17 @@ permalink: /session_5/references/langgraph_langchain_for_doctors.html
           <span class="label">LangChain 1.0 Is the Line</span>
           <p><strong>Always start new projects on LangChain 1.0+.</strong> The 0.3 branch is
           maintenance-only. Python 3.10+ is required.</p>
+        </div>
+      </div>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label">Reading the version tables below</span>
+          <p>When you see <code>langchain&gt;=1.0,&lt;2.0</code>, read it aloud as &quot;any 1-dot-something release, but
+          <strong>stop before 2.0</strong>.&quot; That comma-separated pair is how Python projects express a safe upgrade lane.
+          If semver or pinning still feels abstract, read the two-minute explainer in the
+          <a href="#glossary-versioning">Plain Language Glossary &rarr; Versioning</a> section first, then return here.</p>
         </div>
       </div>
 
@@ -960,6 +1088,28 @@ from langchain_pinecone import PineconeVectorStore</code></pre></div>
         </tbody>
       </table>
 
+      <div class="fidi-callout tech">
+        <div class="icon">&#129504;</div>
+        <div>
+          <span class="label">Why everything is <code>.invoke(...)</code></span>
+          <p>Under the hood, an agent built with <code>create_agent</code> is a <strong>Runnable</strong>: the same
+          &quot;give input, get output&quot; contract as a model or a retriever. That is why the examples all end with
+          <code>agent.invoke({&quot;messages&quot;: ...})</code>. If the word Runnable makes you twitch, read
+          <a href="#glossary-runnable">Glossary &rarr; Runnable</a> &mdash; it is shorter than it sounds.</p>
+        </div>
+      </div>
+
+      <div class="fidi-callout remember">
+        <div class="icon">&#128221;</div>
+        <div>
+          <span class="label">What &quot;<code>middleware</code>&quot; means in this row</span>
+          <p>Here it is <strong>not</strong> hospital middleware in the IT sense. It is a list of small functions LangChain
+          calls <em>before or after</em> the LLM thinks, so you can pause for approval, trim context, log tool calls, or retry
+          failures without rewriting the whole agent. Same idea as double-checks in a CPOE workflow. Full story:
+          <a href="#glossary-middleware">Glossary &rarr; Middleware</a> and Chapter&nbsp;5.</p>
+        </div>
+      </div>
+
       <h3>Your First Agent</h3>
 <pre><code class="language-python">from langchain.agents import create_agent
 from langchain_core.tools import tool
@@ -1144,6 +1294,23 @@ print(result["messages"][-1].content)</code></pre></div>
         Middleware is the seatbelt of your agent. It intercepts the agent loop so you can add
         human approval, retry logic, logging, or anything else &mdash; <em>without</em> rewriting the agent itself.
       </p>
+
+      <p>
+        More slowly: picture each turn of the agent as <strong>read chart &rarr; think &rarr; maybe call a tool &rarr;
+        think again</strong>. Middleware lets you hang tiny programmes on those transitions. Some run
+        <em>before</em> the model sees the chart (for example stripping identifiers), some <em>after</em> the model drafts
+        an action (for example forcing a human &quot;sign&quot; before <code>send_email</code> fires). LangChain exposes those
+        moments as named hooks so you are not copy-pasting the same guard code into every project.
+      </p>
+
+      <div class="fidi-callout tip">
+        <div class="icon">&#128161;</div>
+        <div>
+          <span class="label">If you only remember one sentence</span>
+          <p>Middleware = &quot;extra clinicians in the corridor&quot; who can slow the case down, add warnings, or demand
+          co-signatures &mdash; the attending LLM still makes the plan, but the corridor staff keep the process safe.</p>
+        </div>
+      </div>
 
       <h3>The HITL Setup</h3>
       <p><strong>Always needs:</strong> a <code>checkpointer</code> + a <code>thread_id</code>. No exceptions.</p>
@@ -1622,6 +1789,13 @@ class State(TypedDict):
       </div>
 
       <h3>Node Function Signatures</h3>
+      <p>
+        LangGraph nodes are plain Python functions, but LangChain still thinks in terms of the <strong>Runnable</strong>
+        vocabulary: compiled graphs expose <code>.invoke</code>, and per-node extras arrive via <code>RunnableConfig</code>.
+        If that name feels opaque, jump back to <a href="#glossary-invoke"><code>invoke</code> / RunnableConfig in the glossary</a>
+        for the &quot;runtime paperwork vs patient data&quot; split, then look at the signatures below.
+      </p>
+
       <table>
         <thead><tr><th>Signature</th><th>When</th></tr></thead>
         <tbody>
