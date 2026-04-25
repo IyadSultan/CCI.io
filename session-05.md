@@ -332,6 +332,9 @@ permalink: /session-05/
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/87a0a4d3-b31a-4f2c-8b38-6dad25a7969d" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
+      <a class="s1-btn s1-btn-resource" href="https://docs.google.com/presentation/d/17z44snqsQe-C4V24_fUyPJMNC7csvgsuxCBC5me4eWU/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128202;</span> Agents Presentation
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_5/practices/practice_lesson1_framework_decision.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Framework Decision
       </a>

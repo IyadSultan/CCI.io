@@ -15,6 +15,12 @@ permalink: /session-05/lesson-1-instructions/
 
 ---
 
+## Agents Presentation
+
+[**Agents Presentation**](https://docs.google.com/presentation/d/17z44snqsQe-C4V24_fUyPJMNC7csvgsuxCBC5me4eWU/edit?usp=sharing) (Google Slides) — open in your browser to follow the deck while you work through the instructor introduction and Colab lab.
+
+---
+
 ## Instructor Introduction
 
 Welcome to Session 5. Over the past four sessions you have built a strong foundation: prompt engineering in Session 1, Python programming in Session 2, direct OpenAI API calls with tool calling and conversation memory in Session 3, and HuggingFace models in Session 4. Today we step up to a framework that ties all of these pieces together. LangChain is an open-source Python library that gives you reusable building blocks for working with large language models -- think of it as a toolkit that handles the boilerplate so you can focus on your clinical application logic. LangGraph, its companion library, adds stateful graph-based workflows on top. In this first lesson you will install LangChain, create your first agent with `create_agent`, understand the Runnable interface that powers every component, and see exactly how a LangChain call compares to the raw `client.chat.completions.create()` you wrote in Session 3. By the end you will appreciate why a framework matters when your application grows beyond a single API call.
@@ -41,6 +47,7 @@ The Runnable interface also supports the pipe operator (`|`), allowing you to ch
 
 ### Before Class -- Preparation (15-20 min)
 
+- **Slides:** Walk through [**Agents Presentation**](https://docs.google.com/presentation/d/17z44snqsQe-C4V24_fUyPJMNC7csvgsuxCBC5me4eWU/edit?usp=sharing) (Google Slides) once before class if you have time.
 - **Read:** LangChain official introduction and concepts page -- focus on "Why LangChain" and "Runnables": <https://python.langchain.com/docs/concepts/>
 - **Skim:** The `create_agent` documentation in the LangGraph prebuilt module: <https://langchain-ai.github.io/langgraph/reference/prebuilt/>
 - **Warm-up question:** In Session 3 you wrote a `while` loop that called `client.chat.completions.create()`, checked for tool calls, executed them, appended results, and called the API again. What problems might arise if you need to add error handling, logging, memory, and five more tools to that loop? Write down two or three pain points in plain English.
