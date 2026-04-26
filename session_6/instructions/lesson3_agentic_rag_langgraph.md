@@ -41,6 +41,7 @@ The cost trade-off is real. Agentic RAG can use 3-5x the tokens of basic RAG bec
 
 ### Before Class -- Preparation (20-25 min)
 
+- **Data:** Fresh Colab runtime? Clone the repo so **`WT.pdf`** is available: `!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git` → `/content/CCI.io/session_6/data/WT.pdf`. Guide: <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md>
 - **Read:** LangGraph Agentic RAG tutorial: <https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/>
 - **Skim:** The Self-RAG paper abstract (Asai et al., 2023): <https://arxiv.org/abs/2310.11511> and the CRAG paper (Yan et al., 2024): <https://arxiv.org/abs/2401.15884>
 - **Warm-up question:** Write down a Wilms tumor question your basic RAG from Lesson 1 answered poorly. Why do you think it failed -- bad query phrasing, missing context, or generator issue? Predict whether agentic RAG would help.

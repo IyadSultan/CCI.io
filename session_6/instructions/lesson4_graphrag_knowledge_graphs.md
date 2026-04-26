@@ -39,6 +39,7 @@ NetworkX is the right starting point for clinical teams because it runs in-proce
 
 ### Before Class -- Preparation (20-25 min)
 
+- **Data:** Fresh Colab runtime? Clone the repo so **`WT.pdf`** is available: `!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git` → `/content/CCI.io/session_6/data/WT.pdf`. Guide: <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md>
 - **Read:** Microsoft GraphRAG introduction: <https://microsoft.github.io/graphrag/> and the launch blog: <https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/>
 - **Skim:** NetworkX tutorial introduction: <https://networkx.org/documentation/stable/tutorial.html>
 - **Warm-up exercise:** On paper, sketch the entities and relationships you would expect to extract from the Wilms tumor regimen tables. Use boxes for entities (drugs, regimens, stages) and arrows for relationships. This is the schema you will implement in NetworkX.

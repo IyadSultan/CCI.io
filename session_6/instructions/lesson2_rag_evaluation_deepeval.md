@@ -41,6 +41,7 @@ The workflow is to assemble a `test_set` of `LLMTestCase` objects with input, ac
 
 ### Before Class -- Preparation (20-25 min)
 
+- **Data:** You still need **`WT.pdf`** on your Colab disk (same as Lesson 1). If you start a fresh runtime: `!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git` then use `/content/CCI.io/session_6/data/WT.pdf`. Details: <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md>
 - **Read:** DeepEval introduction and metrics overview: <https://docs.confident-ai.com/docs/getting-started> and <https://docs.confident-ai.com/docs/metrics-introduction>
 - **Skim:** The RAGAS paper or blog summary on the four-metric RAG evaluation framework (DeepEval and RAGAS use the same conceptual metrics): <https://docs.ragas.io/en/stable/concepts/metrics/index.html>
 - **Warm-up exercise:** Write down five clinical questions about Wilms tumor that a KHCC pediatric oncology fellow might realistically ask. For each, write the ideal answer in one sentence. This will become your test set seed.

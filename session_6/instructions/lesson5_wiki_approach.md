@@ -41,6 +41,7 @@ The pros are real. Transparency: you can read the wiki yourself and verify it. D
 
 ### Before Class -- Preparation (20-25 min)
 
+- **Data:** Fresh Colab runtime? Clone the repo so **`WT.pdf`** is available: `!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git` → `/content/CCI.io/session_6/data/WT.pdf`. Guide: <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md>
 - **Read:** Karpathy's wiki/catalog gist: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
 - **Skim:** Any internal clinical wiki or pathway document you have access to at KHCC. Notice how the human authors structured it -- index, entity pages, cross-references. The LLM is going to do the same thing.
 - **Warm-up exercise:** On paper, write what you think the `index.md` of a Wilms tumor wiki should contain. Aim for 15-25 entries grouped by category (regimens, histologies, stages, procedures, side effects, follow-up).
