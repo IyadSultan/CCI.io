@@ -286,7 +286,7 @@ title: CCI.io
     <div class="cci-num" style="background:#0277BD;">6</div>
     <div class="cci-card-body">
       <p class="title">RAG &amp; Clinical Document Retrieval</p>
-      <p class="desc">Embeddings, vector stores, retrieval-augmented generation</p>
+      <p class="desc">LlamaParse, DeepEval, agentic RAG, GraphRAG, wiki pattern, NotebookLM</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

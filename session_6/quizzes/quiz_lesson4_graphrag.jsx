@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "What kind of clinical question is GraphRAG most likely to answer better than vector RAG?",
+    options: [
+      "What is the dose of vincristine? (single fact lookup)",
+      "Which drugs in the standard Wilms regimen cause cardiotoxicity? (multi-hop: regimen → drugs → side effects)",
+      "What is the title of section 3? (literal text match)",
+      "What is the page count of the PDF?"
+    ],
+    correct: 1,
+    explanation: "Multi-hop questions are the GraphRAG sweet spot. Vector RAG would retrieve chunks about 'cardiotoxicity' and chunks about 'standard regimen' but cannot reliably JOIN them. The graph encodes the join explicitly: regimen-INCLUDES->drug, drug-CAUSES->side_effect."
+  },
+  {
+    question: "In a GraphRAG extraction step, what is an LLM doing exactly?",
+    options: [
+      "Embedding the chunks into vectors",
+      "Reading each chunk and producing structured (entity, type) and (entity, relationship, entity) tuples",
+      "Running graph algorithms like PageRank",
+      "Translating the chunks into Cypher queries"
+    ],
+    correct: 1,
+    explanation: "Extraction is structured output: the LLM reads a chunk and produces a list of typed entities (e.g., Drug: cisplatin) and typed edges (e.g., cisplatin -CAUSES-> nephrotoxicity). After extraction across all chunks, you deduplicate entities and assemble the graph."
+  },
+  {
+    question: "After assembling a graph from a 200-page PDF, you have ~5000 nodes and ~12000 edges. Which question type is best served by 'community summaries' rather than direct traversal?",
+    options: [
+      "What is the dose for stage III Wilms tumor?",
+      "What are the major themes and complications discussed across the entire document?",
+      "Does drug A interact with drug B?",
+      "Who wrote the guideline?"
+    ],
+    correct: 1,
+    explanation: "Thematic / global questions ('major themes', 'overall complications') are answered by summarizing communities (clusters of densely connected entities) rather than walking from a seed. Local questions ('what is the dose?') are answered by traversal from a starting entity."
+  },
+  {
+    question: "When is GraphRAG NOT worth the cost?",
+    options: [
+      "When all your questions are narrow lookups against a small corpus and entity extraction would dominate the bill",
+      "When you have multi-hop questions",
+      "When relationships matter to your domain",
+      "When you have a clinical guideline corpus"
+    ],
+    correct: 0,
+    explanation: "Entity extraction across a large PDF is expensive (LLM calls per chunk) and the graph must be re-built on every update. If your questions are narrow lookups (vector RAG handles them well) and your corpus is small, the extra cost of GraphRAG buys you little. Use vector RAG by default; reach for GraphRAG when multi-hop or thematic questions dominate."
+  },
+  {
+    question: "Which tool combination is appropriate for a teaching/prototype scale GraphRAG in Colab?",
+    options: [
+      "Neo4j Aura cluster + Cypher queries",
+      "NetworkX in memory + LLM extraction + Python traversal",
+      "A custom C++ graph engine",
+      "A vector store only — no graph needed"
+    ],
+    correct: 1,
+    explanation: "NetworkX is in-memory, free, and perfect for teaching and prototypes up to a few thousand entities. For production scale at KHCC you would graduate to Neo4j with Cypher, but every concept you learn in NetworkX maps directly."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You can tell when GraphRAG earns its cost." : score >= 3 ? "Good — review when to choose vector RAG vs GraphRAG." : "Review the GraphRAG architecture and the multi-hop question pattern."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
