@@ -1,0 +1,109 @@
+import React, { useState } from 'react';
+
+const NODES = [
+  { id: 'rewrite', label: 'rewrite_query', desc: 'LLM reformulates the user question into a retrieval-optimized query' },
+  { id: 'retrieve', label: 'retrieve_documents', desc: 'Vector store returns top-k chunks for the current query' },
+  { id: 'grade', label: 'grade_documents', desc: 'LLM grades each chunk for relevance; drops irrelevant ones' },
+  { id: 'decompose', label: 'decompose_question', desc: 'LLM splits a complex question into sub-questions' },
+  { id: 'generate', label: 'generate_answer', desc: 'LLM produces the final grounded answer from accumulated context' }
+];
+
+const scenarios = [
+  {
+    title: "Simple lookup",
+    question: "What is the dose of vincristine in the standard Wilms regimen?",
+    correctNodes: ['retrieve', 'generate'],
+    explanation: "A narrow lookup question against a well-structured guideline. Basic RAG (retrieve → generate) is enough. Adding rewrite, grade, or decomposition just burns tokens for no quality gain."
+  },
+  {
+    title: "Vague natural language",
+    question: "What if my kid has weak kidneys before chemo starts?",
+    correctNodes: ['rewrite', 'retrieve', 'generate'],
+    explanation: "The user's phrasing ('kid has weak kidneys') will not embed close to guideline language ('pediatric renal impairment'). Query rewriting fixes this. Then retrieve and generate. No decomposition needed — it is one topic."
+  },
+  {
+    title: "Multi-hop synthesis",
+    question: "For a 4-year-old with stage III favorable-histology Wilms tumor and renal impairment, what regimen modifications apply?",
+    correctNodes: ['decompose', 'retrieve', 'grade', 'generate'],
+    explanation: "Three distinct topics (staging/regimen, age/pediatric, renal impairment). Decompose into sub-questions, retrieve per sub-question, grade to drop irrelevant chunks, synthesize. This is the canonical agentic-RAG case."
+  },
+  {
+    title: "Ambiguous query likely to retrieve junk",
+    question: "What about side effects?",
+    correctNodes: ['rewrite', 'retrieve', 'grade', 'generate'],
+    explanation: "The question is dangerously vague — without rewriting it will pull random side-effect mentions across the entire document. Rewrite (e.g., 'most common side effects of standard Wilms tumor chemotherapy regimen'), retrieve, grade to filter junk, then generate."
+  }
+];
+
+export default function Practice() {
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const s = scenarios[idx];
+
+  const toggle = (id) => {
+    if (submitted) return;
+    setPicked(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  };
+
+  const submit = () => {
+    const correctSet = new Set(s.correctNodes);
+    const pickedSet = new Set(picked);
+    const exact = correctSet.size === pickedSet.size && [...correctSet].every(x => pickedSet.has(x));
+    if (exact) setScore(sc => sc + 1);
+    setSubmitted(true);
+  };
+
+  const next = () => { setIdx(i => i + 1); setPicked([]); setSubmitted(false); };
+  const reset = () => { setIdx(0); setPicked([]); setSubmitted(false); setScore(0); };
+
+  if (idx >= scenarios.length) {
+    return (
+      <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Agentic RAG Designer Complete!</h2>
+        <p style={{ fontSize: 20 }}>Exactly correct: {score} / {scenarios.length}</p>
+        <div style={{ background: score >= 3 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+          {score >= 3 ? "Excellent — you match agentic patterns to question complexity." : "Review when each node earns its cost. Simple questions do not need every node."}
+        </div>
+        <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((idx + 1) / scenarios.length) * 100}%` }} />
+      </div>
+      <h3>Design {idx + 1} of {scenarios.length}: {s.title}</h3>
+      <p style={{ background: '#fff3cd', padding: 12, borderRadius: 8 }}><strong>Clinical question:</strong> {s.question}</p>
+      <p style={{ marginTop: 12, fontWeight: 'bold' }}>Which nodes belong in your agentic RAG flow? (Select all that apply.)</p>
+      {NODES.map(n => {
+        const isPicked = picked.includes(n.id);
+        const isCorrect = s.correctNodes.includes(n.id);
+        return (
+          <div key={n.id} onClick={() => toggle(n.id)} style={{
+            padding: 12, margin: '6px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${submitted ? (isCorrect ? '#198754' : isPicked ? '#dc3545' : '#dee2e6') : isPicked ? '#0d6efd' : '#dee2e6'}`,
+            background: submitted ? (isCorrect ? '#d4edda' : isPicked && !isCorrect ? '#f8d7da' : '#fff') : isPicked ? '#e7f1ff' : '#fff'
+          }}>
+            <div style={{ fontWeight: 'bold' }}>{n.label}</div>
+            <div style={{ fontSize: 13, color: '#555' }}>{n.desc}</div>
+          </div>
+        );
+      })}
+
+      {!submitted && <button onClick={submit} disabled={picked.length === 0} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: picked.length === 0 ? 'default' : 'pointer', opacity: picked.length === 0 ? 0.5 : 1 }}>Submit Design</button>}
+
+      {submitted && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{s.explanation}</p>
+          <p style={{ fontSize: 13, color: '#555' }}>Correct nodes: {s.correctNodes.join(' → ')}.</p>
+          <button onClick={next} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{idx + 1 < scenarios.length ? 'Next Scenario' : 'See Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}
