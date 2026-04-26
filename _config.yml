@@ -20,3 +20,4 @@ exclude:
   - "Session 2/quizzes/quiz_lesson6_wrapup_selfcheck.md"
   - "session_5/practices/*.jsx"
   - "session_5/quizzes/*.jsx"
+  - "session_6/session_6_curriculum.md"
