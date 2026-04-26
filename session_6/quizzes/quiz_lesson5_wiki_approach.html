@@ -1,0 +1,150 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 5 Quiz — Wiki Approach</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="{{ site.baseurl }}/session-06/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#0277BD;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B3E5FC;background:#E1F5FE;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B3E5FC'" onmouseout="this.style.background='#E1F5FE'">&#8249; Session 6</a>
+<div id="root"></div>
+<script type="text/babel">
+{% raw %}
+const { useState } = React;
+
+const questions = [
+  {
+    question: "What is the core philosophical difference between Karpathy's wiki approach and vector RAG?",
+    options: [
+      "The wiki uses a different LLM model",
+      "The wiki compiles understanding once at ingest time and stores it as curated pages; vector RAG re-derives understanding from raw chunks every query",
+      "The wiki only works for code, not clinical text",
+      "Vector RAG is open-source and the wiki is proprietary"
+    ],
+    correct: 1,
+    explanation: "Karpathy's framing: most RAG re-reads raw chunks every query and re-derives the same understanding repeatedly. A wiki shifts the work to ingest time — the LLM curates pages once, and queries become structured page reads. The expensive work happens at ingest, not query."
+  },
+  {
+    question: "In the wiki approach, what role does the LLM play at INGEST time?",
+    options: [
+      "It generates embeddings",
+      "It acts as a wiki maintainer — reads the new source, decides which entity pages need updating, edits each one with cross-references",
+      "It chunks the document",
+      "It produces a vector index"
+    ],
+    correct: 1,
+    explanation: "At ingest the LLM is a librarian/maintainer. It reads the new source and updates the relevant entity pages — adding facts, reconciling contradictions, adding cross-references. Querying then becomes much cheaper because the curation is already done."
+  },
+  {
+    question: "Which is NOT a component of a Karpathy-style wiki for clinical knowledge?",
+    options: [
+      "index.md (table of contents)",
+      "log.md (chronological ingest journal)",
+      "entity pages like staging.md, drug-cisplatin.md",
+      "A ChromaDB vector store of embedded chunks"
+    ],
+    correct: 3,
+    explanation: "The wiki approach explicitly does not use embeddings or a vector DB. It uses markdown files with cross-references — the index, the log, and many entity pages. That is the whole point: deterministic, debuggable, no embedding drift."
+  },
+  {
+    question: "When does the wiki approach win over vector RAG?",
+    options: [
+      "When you have millions of unstructured documents and need millisecond retrieval",
+      "When you have tens to thousands of authoritative sources, want transparency and debuggability, and care about multi-hop relationships",
+      "When you cannot afford any LLM calls",
+      "When you have no documents at all"
+    ],
+    correct: 1,
+    explanation: "The wiki shines at moderate scale (tens to thousands of authoritative sources) where you want to actually understand the corpus, not just search it. KHCC clinical guidelines fit this profile. At millions of documents, retrieval beats reading the index."
+  },
+  {
+    question: "What is the biggest practical risk in a wiki-based RAG?",
+    options: [
+      "Embedding drift over time",
+      "A sloppy maintainer prompt produces a sloppy wiki, and errors compound across ingests",
+      "Vector store latency",
+      "Token limits during retrieval"
+    ],
+    correct: 1,
+    explanation: "Because the LLM curates the wiki, the maintainer prompt is critical. A bad maintainer prompt that misclassifies entities or fails to reconcile contradictions will degrade the wiki over time. Unlike vector RAG where re-indexing fixes things cheaply, fixing a polluted wiki may require re-ingesting everything with a better prompt."
+  }
+];
+
+function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You understand the wiki paradigm and where it wins." : score >= 3 ? "Good — review the ingest-vs-query work split that defines the wiki approach." : "Re-read the lesson summary on Karpathy's wiki approach before moving on."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Quiz />);
+{% endraw %}
+</script>
+</body>
+</html>
