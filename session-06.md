@@ -339,7 +339,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_6/data/WT.pdf" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> WT.pdf (guideline)
@@ -387,7 +387,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://docs.confident-ai.com/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> DeepEval docs
@@ -426,7 +426,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> LangGraph agentic RAG
@@ -465,7 +465,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://microsoft.github.io/graphrag/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Microsoft GraphRAG
@@ -504,7 +504,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Karpathy wiki gist
@@ -537,7 +537,7 @@ permalink: /session-06/
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
-        <span class="s1-btn-icon">&#128209;</span> Session 6 materials (GitHub)
+        <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
       </a>
       <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Full curriculum (markdown)

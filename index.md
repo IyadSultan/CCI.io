@@ -282,10 +282,10 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-06/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-06/">
     <div class="cci-num" style="background:#0277BD;">6</div>
     <div class="cci-card-body">
-      <p class="title">RAG &amp; Clinical Document Retrieval</p>
+      <p class="title">RAG &amp; Clinical Document Retrieval <span class="cci-active-badge">Active</span></p>
       <p class="desc">LlamaParse, DeepEval, agentic RAG, GraphRAG, wiki pattern, NotebookLM</p>
     </div>
     <span class="arrow">&#8250;</span>
