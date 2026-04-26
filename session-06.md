@@ -338,7 +338,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson1_basic_rag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab1_Basic_RAG_LlamaParse_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_6/data/WT.pdf" target="_blank" rel="noopener noreferrer">
@@ -386,7 +386,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson2_deepeval.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab2_RAG_Evaluation_DeepEval_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://docs.confident-ai.com/" target="_blank" rel="noopener noreferrer">
@@ -425,7 +425,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson3_agentic_rag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab3_Agentic_RAG_LangGraph_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/" target="_blank" rel="noopener noreferrer">
@@ -464,7 +464,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson4_graphrag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab4_GraphRAG_KnowledgeGraphs_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://microsoft.github.io/graphrag/" target="_blank" rel="noopener noreferrer">
@@ -503,7 +503,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson5_wiki_approach.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab5_Wiki_Approach_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
       <a class="s1-btn s1-btn-resource" href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener noreferrer">
@@ -536,7 +536,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/391b5876-e522-45e4-9fbe-af316f5b1461" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session6/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
       </a>
       <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer">
