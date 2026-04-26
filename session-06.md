@@ -192,6 +192,28 @@ permalink: /session-06/
     transform: translateY(-1px);
   }
 
+  .s1-btn-practice {
+    background: #E8F5E9;
+    border-color: #A5D6A7;
+    color: #2E7D32 !important;
+  }
+
+  .s1-btn-practice:hover {
+    background: #C8E6C9;
+    transform: translateY(-1px);
+  }
+
+  .s1-btn-quiz {
+    background: #E3F2FD;
+    border-color: #90CAF9;
+    color: #1565C0 !important;
+  }
+
+  .s1-btn-quiz:hover {
+    background: #BBDEFB;
+    transform: translateY(-1px);
+  }
+
   .s1-btn-instructions {
     background: #F3E5F5;
     border-color: #CE93D8;
@@ -222,6 +244,17 @@ permalink: /session-06/
 
   .s1-btn-resource:hover {
     background: #CFD8DC;
+    transform: translateY(-1px);
+  }
+
+  .s1-btn-skill {
+    background: #FFF3E0;
+    border-color: #FFB74D;
+    color: #BF360C !important;
+  }
+
+  .s1-btn-skill:hover {
+    background: #FFE0B2;
     transform: translateY(-1px);
   }
 
@@ -267,7 +300,7 @@ permalink: /session-06/
   <a class="back" href="{{ site.baseurl }}/">&#8249; Home</a>
   <div class="s1-header-text">
     <h1>Session 6: RAG &amp; Clinical Document Retrieval</h1>
-    <p class="meta">6 lessons &middot; 5 Colab labs &middot; NotebookLM per lesson &middot; Full curriculum on GitHub</p>
+    <p class="meta">6 lessons &middot; 5 Colab labs &middot; Interactive practice &amp; quizzes &middot; NotebookLM per lesson &middot; 1 assignment</p>
   </div>
 </div>
 
@@ -298,6 +331,15 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/f47e638f-168a-4625-a39f-7ba9c21e99d9" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson1_pipeline_builder.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Pipeline Builder
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson1_basic_rag.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_6/data/WT.pdf" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> WT.pdf (guideline)
@@ -335,6 +377,15 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/a931223a-e147-4e0e-849a-c09e31bd7db5" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson2_score_the_rag.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Score the RAG
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson2_deepeval.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://docs.confident-ai.com/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> DeepEval docs
       </a>
@@ -364,6 +415,15 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/efa06fa9-5c74-46e0-9b35-423b47e74002" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson3_agentic_designer.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Agentic Designer
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson3_agentic_rag.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> LangGraph agentic RAG
@@ -395,6 +455,15 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/9939af33-a948-440e-8893-3049af84e0ca" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson4_extract_kg.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Extract KG
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson4_graphrag.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://microsoft.github.io/graphrag/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Microsoft GraphRAG
       </a>
@@ -424,6 +493,15 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/dd0d26da-a9c7-4633-8b6a-ae5eb03a0704" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson5_design_wiki.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Design Wiki
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson5_wiki_approach.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Karpathy wiki gist
@@ -471,9 +549,22 @@ permalink: /session-06/
   <p style="color:#CFD8DC;font-size:0.85rem;line-height:1.6;margin-bottom:0.75rem;">
     Build, evaluate, and harden a <strong>RAG system</strong> on a <strong>new</strong> oncology guideline PDF (not the in-class Wilms file). Use <strong>LlamaParse</strong>, justified chunking, <strong>ChromaDB</strong>, and an &quot;answer only from retrieved context&quot; prompt. Add a <strong>DeepEval</strong> suite on five grounded Q&amp;A pairs (all four metrics). Implement <strong>one agentic upgrade</strong> (query rewrite or grade-and-retry) and report metric deltas. For the stretch, add either a small <strong>GraphRAG</strong> slice or a <strong>Karpathy-style wiki</strong>. Full rubric and submission instructions: <code>session_6/session_6_curriculum.md</code> on the course repo.
   </p>
-  <p style="color:#90A4AE;font-size:0.8rem;line-height:1.5;margin-bottom:1rem;">
+  <p style="color:#90A4AE;font-size:0.8rem;line-height:1.5;margin-bottom:0.5rem;">
     <strong style="color:#FFC107;">Due:</strong> Before Session 7 &middot; <strong style="color:#FFC107;">Effort:</strong> ~5&ndash;7 hours &middot; <strong style="color:#FFC107;">Submit:</strong> per Dr. Iyad / CCI Academy (GitHub <code>assignments/session-6/</code> per curriculum).
   </p>
+  <p style="color:#90A4AE;font-size:0.8rem;line-height:1.5;margin-bottom:1rem;">
+    <strong style="color:#FFC107;">Grading (typical):</strong> Code &amp; correctness &middot; Clinical relevance &middot; Critical analysis &middot; Stretch (GraphRAG or wiki) &mdash; see rubric table in the curriculum file.
+  </p>
+  <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,193,7,0.25);border-radius:0.6rem;padding:1rem 1.15rem;margin-bottom:1.25rem;">
+    <p style="color:#FFC107;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin:0 0 0.5rem;">&#9888; Hints &mdash; Common pitfalls</p>
+    <ol style="margin:0;padding-left:1.25rem;color:#B0BEC5;font-size:0.8rem;line-height:1.7;">
+      <li><strong style="color:#CFD8DC;">Parsing quality gates everything.</strong> If you skip LlamaParse for a layout-heavy PDF, DeepEval will blame the retriever when the real bug is garbage text.</li>
+      <li><strong style="color:#CFD8DC;">Same embedding model at index and query.</strong> Mixing models makes vectors incomparable &mdash; answers look random.</li>
+      <li><strong style="color:#CFD8DC;">Version your index.</strong> Note which PDF build and chunk settings produced each score so you can audit &quot;which guideline&quot; an answer came from.</li>
+      <li><strong style="color:#CFD8DC;">Faithfulness first in clinic.</strong> High answer relevancy with low faithfulness is still unsafe; design prompts to refuse when context is thin.</li>
+      <li><strong style="color:#CFD8DC;">Do not ship agentic/graph/wiki complexity without a metric win.</strong> Show before/after tables so the extra cost is justified.</li>
+    </ol>
+  </div>
   <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
     <a href="https://academy.khcc.jo/course/view.php?id=208" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
       Open CCI Academy &#8594;

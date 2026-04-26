@@ -1,0 +1,152 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 4 Practice — Extract KG</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; padding-top: 48px; }
+  </style>
+</head>
+<body>
+<a href="{{ site.baseurl }}/session-06/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#0277BD;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B3E5FC;background:#E1F5FE;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B3E5FC'" onmouseout="this.style.background='#E1F5FE'">&#8249; Session 6</a>
+<div id="root"></div>
+<script type="text/babel">
+{% raw %}
+const { useState } = React;
+
+const PARAGRAPH = "Stage III favorable-histology Wilms tumor in pediatric patients is treated with a regimen of vincristine, actinomycin-D, and doxorubicin combined with flank radiotherapy. Doxorubicin is associated with cardiotoxicity and requires baseline echocardiogram. Vincristine commonly causes peripheral neuropathy. In patients with renal impairment, actinomycin-D dosing should be modified.";
+
+const ENTITY_OPTIONS = [
+  { id: 'wilms', label: 'Wilms tumor', type: 'Disease', correct: true },
+  { id: 'stage3', label: 'Stage III', type: 'Stage', correct: true },
+  { id: 'fh', label: 'favorable histology', type: 'Histology', correct: true },
+  { id: 'vincristine', label: 'vincristine', type: 'Drug', correct: true },
+  { id: 'actd', label: 'actinomycin-D', type: 'Drug', correct: true },
+  { id: 'dox', label: 'doxorubicin', type: 'Drug', correct: true },
+  { id: 'radio', label: 'flank radiotherapy', type: 'Procedure', correct: true },
+  { id: 'cardio', label: 'cardiotoxicity', type: 'SideEffect', correct: true },
+  { id: 'neuro', label: 'peripheral neuropathy', type: 'SideEffect', correct: true },
+  { id: 'renal', label: 'renal impairment', type: 'Condition', correct: true },
+  { id: 'echo', label: 'echocardiogram', type: 'Procedure', correct: true },
+  { id: 'pediatric', label: 'pediatric patients', type: 'AgeGroup', correct: true },
+  { id: 'aspirin', label: 'aspirin', type: 'Drug', correct: false },
+  { id: 'lung', label: 'lung cancer', type: 'Disease', correct: false },
+  { id: 'mri', label: 'MRI', type: 'Procedure', correct: false }
+];
+
+const RELATION_OPTIONS = [
+  { id: 'r1', text: 'vincristine — TREATS → Wilms tumor', correct: true },
+  { id: 'r2', text: 'doxorubicin — CAUSES → cardiotoxicity', correct: true },
+  { id: 'r3', text: 'vincristine — CAUSES → peripheral neuropathy', correct: true },
+  { id: 'r4', text: 'actinomycin-D — MODIFIED_BY → renal impairment', correct: true },
+  { id: 'r5', text: 'flank radiotherapy — TREATS → Wilms tumor', correct: true },
+  { id: 'r6', text: 'aspirin — TREATS → Wilms tumor', correct: false },
+  { id: 'r7', text: 'echocardiogram — INDICATES → cardiotoxicity', correct: true },
+  { id: 'r8', text: 'MRI — TREATS → Wilms tumor', correct: false },
+  { id: 'r9', text: 'doxorubicin — CAUSES → peripheral neuropathy', correct: false }
+];
+
+function Practice() {
+  const [step, setStep] = useState('entities');
+  const [pickedEntities, setPickedEntities] = useState([]);
+  const [pickedRelations, setPickedRelations] = useState([]);
+  const [submittedE, setSubmittedE] = useState(false);
+  const [submittedR, setSubmittedR] = useState(false);
+
+  const toggleE = (id) => { if (!submittedE) setPickedEntities(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]); };
+  const toggleR = (id) => { if (!submittedR) setPickedRelations(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]); };
+
+  const submitE = () => setSubmittedE(true);
+  const submitR = () => setSubmittedR(true);
+  const reset = () => { setStep('entities'); setPickedEntities([]); setPickedRelations([]); setSubmittedE(false); setSubmittedR(false); };
+
+  const eCorrect = ENTITY_OPTIONS.filter(o => o.correct && pickedEntities.includes(o.id)).length;
+  const eWrong = ENTITY_OPTIONS.filter(o => !o.correct && pickedEntities.includes(o.id)).length;
+  const eMissed = ENTITY_OPTIONS.filter(o => o.correct && !pickedEntities.includes(o.id)).length;
+
+  const rCorrect = RELATION_OPTIONS.filter(o => o.correct && pickedRelations.includes(o.id)).length;
+  const rWrong = RELATION_OPTIONS.filter(o => !o.correct && pickedRelations.includes(o.id)).length;
+
+  return (
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Extract the Knowledge Graph</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        <strong>Clinical paragraph:</strong> {PARAGRAPH}
+      </p>
+
+      <div style={{ display: 'flex', gap: 8, margin: '12px 0' }}>
+        <button onClick={() => setStep('entities')} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: step === 'entities' ? '#0d6efd' : '#e9ecef', color: step === 'entities' ? '#fff' : '#000', cursor: 'pointer' }}>Step 1: Entities</button>
+        <button onClick={() => setStep('relations')} disabled={!submittedE} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: step === 'relations' ? '#0d6efd' : '#e9ecef', color: step === 'relations' ? '#fff' : '#000', cursor: !submittedE ? 'not-allowed' : 'pointer', opacity: !submittedE ? 0.5 : 1 }}>Step 2: Relationships</button>
+      </div>
+
+      {step === 'entities' && (
+        <div>
+          <p style={{ fontWeight: 'bold' }}>Select all entities present in the paragraph (and only those).</p>
+          {ENTITY_OPTIONS.map(o => {
+            const isPicked = pickedEntities.includes(o.id);
+            const showCorrect = submittedE && o.correct;
+            const showWrong = submittedE && isPicked && !o.correct;
+            const showMissed = submittedE && o.correct && !isPicked;
+            return (
+              <div key={o.id} onClick={() => toggleE(o.id)} style={{
+                display: 'inline-block', padding: '6px 12px', margin: 4, borderRadius: 16, cursor: submittedE ? 'default' : 'pointer',
+                border: `2px solid ${showCorrect ? '#198754' : showWrong ? '#dc3545' : showMissed ? '#ffc107' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+                background: showCorrect ? '#d4edda' : showWrong ? '#f8d7da' : showMissed ? '#fff3cd' : isPicked ? '#e7f1ff' : '#fff',
+                fontSize: 13
+              }}>{o.label} <span style={{ color: '#666', fontSize: 11 }}>({o.type})</span></div>
+            );
+          })}
+          {!submittedE && <div><button onClick={submitE} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Entities</button></div>}
+          {submittedE && (
+            <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+              <p>Correctly identified: {eCorrect}. Incorrectly included (not in paragraph): {eWrong}. Missed: {eMissed}.</p>
+              <p style={{ fontSize: 13 }}>The paragraph contains 12 entities across types Disease, Stage, Histology, Drug, Procedure, SideEffect, Condition, AgeGroup. The distractors (aspirin, lung cancer, MRI) are not mentioned. Notice how typing matters — 'flank radiotherapy' is a Procedure, not a Drug.</p>
+              <button onClick={() => setStep('relations')} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Next: Identify Relationships</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {step === 'relations' && (
+        <div>
+          <p style={{ fontWeight: 'bold' }}>Select all relationships supported by the paragraph.</p>
+          {RELATION_OPTIONS.map(o => {
+            const isPicked = pickedRelations.includes(o.id);
+            const showCorrect = submittedR && o.correct;
+            const showWrong = submittedR && isPicked && !o.correct;
+            return (
+              <div key={o.id} onClick={() => toggleR(o.id)} style={{
+                padding: 10, margin: '6px 0', borderRadius: 8, cursor: submittedR ? 'default' : 'pointer',
+                border: `2px solid ${showCorrect ? '#198754' : showWrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+                background: showCorrect ? '#d4edda' : showWrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff',
+                fontFamily: 'monospace', fontSize: 13
+              }}>{o.text}</div>
+            );
+          })}
+          {!submittedR && <div><button onClick={submitR} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Relationships</button></div>}
+          {submittedR && (
+            <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+              <p>Correct relationships selected: {rCorrect}. Incorrect (not supported by paragraph): {rWrong}.</p>
+              <p style={{ fontSize: 13 }}>The valid edges are TREATS (drug→disease, procedure→disease), CAUSES (drug→side effect — only as written), MODIFIED_BY (drug→condition), and INDICATES (procedure→side effect monitoring). Watch out for relationships that "feel right" but are not actually stated — vincristine causes neuropathy is in the text; doxorubicin causing neuropathy is NOT — extracting it would be a hallucination.</p>
+              <button onClick={reset} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<Practice />);
+{% endraw %}
+</script>
+</body>
+</html>
