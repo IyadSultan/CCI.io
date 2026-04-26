@@ -300,7 +300,7 @@ permalink: /session-06/
   <a class="back" href="{{ site.baseurl }}/">&#8249; Home</a>
   <div class="s1-header-text">
     <h1>Session 6: RAG &amp; Clinical Document Retrieval</h1>
-    <p class="meta">6 lessons &middot; 5 Colab labs &middot; Interactive practice &amp; quizzes &middot; NotebookLM per lesson &middot; 1 assignment</p>
+    <p class="meta">6 lessons &middot; 5 Colab labs &middot; Interactive practice &amp; quizzes &middot; 1 assignment</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ permalink: /session-06/
     <strong style="color:#FFC107;">Grading (typical):</strong> Code &amp; correctness &middot; Clinical relevance &middot; Critical analysis &middot; Stretch (GraphRAG or wiki) &mdash; see rubric table in the curriculum file.
   </p>
   <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,193,7,0.25);border-radius:0.6rem;padding:1rem 1.15rem;margin-bottom:1.25rem;">
-    <p style="color:#FFC107;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin:0 0 0.5rem;">&#9888; Hints &mdash; Common pitfalls</p>
+    <p style="color:#FFC107;font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;margin:0 0 0.5rem;">&#9888; Hints &mdash; Common pitfalls to avoid</p>
     <ol style="margin:0;padding-left:1.25rem;color:#B0BEC5;font-size:0.8rem;line-height:1.7;">
       <li><strong style="color:#CFD8DC;">Parsing quality gates everything.</strong> If you skip LlamaParse for a layout-heavy PDF, DeepEval will blame the retriever when the real bug is garbage text.</li>
       <li><strong style="color:#CFD8DC;">Same embedding model at index and query.</strong> Mixing models makes vectors incomparable &mdash; answers look random.</li>
@@ -570,7 +570,7 @@ permalink: /session-06/
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
     <a href="https://academy.khcc.jo/course/view.php?id=208" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
-      Open CCI Academy &#8594;
+      Open Assignment on CCI Academy &#8594;
     </a>
     <a href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:rgba(255,255,255,0.12);color:#ECEFF1;font-weight:600;font-size:0.85rem;text-decoration:none;border:1px solid rgba(255,255,255,0.25);">
       Assignment rubric on GitHub &#8594;
