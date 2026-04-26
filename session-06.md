@@ -338,11 +338,14 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson1_basic_rag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_6/data/WT.pdf" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> WT.pdf (guideline)
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128190;</span> Colab: clone repo for <code>data/</code>
       </a>
       <a class="s1-btn s1-btn-resource" href="https://python.langchain.com/docs/tutorials/rag/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> LangChain RAG tutorial
@@ -383,7 +386,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson2_deepeval.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://docs.confident-ai.com/" target="_blank" rel="noopener noreferrer">
@@ -422,7 +425,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson3_agentic_rag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://langchain-ai.github.io/langgraph/tutorials/rag/langgraph_agentic_rag/" target="_blank" rel="noopener noreferrer">
@@ -461,7 +464,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson4_graphrag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://microsoft.github.io/graphrag/" target="_blank" rel="noopener noreferrer">
@@ -500,7 +503,7 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson5_wiki_approach.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Lab materials (GitHub)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener noreferrer">
@@ -533,10 +536,10 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/391b5876-e522-45e4-9fbe-af316f5b1461" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
       </a>
-      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session_6" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI.io/tree/main/session_6" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Session 6 materials (GitHub)
       </a>
-      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer">
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Full curriculum (markdown)
       </a>
     </div>
@@ -569,7 +572,7 @@ permalink: /session-06/
     <a href="https://academy.khcc.jo/course/view.php?id=208" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:#FFC107;color:#1B2A4A;font-weight:700;font-size:0.85rem;text-decoration:none;transition:all .15s;border:none;" onmouseover="this.style.background='#FFD54F'" onmouseout="this.style.background='#FFC107'">
       Open CCI Academy &#8594;
     </a>
-    <a href="https://github.com/IyadSultan/CCI/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:rgba(255,255,255,0.12);color:#ECEFF1;font-weight:600;font-size:0.85rem;text-decoration:none;border:1px solid rgba(255,255,255,0.25);">
+    <a href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;background:rgba(255,255,255,0.12);color:#ECEFF1;font-weight:600;font-size:0.85rem;text-decoration:none;border:1px solid rgba(255,255,255,0.25);">
       Assignment rubric on GitHub &#8594;
     </a>
   </div>

@@ -11,11 +11,22 @@
 
 These URLs are mirrored on the Jekyll **Session 6** hub page (`session-06.md` → permalink `/session-06/`).
 
+### Using `session_6/data/` files (e.g. `WT.pdf`) in Google Colab
+
+Colab does not include this folder until you copy the repo. From a Colab cell:
+
+```python
+!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git
+# Then use: /content/CCI.io/session_6/data/WT.pdf
+```
+
+See **[README.md in this folder](https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md)** for the full path checklist and a one-line `assert` you can paste.
+
 ---
 
 # Session 6 NotebookLM Sources — Ready to Paste (text for inside each notebook)
 
-Instructions: In each NotebookLM notebook above, add sources such as the paragraph blocks below, `session_6_curriculum.md`, lesson instructions, **WT.pdf**, and official docs links from each lesson.
+Instructions: In each NotebookLM notebook above, add sources such as the paragraph blocks below, `session_6_curriculum.md`, lesson instructions, **WT.pdf** (upload the file, or clone the repo in Colab per the block above), and official docs links from each lesson.
 
 ---
 

@@ -31,7 +31,7 @@ A RAG pipeline has five stages. **Document loaders** ingest source files -- Llam
 
 The final piece is the generation chain. In LangChain v1 you compose a retriever, a prompt template that includes a `{context}` variable, a chat model, and an output parser into a single Runnable using the pipe operator. When the user asks "What is the chemotherapy regimen for Stage III favorable-histology Wilms tumor?", the retriever pulls the relevant pages from WT.pdf, the prompt stuffs them into the context window, and the model produces a grounded answer. This is the foundation that the rest of Session 6 builds on.
 
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), upload WT.pdf as a source, and ask it to generate an Audio Overview of the Wilms tumor treatment protocol so you arrive at class already familiar with the document.
+> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add **WT.pdf** as a source (upload the file, or download it from the repo after `git clone` as in *Before Class*), and ask for an Audio Overview of the Wilms tumor treatment protocol so you arrive at class already familiar with the document.
 
 ---
 
@@ -41,7 +41,11 @@ The final piece is the generation chain. In LangChain v1 you compose a retriever
 
 - **Read:** LangChain RAG tutorial (Part 1): <https://python.langchain.com/docs/tutorials/rag/>
 - **Skim:** LlamaParse documentation introduction: <https://docs.cloud.llamaindex.ai/llamaparse/getting_started>
-- **Download:** WT.pdf (National Wilms Tumor treatment guideline) from the Session 6 materials folder. Open it and look at the table of contents -- note the staging system, histology classifications, and the chemotherapy regimens (EE-4A, DD-4A, Regimen I, Regimen M). These are the entities your RAG system will need to retrieve accurately.
+- **Get `WT.pdf` (National Wilms Tumor guideline):** The file lives in the course repo under `session_6/data/WT.pdf`. **In Google Colab**, clone the repo once per runtime so that path exists on disk:
+  - Run: `!git clone --depth 1 https://github.com/IyadSultan/CCI.io.git`
+  - Then use path: `/content/CCI.io/session_6/data/WT.pdf` (see [data/README.md](https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md) for copy-paste checks).
+  - **Locally:** if you already cloned `CCI.io`, open `session_6/data/WT.pdf` from your working tree.
+  - Skim the PDF table of contents -- staging, histology, regimens (EE-4A, DD-4A, Regimen I, Regimen M) -- these are what your RAG must retrieve well.
 - **Warm-up question:** If a fellow asks GPT-4o-mini "What is the recommended therapy for a 4-year-old with Stage III favorable-histology Wilms tumor with loss of heterozygosity at 1p and 16q?", why might the answer be unsafe to act on without RAG? Write down two specific risks.
 
 ### During Class -- What to Focus On
@@ -85,6 +89,7 @@ In the provided Colab notebook, complete the guided exercises:
 
 | Resource | Link |
 |----------|------|
+| Colab + `session_6/data/` (clone + `WT.pdf` path) | <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md> |
 | LangChain RAG Tutorial | <https://python.langchain.com/docs/tutorials/rag/> |
 | LlamaParse Getting Started | <https://docs.cloud.llamaindex.ai/llamaparse/getting_started> |
 | OpenAI Embeddings Guide | <https://platform.openai.com/docs/guides/embeddings> |
