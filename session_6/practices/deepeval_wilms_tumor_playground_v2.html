@@ -1,0 +1,491 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson 2 — DeepEval metrics playground (Wilms)</title>
+</head>
+<body style="margin:0;padding-top:48px;padding-bottom:24px;background:#fafafa;">
+<a href="{{ site.baseurl }}/session-06/" style="position:fixed;top:12px;left:12px;z-index:9999;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#0277BD;text-decoration:none;padding:6px 12px;border-radius:6px;border:1px solid #B3E5FC;background:#E1F5FE;font-family:system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,0.1);transition:background .15s" onmouseover="this.style.background='#B3E5FC'" onmouseout="this.style.background='#E1F5FE'">&#8249; Session 6</a>
+
+<div style="padding: 0; font-family: var(--font-sans); max-width: 720px; margin: 0 auto;">
+  <h2 class="sr-only">Interactive DeepEval playground showing how four RAG metrics — Faithfulness, Answer Relevancy, Contextual Relevancy, and Contextual Recall — score three Wilms tumor test cases against a perfect, partial, and wrong answer.</h2>
+
+  <style>
+    :root {
+      --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+      --color-border-tertiary: #e2e8f0;
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f1f5f9;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --color-text-primary: #1e293b;
+      --color-text-secondary: #64748b;
+      --color-text-tertiary: #94a3b8;
+    }
+    .dv-tab {
+      flex: 1;
+      padding: 10px 8px;
+      border: 0.5px solid var(--color-border-tertiary);
+      background: var(--color-background-primary);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .dv-tab.active {
+      background: #EEEDFE;
+      border-color: #7F77DD;
+      color: #26215C;
+      font-weight: 500;
+    }
+    .dv-mode {
+      padding: 10px 14px;
+      border: 0.5px solid var(--color-border-tertiary);
+      background: var(--color-background-primary);
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .dv-mode.gold.active { background: #EAF3DE; border-color: #639922; color: #173404; font-weight: 500; }
+    .dv-mode.mid.active  { background: #FAEEDA; border-color: #BA7517; color: #412402; font-weight: 500; }
+    .dv-mode.bad.active  { background: #FCEBEB; border-color: #E24B4A; color: #501313; font-weight: 500; }
+    .dv-card {
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .dv-label {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-text-tertiary);
+      margin: 0 0 6px;
+      font-weight: 500;
+    }
+    .dv-text { font-size: 13px; line-height: 1.6; color: var(--color-text-primary); margin: 0; }
+    .dv-pill {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 500; margin-right: 6px;
+    }
+    .dv-meter-track {
+      width: 100%; height: 10px; border-radius: 999px;
+      background: var(--color-background-secondary); overflow: hidden;
+    }
+    .dv-meter-fill {
+      height: 100%; border-radius: 999px;
+      transition: width 0.8s cubic-bezier(.2,.8,.2,1), background 0.3s;
+    }
+    .dv-run-btn {
+      width: 100%; padding: 12px; border-radius: var(--border-radius-md);
+      border: 0.5px solid #534AB7; background: #7F77DD; color: white;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: var(--font-sans); transition: all 0.15s;
+    }
+    .dv-run-btn:hover { background: #534AB7; }
+    .dv-run-btn:active { transform: scale(0.99); }
+    .dv-run-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .dv-metric-row {
+      display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+      padding: 12px 14px; background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md);
+      margin-bottom: 8px;
+    }
+    .dv-score {
+      font-size: 18px; font-weight: 500; min-width: 56px; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .dv-status {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 11px; font-weight: 500; margin-left: 8px;
+    }
+    .dv-pass { background: #EAF3DE; color: #173404; }
+    .dv-fail { background: #FCEBEB; color: #501313; }
+    .dv-pending { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+    .dv-reason {
+      font-size: 12px; color: var(--color-text-secondary); line-height: 1.55;
+      margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--color-border-tertiary);
+    }
+    .dv-confetti { position: relative; }
+    .dv-burst {
+      position: absolute; pointer-events: none; font-size: 14px;
+      animation: dvburst 0.9s ease-out forwards;
+    }
+    @keyframes dvburst {
+      0% { transform: translate(0,0) scale(0.5); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(1); opacity: 0; }
+    }
+    .dv-glow { animation: dvglow 1.2s ease-in-out; }
+    @keyframes dvglow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(127,119,221,0); }
+      50% { box-shadow: 0 0 0 4px rgba(127,119,221,0.25); }
+    }
+  </style>
+
+  <div style="padding: 4px 0 0;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+      <div>
+        <div style="font-size: 20px; font-weight: 500; color: var(--color-text-primary);">DeepEval playground</div>
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-top: 2px;">RAG triad + recall on Wilms tumor cases</div>
+      </div>
+      <div id="dv-score-badge" style="padding: 6px 12px; border-radius: 999px; background: #EEEDFE; color: #26215C; font-size: 12px; font-weight: 500;">
+        <span id="dv-streak">0</span> / 3 cases
+      </div>
+    </div>
+
+    <div style="height: 1px; background: var(--color-border-tertiary); margin: 14px 0;"></div>
+
+    <div style="margin-bottom: 8px;">
+      <div class="dv-label">Pick a test case</div>
+      <div style="display: flex; gap: 6px; margin-top: 6px;">
+        <button class="dv-tab active" data-tab="0">
+          <div style="font-weight: 500;">Case 1</div>
+          <div style="font-size: 11px; opacity: 0.85; margin-top: 2px;">Stage III postop</div>
+        </button>
+        <button class="dv-tab" data-tab="1">
+          <div style="font-weight: 500;">Case 2</div>
+          <div style="font-size: 11px; opacity: 0.85; margin-top: 2px;">Stage IV mets</div>
+        </button>
+        <button class="dv-tab" data-tab="2">
+          <div style="font-weight: 500;">Case 3</div>
+          <div style="font-size: 11px; opacity: 0.85; margin-top: 2px;">SIOP histology</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="dv-card" style="background: #FBEAF0; border-color: #D4537E;">
+      <div class="dv-label" style="color: #72243E;">Input (clinical question)</div>
+      <p class="dv-text" id="dv-input" style="color: #4B1528;"></p>
+    </div>
+
+    <div class="dv-card" style="background: #E6F1FB; border-color: #378ADD;">
+      <div class="dv-label" style="color: #0C447C;">Expected output (ground truth)</div>
+      <p class="dv-text" id="dv-expected" style="color: #042C53;"></p>
+    </div>
+
+    <div class="dv-card" style="background: #E1F5EE; border-color: #1D9E75;">
+      <div class="dv-label" style="color: #085041;">Retrieval context (RAG chunk)</div>
+      <p class="dv-text" id="dv-context" style="color: #04342C;"></p>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <div class="dv-label">Pick the LLM's answer to evaluate</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px;">
+        <button class="dv-mode gold active" data-mode="gold">
+          <span style="font-size: 14px;">★</span> Perfect answer
+        </button>
+        <button class="dv-mode mid" data-mode="mid">
+          <span style="font-size: 14px;">◐</span> Partial answer
+        </button>
+        <button class="dv-mode bad" data-mode="bad">
+          <span style="font-size: 14px;">✗</span> Wrong answer
+        </button>
+      </div>
+    </div>
+
+    <div class="dv-card" style="background: #FAEEDA; border-color: #BA7517;">
+      <div class="dv-label" style="color: #633806;">Actual output (what the LLM said)</div>
+      <p class="dv-text" id="dv-output" style="color: #412402;"></p>
+    </div>
+
+    <button class="dv-run-btn" id="dv-run">
+      <span id="dv-run-label">▶ Run DeepEval</span>
+    </button>
+
+    <div style="margin-top: 16px;" class="dv-confetti" id="dv-results-wrap">
+      <div class="dv-label">Metric scores (threshold ≥ 0.7 to pass)</div>
+
+      <div class="dv-metric-row" id="dv-m-faith" style="margin-top: 6px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 500;">
+            <span class="dv-pill" style="background: #E6F1FB; color: #042C53;">Faithfulness</span>
+            <span style="color: var(--color-text-secondary); font-size: 12px;">— output vs. context (no hallucination)</span>
+          </div>
+          <div class="dv-meter-track" style="margin-top: 8px;">
+            <div class="dv-meter-fill" id="dv-bar-faith" style="width: 0%; background: #B5D4F4;"></div>
+          </div>
+          <div class="dv-reason" id="dv-r-faith" style="display: none;"></div>
+        </div>
+        <div>
+          <span class="dv-score" id="dv-s-faith">–</span>
+          <span class="dv-status dv-pending" id="dv-st-faith">idle</span>
+        </div>
+      </div>
+
+      <div class="dv-metric-row" id="dv-m-rel">
+        <div>
+          <div style="font-size: 13px; font-weight: 500;">
+            <span class="dv-pill" style="background: #EEEDFE; color: #26215C;">Answer relevancy</span>
+            <span style="color: var(--color-text-secondary); font-size: 12px;">— output vs. input</span>
+          </div>
+          <div class="dv-meter-track" style="margin-top: 8px;">
+            <div class="dv-meter-fill" id="dv-bar-rel" style="width: 0%; background: #CECBF6;"></div>
+          </div>
+          <div class="dv-reason" id="dv-r-rel" style="display: none;"></div>
+        </div>
+        <div>
+          <span class="dv-score" id="dv-s-rel">–</span>
+          <span class="dv-status dv-pending" id="dv-st-rel">idle</span>
+        </div>
+      </div>
+
+      <div class="dv-metric-row" id="dv-m-ctx">
+        <div>
+          <div style="font-size: 13px; font-weight: 500;">
+            <span class="dv-pill" style="background: #FAECE7; color: #4A1B0C;">Contextual relevancy</span>
+            <span style="color: var(--color-text-secondary); font-size: 12px;">— context vs. input (precision)</span>
+          </div>
+          <div class="dv-meter-track" style="margin-top: 8px;">
+            <div class="dv-meter-fill" id="dv-bar-ctx" style="width: 0%; background: #F5C4B3;"></div>
+          </div>
+          <div class="dv-reason" id="dv-r-ctx" style="display: none;"></div>
+        </div>
+        <div>
+          <span class="dv-score" id="dv-s-ctx">–</span>
+          <span class="dv-status dv-pending" id="dv-st-ctx">idle</span>
+        </div>
+      </div>
+
+      <div class="dv-metric-row" id="dv-m-rec">
+        <div>
+          <div style="font-size: 13px; font-weight: 500;">
+            <span class="dv-pill" style="background: #FBEAF0; color: #4B1528;">Contextual recall</span>
+            <span style="color: var(--color-text-secondary); font-size: 12px;">— context vs. expected output</span>
+          </div>
+          <div class="dv-meter-track" style="margin-top: 8px;">
+            <div class="dv-meter-fill" id="dv-bar-rec" style="width: 0%; background: #F4C0D1;"></div>
+          </div>
+          <div class="dv-reason" id="dv-r-rec" style="display: none;"></div>
+        </div>
+        <div>
+          <span class="dv-score" id="dv-s-rec">–</span>
+          <span class="dv-status dv-pending" id="dv-st-rec">idle</span>
+        </div>
+      </div>
+
+      <div id="dv-verdict" style="margin-top: 10px; padding: 10px 14px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); font-size: 13px; color: var(--color-text-secondary); text-align: center;">
+        Pick a case and an answer, then run the evaluation.
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); font-size: 12px; color: var(--color-text-secondary); line-height: 1.55;">
+      <span style="font-weight: 500; color: var(--color-text-primary);">The four-metric RAG eval:</span>
+      Faithfulness and Answer relevancy score the <em>generator</em> (does the output match the context, does it answer the question). Contextual relevancy and Contextual recall score the <em>retriever</em> — relevancy is precision (is the chunk on-topic?), recall is coverage (does the chunk contain everything the expected answer needs?). High recall + low faithfulness = generator hallucinated despite good retrieval. Low recall + high faithfulness = retrieval missed key facts and the generator dutifully answered with what little it had.
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const cases = [
+        {
+          input: "A 4-year-old with localized Wilms tumor completes 4 weeks of preoperative AV chemo. Post-chemo tumor volume is 620 ml; final pathology shows Stage III mixed-type intermediate-risk. What postoperative regimen is recommended?",
+          expected: "Because the tumor is intermediate-risk (mixed type, not stromal/epithelial subtype) with post-chemo volume >500 ml at Stage III, give AVD (adding doxorubicin to AV) plus flank radiotherapy. Total postoperative duration is 27 weeks with cumulative doxorubicin 250 mg/m².",
+          context: "Stage II and III mixed type, regressive type and focal anaplasia receive AVD if their tumor volume after preoperative chemotherapy is larger than 500 ml. Stage III intermediate risk requires flank radiotherapy.",
+          gold: "Because the tumor is intermediate-risk (mixed type) with post-chemo volume >500 ml at Stage III, give AVD (adding doxorubicin to AV) plus flank radiotherapy. Total postoperative duration is 27 weeks with cumulative doxorubicin 250 mg/m².",
+          mid:  "The patient should receive AV chemotherapy postoperatively. Radiotherapy is not needed because the tumor is intermediate risk.",
+          bad:  "Stage III intermediate-risk Wilms tumor is treated with single-agent vincristine for 12 weeks, no radiotherapy. The 500 ml volume cutoff does not apply to mixed type."
+        },
+        {
+          input: "Stage IV Wilms with 4 mm lung nodules at diagnosis. After 6 weeks of preoperative AVD and nephrectomy, complete clearance of metastases is achieved with chemo alone; primary is intermediate-risk. What postoperative regimen and total cumulative doxorubicin dose?",
+          expected: "This is Group A1 (lung nodules 3-5 mm at diagnosis with LR/IR histology and metastatic CR). The recommended treatment is AVD150, with one additional doxorubicin dose at week 2 only. Total cumulative doxorubicin including preop is 150 mg/m². No pulmonary RT since CR was achieved.",
+          context: "Group A1: Stage IV with lung nodules 3-5 mm at diagnosis and LR/IR histology with metastatic clearance receives AVD150. Total cumulative doxorubicin dose 150 mg/m². No pulmonary RT unless complete resection of still viable metastasis.",
+          gold: "This is Group A1 (lung nodules 3-5 mm at diagnosis, LR/IR histology, metastatic CR). Treat with AVD150 — one further doxorubicin dose at week 2 only. Total cumulative doxorubicin including preop is 150 mg/m². No pulmonary RT since CR was achieved.",
+          mid:  "Group A1 patients are treated with AVD. Total cumulative doxorubicin is around 150 mg/m². Pulmonary radiotherapy is given to all Stage IV patients regardless of response.",
+          bad:  "Stage IV Wilms always requires whole-lung radiotherapy and 300 mg/m² of doxorubicin. The patient should be escalated to high-risk regimen with cyclophosphamide and etoposide."
+        },
+        {
+          input: "In SIOP histological classification after preoperative chemotherapy, what percentage of necrosis defines regressive-type nephroblastoma, and how does it differ from completely necrotic nephroblastoma in risk classification?",
+          expected: "Regressive type requires more than 2/3 (>66%) of the tumor mass to show chemotherapy-induced necrosis, with remaining viable tumor of any nephroblastoma component (except diffuse anaplasia); it is intermediate-risk. Completely necrotic nephroblastoma requires absence of any viable tumor and is low-risk.",
+          context: "Regressive type: >2/3 of tumor mass is non-viable from chemotherapy. Completely necrotic nephroblastoma requires absence of any viable tumor tissue and is low-risk. Both assessed on gross and histological examination.",
+          gold: "Regressive type requires more than 2/3 (>66%) of the tumor mass to show chemotherapy-induced necrosis, with remaining viable tumor of any nephroblastoma component (except diffuse anaplasia); it is intermediate-risk. Completely necrotic nephroblastoma requires absence of any viable tumor and is low-risk.",
+          mid:  "Regressive type means most of the tumor is necrotic. Completely necrotic nephroblastoma is low-risk. The exact percentage cutoff is not specified.",
+          bad:  "Regressive type means at least 50% necrosis and is high-risk histology. Completely necrotic nephroblastoma is high-risk because the absent viable tumor cannot be staged."
+        }
+      ];
+
+      // [faithfulness, answer_relevancy, contextual_relevancy, contextual_recall]
+      // recall is mode-INVARIANT for a given case (it scores context vs. expected, not vs. actual).
+      // Case 1: context says nothing about 27-week duration or 250 mg/m² → recall is moderate.
+      // Case 2: context covers regimen, dose, and RT logic → recall is high.
+      // Case 3: context is missing the "intermediate-risk" classification of regressive type → recall is moderate.
+      const scores = [
+        { gold: [0.97, 0.95, 0.92, 0.65], mid: [0.55, 0.62, 0.92, 0.65], bad: [0.12, 0.45, 0.92, 0.65] },
+        { gold: [0.95, 0.96, 0.90, 0.92], mid: [0.48, 0.70, 0.90, 0.92], bad: [0.08, 0.30, 0.90, 0.92] },
+        { gold: [0.96, 0.94, 0.91, 0.72], mid: [0.72, 0.65, 0.91, 0.72], bad: [0.10, 0.55, 0.91, 0.72] }
+      ];
+
+      const reasons = {
+        gold: {
+          faith: "All claims in the output are directly supported by the retrieval context.",
+          rel:   "The answer addresses every part of the question — regimen, duration, and dose."
+        },
+        mid: {
+          faith: "Output partially aligns with context but introduces or omits clinically relevant claims.",
+          rel:   "Answers the question but skips a required component (dose, RT, or regimen detail)."
+        },
+        bad: {
+          faith: "Multiple claims in the output contradict the retrieval context. Likely hallucination.",
+          rel:   "The answer drifts away from what was asked or invents a different clinical scenario."
+        }
+      };
+
+      // recall reasons are per-case (independent of mode)
+      const recallReasons = [
+        "Context covers AVD + flank RT for the scenario, but is missing the 27-week duration and 250 mg/m² cumulative dose stated in the expected answer.",
+        "Context contains the regimen name (AVD150), the cumulative dose (150 mg/m²), and the rule about pulmonary RT — every fact in the expected answer is retrievable.",
+        "Context defines the >2/3 cutoff and confirms completely necrotic = low-risk, but does not state that regressive type itself is intermediate-risk."
+      ];
+
+      const ctxReasons = [
+        "Retrieved chunk contains the exact rule (volume >500 ml + Stage III + IR → AVD + flank RT) needed for the question.",
+        "Retrieved chunk defines Group A1 and its regimen, directly matching the question.",
+        "Retrieved chunk states the >2/3 cutoff and contrasts with completely necrotic — directly relevant to the question."
+      ];
+
+      let activeCase = 0;
+      let activeMode = "gold";
+      let solved = new Set();
+
+      const $ = (id) => document.getElementById(id);
+
+      function render() {
+        const c = cases[activeCase];
+        $("dv-input").textContent = c.input;
+        $("dv-expected").textContent = c.expected;
+        $("dv-context").textContent = c.context;
+        $("dv-output").textContent = c[activeMode];
+        resetMeters();
+      }
+
+      function resetMeters() {
+        ["faith","rel","ctx","rec"].forEach(k => {
+          $("dv-bar-"+k).style.width = "0%";
+          $("dv-s-"+k).textContent = "–";
+          const st = $("dv-st-"+k);
+          st.className = "dv-status dv-pending";
+          st.textContent = "idle";
+          $("dv-r-"+k).style.display = "none";
+        });
+        $("dv-verdict").style.background = "var(--color-background-secondary)";
+        $("dv-verdict").style.color = "var(--color-text-secondary)";
+        $("dv-verdict").textContent = "Pick a case and an answer, then run the evaluation.";
+      }
+
+      function colorFor(score) {
+        if (score >= 0.7) return "#639922";
+        if (score >= 0.5) return "#EF9F27";
+        return "#E24B4A";
+      }
+
+      function animateMetric(key, target, reasonText, delay) {
+        setTimeout(() => {
+          const st = $("dv-st-"+key);
+          st.className = "dv-status dv-pending";
+          st.textContent = "running…";
+          $("dv-s-"+key).textContent = "…";
+          setTimeout(() => {
+            $("dv-bar-"+key).style.width = (target * 100).toFixed(0) + "%";
+            $("dv-bar-"+key).style.background = colorFor(target);
+            $("dv-s-"+key).textContent = target.toFixed(2);
+            $("dv-s-"+key).style.color = colorFor(target);
+            const passed = target >= 0.7;
+            st.className = "dv-status " + (passed ? "dv-pass" : "dv-fail");
+            st.textContent = passed ? "pass" : "fail";
+            const r = $("dv-r-"+key);
+            r.textContent = reasonText;
+            r.style.display = "block";
+          }, 450);
+        }, delay);
+      }
+
+      function spawnConfetti() {
+        const wrap = $("dv-results-wrap");
+        const colors = ["#7F77DD","#1D9E75","#D4537E","#EF9F27","#378ADD","#F5C4B3"];
+        for (let i = 0; i < 18; i++) {
+          const el = document.createElement("div");
+          el.className = "dv-burst";
+          el.textContent = ["★","●","◆","▲"][i % 4];
+          el.style.color = colors[i % colors.length];
+          el.style.left = (40 + Math.random() * 80) + "%";
+          el.style.top = "10px";
+          el.style.setProperty("--tx", ((Math.random() - 0.5) * 220).toFixed(0) + "px");
+          el.style.setProperty("--ty", (60 + Math.random() * 180).toFixed(0) + "px");
+          wrap.appendChild(el);
+          setTimeout(() => el.remove(), 1000);
+        }
+      }
+
+      function run() {
+        const btn = $("dv-run");
+        btn.disabled = true;
+        $("dv-run-label").textContent = "⏳ Judge LLM is scoring…";
+        const s = scores[activeCase][activeMode];
+        const r = reasons[activeMode];
+
+        animateMetric("faith", s[0], r.faith, 200);
+        animateMetric("rel",   s[1], r.rel,   800);
+        animateMetric("ctx",   s[2], ctxReasons[activeCase], 1500);
+        animateMetric("rec",   s[3], recallReasons[activeCase], 2200);
+
+        setTimeout(() => {
+          const allPass = s.every(x => x >= 0.7);
+          const verdict = $("dv-verdict");
+          if (allPass) {
+            verdict.style.background = "#EAF3DE";
+            verdict.style.color = "#173404";
+            verdict.innerHTML = "✓ Test case passed — all four metrics above threshold";
+            spawnConfetti();
+            $("dv-results-wrap").classList.add("dv-glow");
+            setTimeout(() => $("dv-results-wrap").classList.remove("dv-glow"), 1300);
+            solved.add(activeCase + ":" + activeMode);
+          } else {
+            const labels = ["Faithfulness","Answer relevancy","Contextual relevancy","Contextual recall"];
+            const failed = labels.filter((_, i) => s[i] < 0.7);
+            verdict.style.background = "#FCEBEB";
+            verdict.style.color = "#501313";
+            verdict.innerHTML = "✗ Test case failed — below threshold on " + failed.join(", ");
+          }
+          const goldPasses = new Set();
+          solved.forEach(k => { if (k.endsWith(":gold")) goldPasses.add(k.split(":")[0]); });
+          $("dv-streak").textContent = goldPasses.size;
+          $("dv-run-label").textContent = "▶ Run DeepEval again";
+          btn.disabled = false;
+        }, 3100);
+      }
+
+      document.querySelectorAll(".dv-tab").forEach(t => {
+        t.addEventListener("click", () => {
+          document.querySelectorAll(".dv-tab").forEach(x => x.classList.remove("active"));
+          t.classList.add("active");
+          activeCase = parseInt(t.dataset.tab, 10);
+          render();
+        });
+      });
+      document.querySelectorAll(".dv-mode").forEach(m => {
+        m.addEventListener("click", () => {
+          document.querySelectorAll(".dv-mode").forEach(x => x.classList.remove("active"));
+          m.classList.add("active");
+          activeMode = m.dataset.mode;
+          render();
+        });
+      });
+      $("dv-run").addEventListener("click", run);
+
+      render();
+    })();
+  </script>
+</div>
+</body>
+</html>

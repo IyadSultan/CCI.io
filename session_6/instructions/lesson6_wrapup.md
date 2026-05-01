@@ -30,6 +30,10 @@ Use the **Session 6** notebooks below (one per lesson). Each is grounded on that
 
 **Tip:** Ask the chat *when to use basic vector RAG vs agentic RAG vs GraphRAG vs a wiki* for a given clinical question shape.
 
+### Worked lab solutions (CCI repo)
+
+After class you can compare your notebooks to the **worked solutions** for Session 6 labs ([full folder on GitHub](https://github.com/IyadSultan/CCI/tree/main/session6/solutions)). There is **no separate Lab 6 notebook** — Lesson 6 is review — but **Lab 1’s solution notebook** is here: [Lab1_Basic_RAG_LlamaParse_Solutions.ipynb](https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb) · [Open in Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb). Labs 0–5 each have a matching `*_Solutions.ipynb` in that folder.
+
 ---
 
 ## Session arc (one paragraph)
