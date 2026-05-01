@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG Quest — Be the Retriever</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Fraunces:wght@600;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #161d33;
+    --ink: #ffffff;
+    --dim: #b4bcd9;
+    --mag: #ff5fa0;
+    --cyan: #4dedff;
+    --lime: #d4ff5f;
+    --orange: #ffa15f;
+    --violet: #b08aff;
+    --gold: #ffe066;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(155,109,255,0.15), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(0,229,255,0.12), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,61,138,0.06), transparent 60%);
+  }
+
+  .scanlines::before {
+    content: none;
+  }
+
+  .app {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 28px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+  }
+  .logo {
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .logo h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 40px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+  .logo h1 .accent {
+    color: var(--mag);
+  }
+  .logo .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .stats {
+    display: flex; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 9px 16px;
+    border-radius: 8px;
+  }
+  .stat .label { color: var(--dim); font-size: 10.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+  .stat .value { color: var(--cyan); font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .stat.score .value { color: var(--lime); }
+  .stat.lvl .value { color: var(--gold); }
+
+  /* Question card */
+  .question-card {
+    background: linear-gradient(135deg, rgba(255,61,138,0.12), rgba(155,109,255,0.08));
+    border: 1.5px solid rgba(255,61,138,0.4);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: 'INCOMING QUESTION';
+    position: absolute; top: 8px; right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    color: var(--mag); opacity: 0.7;
+  }
+  .question-card .qlabel {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+    color: var(--mag); margin-bottom: 6px;
+  }
+  .question-card .q {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 23px;
+    line-height: 1.35;
+    color: #ffffff;
+  }
+
+  /* Mode switcher */
+  .modes {
+    display: flex; gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    color: var(--ink);
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: all 0.2s;
+  }
+  .mode-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.28); }
+  .mode-btn.active.vector { border-color: var(--cyan); background: rgba(0,229,255,0.15); color: var(--cyan); }
+  .mode-btn.active.bm25 { border-color: var(--orange); background: rgba(255,138,61,0.15); color: var(--orange); }
+  .mode-btn.active.hybrid { border-color: var(--lime); background: rgba(196,255,61,0.15); color: var(--lime); }
+  .mode-btn.active.manual { border-color: var(--violet); background: rgba(155,109,255,0.15); color: var(--violet); }
+  .mode-btn .hint {
+    font-size: 10.5px;
+    font-weight: 500;
+    opacity: 0.75;
+    margin-left: 6px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /* Main grid */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+
+  .panel {
+    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 13px 18px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-head .title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .panel-head .accent {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cyan);
+  }
+
+  /* Corpus chunks */
+  .chunks {
+    padding: 12px;
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  .chunks::-webkit-scrollbar { width: 8px; }
+  .chunks::-webkit-scrollbar-track { background: transparent; }
+  .chunks::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  .chunk {
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .chunk:hover {
+    border-color: rgba(255,255,255,0.2);
+    transform: translateX(3px);
+  }
+  .chunk.selected {
+    background: rgba(155,109,255,0.15);
+    border-color: var(--violet);
+  }
+  .chunk.suggested {
+    border-color: rgba(0,229,255,0.5);
+    background: rgba(0,229,255,0.06);
+  }
+  .chunk.suggested.bm25-mode {
+    border-color: rgba(255,138,61,0.5);
+    background: rgba(255,138,61,0.06);
+  }
+  .chunk.suggested.hybrid-mode {
+    border-color: rgba(196,255,61,0.5);
+    background: rgba(196,255,61,0.06);
+  }
+  .chunk.is-answer {
+    box-shadow: 0 0 0 1.5px var(--gold) inset;
+  }
+
+  .chunk-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .chunk-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.08em;
+  }
+  .scores {
+    display: flex; gap: 6px;
+  }
+  .score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+    color: var(--dim);
+  }
+  .score.active.vector { color: var(--cyan); background: rgba(0,229,255,0.18); }
+  .score.active.bm25 { color: var(--orange); background: rgba(255,138,61,0.18); }
+  .score.active.hybrid { color: var(--lime); background: rgba(196,255,61,0.18); }
+
+  .chunk-text {
+    font-size: 14.5px;
+    font-weight: 400;
+    line-height: 1.55;
+    color: #f0f3ff;
+  }
+  .chunk-text mark {
+    background: rgba(255,224,102,0.35);
+    color: var(--gold);
+    padding: 0 4px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  /* Right side: Answer area */
+  .right-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .selected-pile {
+    padding: 14px;
+    min-height: 130px;
+  }
+  .pile-grid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .pile-chunk {
+    background: linear-gradient(135deg, var(--violet), var(--mag));
+    color: white;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .pile-empty {
+    color: var(--dim);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .actions {
+    display: flex; gap: 8px;
+    margin-top: 12px;
+  }
+  .btn-primary {
+    background: linear-gradient(90deg, var(--mag), var(--violet));
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    flex: 1;
+    transition: transform 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: var(--dim);
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  .btn-secondary:hover { color: var(--ink); border-color: rgba(255,255,255,0.3); }
+
+  /* LLM output */
+  .llm-out {
+    padding: 16px 18px;
+    min-height: 200px;
+  }
+  .llm-empty {
+    color: var(--dim);
+    text-align: center;
+    padding: 30px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .typing {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+  }
+  .typing::after {
+    content: '▊';
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .answer-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #f0f3ff;
+  }
+  .answer-text strong { color: var(--lime); font-weight: 600; }
+  .answer-text em { color: var(--mag); font-style: normal; font-weight: 600; }
+
+  .verdict {
+    margin-top: 14px;
+    padding: 13px 16px;
+    border-radius: 8px;
+    border: 1.5px solid;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .verdict.good {
+    background: rgba(196,255,61,0.08);
+    border-color: var(--lime);
+  }
+  .verdict.partial {
+    background: rgba(255,210,61,0.08);
+    border-color: var(--gold);
+  }
+  .verdict.bad {
+    background: rgba(255,61,138,0.08);
+    border-color: var(--mag);
+  }
+  .verdict .title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    margin-bottom: 6px;
+  }
+  .verdict.good .title { color: var(--lime); }
+  .verdict.partial .title { color: var(--gold); }
+  .verdict.bad .title { color: var(--mag); }
+  .verdict .body {
+    color: #f0f3ff;
+    font-size: 13.5px;
+  }
+  .verdict .points {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .verdict.good .points { color: var(--lime); }
+  .verdict.partial .points { color: var(--gold); }
+  .verdict.bad .points { color: var(--mag); }
+
+  /* Coach */
+  .coach {
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.3);
+    border-radius: 8px;
+    padding: 11px 14px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #f0f3ff;
+    line-height: 1.5;
+  }
+  .coach .icon {
+    color: var(--cyan);
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .next-btn {
+    margin-top: 14px;
+    width: 100%;
+    background: var(--lime);
+    color: var(--bg);
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .next-btn:hover { filter: brightness(1.1); }
+
+  /* Win modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,14,26,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .modal.show { display: flex; }
+  .modal-card {
+    background: var(--bg2);
+    border: 1.5px solid var(--lime);
+    border-radius: 16px;
+    padding: 36px 40px;
+    max-width: 460px;
+    text-align: center;
+  }
+  .modal-card h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, var(--lime), var(--cyan));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .modal-card p {
+    color: var(--dim);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .final-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 48px;
+    color: var(--lime);
+    margin: 20px 0;
+    font-weight: 700;
+  }
+
+  @media (max-width: 880px) {
+    .main { grid-template-columns: 1fr; }
+    .stats { display: none; }
+    .logo h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="logo">
+      <h1>RAG Quest<span class="accent">.</span></h1>
+      <span class="sub">Be the Retriever</span>
+    </div>
+    <div class="stats">
+      <div class="stat lvl"><div class="label">Level</div><div class="value" id="level">1/5</div></div>
+      <div class="stat score"><div class="label">Score</div><div class="value" id="score">0</div></div>
+      <div class="stat"><div class="label">Mode</div><div class="value" id="mode-display" style="font-size:13px;">MANUAL</div></div>
+    </div>
+  </header>
+
+  <div class="question-card">
+    <div class="qlabel">USER QUERY</div>
+    <div class="q" id="question-text">Loading…</div>
+  </div>
+
+  <div class="modes">
+    <button class="mode-btn manual active" data-mode="manual">🎯 MANUAL <span class="hint">pick chunks yourself</span></button>
+    <button class="mode-btn vector" data-mode="vector">🌊 VECTOR <span class="hint">semantic similarity</span></button>
+    <button class="mode-btn bm25" data-mode="bm25">🔤 BM25 <span class="hint">keyword match</span></button>
+    <button class="mode-btn hybrid" data-mode="hybrid">⚡ HYBRID <span class="hint">vector + BM25</span></button>
+  </div>
+
+  <div class="main">
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="title">📚 Corpus · Click chunks to feed the LLM</div>
+        <div class="accent" id="corpus-info">8 chunks</div>
+      </div>
+      <div class="chunks" id="chunks-container"></div>
+    </div>
+
+    <div class="right-stack">
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="title">🎒 Selected Context</div>
+          <div class="accent" id="pile-count">0 / 3 max</div>
+        </div>
+        <div class="selected-pile">
+          <div id="pile-content"><div class="pile-empty">No chunks selected. Click on the corpus to add some.</div></div>
+          <div class="actions">
+            <button class="btn-primary" id="ask-btn" disabled>Send to LLM ✨</button>
+            <button class="btn-secondary" id="clear-btn">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div class="title">🤖 LLM Response</div>
+          <div class="accent">gpt-4-mini</div>
+        </div>
+        <div class="llm-out" id="llm-out">
+          <div class="llm-empty">The LLM will only see the chunks you give it.<br>Pick wisely.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="modal" id="win-modal">
+  <div class="modal-card">
+    <h2>Quest Complete!</h2>
+    <p>You've finished all 5 retrieval challenges.</p>
+    <div class="final-score" id="final-score">0</div>
+    <p id="final-msg">Nice work.</p>
+    <button class="btn-primary" id="restart-btn" style="width:100%;">Play Again</button>
+  </div>
+</div>
+
+<script>
+// ========== GAME DATA ==========
+
+const LEVELS = [
+  {
+    question: "What drugs treat Stage III Wilms tumor and what are their side effects?",
+    chunks: [
+      { id: 'C1', text: 'Stage III Wilms tumor is treated with the DD-4A regimen, which combines vincristine, dactinomycin, and doxorubicin over 24 weeks.', vec: 0.92, bm25: 0.85, isAnswer: true, contains: ['drugs','stage'] },
+      { id: 'C2', text: 'Vincristine commonly causes peripheral neuropathy, including numbness, tingling, and weakness in the hands and feet.', vec: 0.65, bm25: 0.55, isAnswer: true, contains: ['side_effects'] },
+      { id: 'C3', text: 'Doxorubicin is associated with cumulative cardiotoxicity. Lifetime dose limits are typically 300 mg/m² in pediatric patients.', vec: 0.62, bm25: 0.50, isAnswer: true, contains: ['side_effects'] },
+      { id: 'C4', text: 'Wilms tumor is the most common kidney cancer in children, accounting for about 90% of pediatric renal tumors.', vec: 0.55, bm25: 0.40, isAnswer: false },
+      { id: 'C5', text: 'Stage I patients with favorable histology receive vincristine and dactinomycin only, without doxorubicin.', vec: 0.71, bm25: 0.45, isAnswer: false },
+      { id: 'C6', text: 'Imaging workup for suspected Wilms tumor includes abdominal ultrasound and CT of the chest and abdomen.', vec: 0.40, bm25: 0.20, isAnswer: false },
+      { id: 'C7', text: 'Dactinomycin can cause hepatotoxicity, particularly veno-occlusive disease, in young children under 4 years of age.', vec: 0.58, bm25: 0.48, isAnswer: true, contains: ['side_effects'] },
+      { id: 'C8', text: 'The 5-year overall survival for Wilms tumor exceeds 90% with modern multimodal therapy.', vec: 0.45, bm25: 0.30, isAnswer: false },
+    ],
+    keywords: ['stage', 'iii', 'wilms', 'drugs', 'side', 'effects', 'treat'],
+    requiredAnswers: ['drugs', 'side_effects'],
+    perfectMsg: 'Perfect retrieval. The LLM has both the regimen AND its toxicities.',
+    partialMsg: 'You got drugs but missed side effects (or vice versa). Multi-hop questions need facts from multiple chunks.',
+    badMsg: 'The LLM hallucinated. You fed it chunks that don\'t actually answer the question.',
+  },
+  {
+    question: "What is the lifetime cumulative dose limit for doxorubicin in children?",
+    chunks: [
+      { id: 'C1', text: 'Doxorubicin cumulative dose in pediatric patients should not exceed 300 mg/m² to minimize cardiotoxicity risk.', vec: 0.95, bm25: 0.98, isAnswer: true, contains: ['dose'] },
+      { id: 'C2', text: 'Anthracyclines are the cornerstone of treatment for many pediatric cancers including leukemia and sarcomas.', vec: 0.72, bm25: 0.45, isAnswer: false },
+      { id: 'C3', text: 'Cardiotoxicity is the dose-limiting toxicity of doxorubicin and other anthracyclines.', vec: 0.78, bm25: 0.65, isAnswer: false },
+      { id: 'C4', text: 'Vincristine is dosed at 1.5 mg/m² weekly in most pediatric oncology protocols.', vec: 0.55, bm25: 0.35, isAnswer: false },
+      { id: 'C5', text: 'Dexrazoxane is a cardioprotectant that can be co-administered with doxorubicin to reduce heart damage.', vec: 0.68, bm25: 0.50, isAnswer: false },
+      { id: 'C6', text: 'Echocardiography is recommended at baseline and during treatment for patients on doxorubicin.', vec: 0.60, bm25: 0.40, isAnswer: false },
+      { id: 'C7', text: 'Adriamycin is another name for doxorubicin, both refer to the same anthracycline drug.', vec: 0.65, bm25: 0.55, isAnswer: false },
+      { id: 'C8', text: 'Stage IV neuroblastoma protocols sometimes use higher anthracycline doses with closer cardiac monitoring.', vec: 0.50, bm25: 0.30, isAnswer: false },
+    ],
+    keywords: ['doxorubicin', 'dose', 'cumulative', 'limit', 'children', 'pediatric'],
+    requiredAnswers: ['dose'],
+    perfectMsg: 'Single-fact lookup — exactly what RAG is best at. Clean retrieval, clean answer.',
+    partialMsg: 'You got close but missed the precise dose chunk.',
+    badMsg: 'The LLM made up a number. RAG fails when the actual answer chunk isn\'t retrieved.',
+  },
+  {
+    question: "Patient on cisplatin develops creatinine of 2.1 — what's likely happening and what's the management?",
+    chunks: [
+      { id: 'C1', text: 'Cisplatin causes nephrotoxicity in 20-30% of patients, manifesting as elevated creatinine, hypomagnesemia, and Fanconi-like syndrome.', vec: 0.93, bm25: 0.82, isAnswer: true, contains: ['cause'] },
+      { id: 'C2', text: 'Management of cisplatin-induced AKI includes aggressive hydration, magnesium replacement, and dose reduction or substitution with carboplatin.', vec: 0.88, bm25: 0.70, isAnswer: true, contains: ['management'] },
+      { id: 'C3', text: 'Carboplatin is less nephrotoxic than cisplatin and is dosed using the Calvert formula based on AUC and GFR.', vec: 0.71, bm25: 0.45, isAnswer: false },
+      { id: 'C4', text: 'Normal serum creatinine in adults ranges from 0.6 to 1.2 mg/dL.', vec: 0.55, bm25: 0.50, isAnswer: false },
+      { id: 'C5', text: 'Cisplatin is widely used in germ cell tumors, head and neck cancers, and pediatric hepatoblastoma.', vec: 0.60, bm25: 0.55, isAnswer: false },
+      { id: 'C6', text: 'Pre-hydration with normal saline and mannitol is standard before cisplatin infusion to reduce renal injury.', vec: 0.78, bm25: 0.60, isAnswer: true, contains: ['management'] },
+      { id: 'C7', text: 'Acute kidney injury is defined by the KDIGO criteria as a 0.3 mg/dL rise in creatinine within 48 hours.', vec: 0.65, bm25: 0.58, isAnswer: false },
+      { id: 'C8', text: 'Ototoxicity and peripheral neuropathy are other major cisplatin side effects beyond renal injury.', vec: 0.62, bm25: 0.40, isAnswer: false },
+    ],
+    keywords: ['cisplatin', 'creatinine', 'management', 'nephrotoxicity'],
+    requiredAnswers: ['cause', 'management'],
+    perfectMsg: 'You connected the dots: cause (nephrotoxicity) AND management (hydration, dose reduction). This is what RAG needs to do for clinical reasoning.',
+    partialMsg: 'You got one half. Clinical questions usually need both diagnosis and management retrieved.',
+    badMsg: 'No clinical signal in your retrieved chunks — the LLM is reasoning from thin air.',
+  },
+  {
+    question: "What is atezolizumab and when is it used?",
+    chunks: [
+      { id: 'C1', text: 'Atezolizumab is an anti-PD-L1 monoclonal antibody used in lung cancer, urothelial carcinoma, and triple-negative breast cancer.', vec: 0.96, bm25: 0.95, isAnswer: true, contains: ['identity', 'use'] },
+      { id: 'C2', text: 'Immune checkpoint inhibitors target PD-1, PD-L1, or CTLA-4 to restore antitumor T cell activity.', vec: 0.81, bm25: 0.20, isAnswer: false },
+      { id: 'C3', text: 'Pembrolizumab is an anti-PD-1 antibody approved for many solid tumors including melanoma and NSCLC.', vec: 0.74, bm25: 0.18, isAnswer: false },
+      { id: 'C4', text: 'Atezolizumab is dosed at 1200 mg IV every 3 weeks, or 840 mg every 2 weeks.', vec: 0.85, bm25: 0.92, isAnswer: true, contains: ['use'] },
+      { id: 'C5', text: 'Common immune-related adverse events include colitis, pneumonitis, hepatitis, and endocrinopathies.', vec: 0.68, bm25: 0.15, isAnswer: false },
+      { id: 'C6', text: 'PD-L1 expression by IHC is used as a biomarker to predict response to checkpoint inhibitors in some indications.', vec: 0.72, bm25: 0.22, isAnswer: false },
+      { id: 'C7', text: 'Nivolumab and ipilimumab combination is used in advanced melanoma and renal cell carcinoma.', vec: 0.62, bm25: 0.10, isAnswer: false },
+      { id: 'C8', text: 'Cancer immunotherapy has revolutionized oncology over the past decade with multiple FDA approvals each year.', vec: 0.55, bm25: 0.08, isAnswer: false },
+    ],
+    keywords: ['atezolizumab'],
+    requiredAnswers: ['identity'],
+    perfectMsg: 'Rare drug name — BM25 dominates here. Vector search may rank semantically similar but wrong drugs nearby. This is why hybrid retrieval matters.',
+    partialMsg: 'Close. Notice how BM25 nailed the rare term while vector retrieved similar-but-wrong checkpoint inhibitors?',
+    badMsg: 'You retrieved chunks about checkpoint inhibitors generally, not atezolizumab specifically. Vector similarity ≠ correct answer.',
+  },
+  {
+    question: "How does graph traversal answer multi-hop questions that vector RAG misses?",
+    chunks: [
+      { id: 'C1', text: 'Vector RAG retrieves chunks similar to the query embedding, which works when the answer lives in one chunk.', vec: 0.92, bm25: 0.78, isAnswer: true, contains: ['vector'] },
+      { id: 'C2', text: 'Graph RAG extracts entities and typed relationships, enabling explicit multi-hop traversal across the knowledge graph.', vec: 0.95, bm25: 0.85, isAnswer: true, contains: ['graph'] },
+      { id: 'C3', text: 'A multi-hop query like "drug → indication → toxicity" is a path query in graph terms, not a similarity query.', vec: 0.90, bm25: 0.72, isAnswer: true, contains: ['multihop'] },
+      { id: 'C4', text: 'NetworkX is a Python library for in-memory graph operations including traversal and community detection.', vec: 0.68, bm25: 0.48, isAnswer: false },
+      { id: 'C5', text: 'Embedding models map text to high-dimensional vectors where semantic similarity equals geometric proximity.', vec: 0.65, bm25: 0.30, isAnswer: false },
+      { id: 'C6', text: 'Hybrid systems use vectors for entry-point retrieval and graphs for verification or multi-hop reasoning.', vec: 0.85, bm25: 0.62, isAnswer: true, contains: ['multihop'] },
+      { id: 'C7', text: 'BM25 is a keyword-based ranking function that scores documents by term frequency and rarity.', vec: 0.40, bm25: 0.25, isAnswer: false },
+      { id: 'C8', text: 'Cypher is the declarative query language for Neo4j, used to express graph patterns.', vec: 0.55, bm25: 0.35, isAnswer: false },
+    ],
+    keywords: ['graph', 'traversal', 'multi-hop', 'vector', 'rag'],
+    requiredAnswers: ['vector', 'graph', 'multihop'],
+    perfectMsg: 'You retrieved the contrast (vector vs graph) AND the multi-hop concept. This is exactly the synthesis a clinical question needs.',
+    partialMsg: 'You got one side of the comparison. Synthesis questions need facts from multiple chunks.',
+    badMsg: 'Off-topic chunks. The LLM is going to confabulate.',
+  },
+];
+
+// ========== STATE ==========
+
+let state = {
+  level: 0,
+  score: 0,
+  mode: 'manual',
+  selected: new Set(),
+  answered: false,
+  maxSelect: 3,
+};
+
+// ========== RENDERING ==========
+
+const $ = id => document.getElementById(id);
+
+function renderLevel() {
+  const level = LEVELS[state.level];
+  state.selected.clear();
+  state.answered = false;
+
+  $('level').textContent = `${state.level + 1}/${LEVELS.length}`;
+  $('score').textContent = state.score;
+  $('question-text').textContent = level.question;
+  $('corpus-info').textContent = `${level.chunks.length} chunks`;
+
+  renderChunks();
+  renderPile();
+  renderLLMOut(null);
+}
+
+function renderChunks() {
+  const level = LEVELS[state.level];
+  const container = $('chunks-container');
+  container.innerHTML = '';
+
+  // Decide which chunks are "suggested" by the current mode
+  let suggested = new Set();
+  if (state.mode !== 'manual') {
+    const sorted = [...level.chunks].map((c, i) => {
+      let score;
+      if (state.mode === 'vector') score = c.vec;
+      else if (state.mode === 'bm25') score = c.bm25;
+      else if (state.mode === 'hybrid') score = (c.vec + c.bm25) / 2;
+      return { c, score };
+    }).sort((a, b) => b.score - a.score);
+    suggested = new Set(sorted.slice(0, 3).map(x => x.c.id));
+  }
+
+  level.chunks.forEach(chunk => {
+    const div = document.createElement('div');
+    div.className = 'chunk';
+    if (state.selected.has(chunk.id)) div.classList.add('selected');
+    if (suggested.has(chunk.id)) {
+      div.classList.add('suggested');
+      if (state.mode === 'bm25') div.classList.add('bm25-mode');
+      if (state.mode === 'hybrid') div.classList.add('hybrid-mode');
+    }
+
+    // highlight keywords in text
+    let text = chunk.text;
+    if (state.mode === 'bm25' || state.mode === 'hybrid') {
+      level.keywords.forEach(k => {
+        const regex = new RegExp(`\\b(${k})\\b`, 'gi');
+        text = text.replace(regex, '<mark>$1</mark>');
+      });
+    }
+
+    div.innerHTML = `
+      <div class="chunk-meta">
+        <span class="chunk-id">${chunk.id}</span>
+        <div class="scores">
+          <span class="score ${state.mode === 'vector' ? 'active vector' : ''}">vec ${chunk.vec.toFixed(2)}</span>
+          <span class="score ${state.mode === 'bm25' ? 'active bm25' : ''}">bm25 ${chunk.bm25.toFixed(2)}</span>
+          <span class="score ${state.mode === 'hybrid' ? 'active hybrid' : ''}">⊕ ${((chunk.vec + chunk.bm25) / 2).toFixed(2)}</span>
+        </div>
+      </div>
+      <div class="chunk-text">${text}</div>
+    `;
+
+    div.addEventListener('click', () => toggleChunk(chunk.id));
+    container.appendChild(div);
+  });
+}
+
+function toggleChunk(id) {
+  if (state.answered) return;
+  if (state.selected.has(id)) {
+    state.selected.delete(id);
+  } else {
+    if (state.selected.size >= state.maxSelect) {
+      // pulse the pile to indicate limit
+      const pile = $('pile-count');
+      pile.style.color = 'var(--mag)';
+      setTimeout(() => pile.style.color = '', 600);
+      return;
+    }
+    state.selected.add(id);
+  }
+  renderChunks();
+  renderPile();
+}
+
+function renderPile() {
+  const level = LEVELS[state.level];
+  const container = $('pile-content');
+  $('pile-count').textContent = `${state.selected.size} / ${state.maxSelect} max`;
+  $('ask-btn').disabled = state.selected.size === 0 || state.answered;
+
+  if (state.selected.size === 0) {
+    container.innerHTML = '<div class="pile-empty">No chunks selected. Click on the corpus to add some.</div>';
+  } else {
+    const items = [...state.selected].map(id => `<span class="pile-chunk" onclick="toggleChunk('${id}')">${id} ✕</span>`).join('');
+    container.innerHTML = `<div class="pile-grid">${items}</div>`;
+  }
+}
+
+// ========== LLM RESPONSE GENERATION ==========
+
+function generateLLMResponse() {
+  const level = LEVELS[state.level];
+  const selectedChunks = level.chunks.filter(c => state.selected.has(c.id));
+  const answerCoverage = new Set();
+  selectedChunks.forEach(c => {
+    if (c.contains) c.contains.forEach(t => answerCoverage.add(t));
+  });
+
+  const required = new Set(level.requiredAnswers);
+  const matchedRequired = [...required].filter(r => answerCoverage.has(r));
+
+  let verdict, points, msg;
+  if (matchedRequired.length === required.size && selectedChunks.every(c => c.isAnswer)) {
+    verdict = 'good';
+    points = 100;
+    msg = level.perfectMsg;
+  } else if (matchedRequired.length === required.size) {
+    verdict = 'good';
+    points = 80;
+    msg = level.perfectMsg + ' (Slight noise — you included a chunk that wasn\'t needed.)';
+  } else if (matchedRequired.length > 0) {
+    verdict = 'partial';
+    points = 40;
+    msg = level.partialMsg;
+  } else {
+    verdict = 'bad';
+    points = 0;
+    msg = level.badMsg;
+  }
+
+  return { selectedChunks, verdict, points, msg, matchedRequired, required };
+}
+
+function renderLLMOut(result) {
+  const out = $('llm-out');
+  if (!result) {
+    out.innerHTML = '<div class="llm-empty">The LLM will only see the chunks you give it.<br>Pick wisely.</div>';
+    return;
+  }
+
+  out.innerHTML = '<div class="typing">LLM is reasoning over your context</div>';
+
+  setTimeout(() => {
+    const level = LEVELS[state.level];
+    let answer = synthesizeAnswer(level, result);
+
+    out.innerHTML = `
+      <div class="answer-text">${answer}</div>
+      <div class="verdict ${result.verdict}">
+        <div class="title">${result.verdict === 'good' ? '✓ STRONG RETRIEVAL' : result.verdict === 'partial' ? '⚠ PARTIAL RETRIEVAL' : '✗ POOR RETRIEVAL'}</div>
+        <div class="body">${result.msg}</div>
+        <div class="points">+${result.points} points</div>
+      </div>
+      ${getCoachTip(result, level) ? `<div class="coach"><span class="icon">💡</span>${getCoachTip(result, level)}</div>` : ''}
+      <button class="next-btn" id="next-btn">${state.level + 1 < LEVELS.length ? 'Next Level →' : 'See Final Score'}</button>
+    `;
+
+    state.score += result.points;
+    $('score').textContent = state.score;
+
+    $('next-btn').addEventListener('click', nextLevel);
+  }, 900);
+}
+
+function synthesizeAnswer(level, result) {
+  if (result.selectedChunks.length === 0) return '<em>No context provided. Cannot answer.</em>';
+
+  if (result.verdict === 'good' || result.verdict === 'partial') {
+    // Build a synthesized answer from the selected answer-chunks
+    const answerChunks = result.selectedChunks.filter(c => c.isAnswer);
+    if (answerChunks.length > 0) {
+      const sentences = answerChunks.map(c => c.text).join(' ');
+      return `Based on the retrieved context: <strong>${sentences}</strong>`;
+    }
+  }
+
+  // Bad: hallucinate (fabricate from non-answer chunks)
+  const chunkText = result.selectedChunks.map(c => c.text).join(' ');
+  return `<em>Based on what was provided, I can describe the topic broadly:</em> ${chunkText.slice(0, 180)}... <em>However, I don't have the specific information needed to answer the question precisely.</em>`;
+}
+
+function getCoachTip(result, level) {
+  if (state.mode === 'vector' && level.question.toLowerCase().includes('atezolizumab')) {
+    return 'Notice: vector search ranked similar drugs (pembrolizumab, nivolumab) high because they\'re semantically close. BM25 nails rare drug names — try switching modes.';
+  }
+  if (state.mode === 'bm25' && result.verdict !== 'good' && level.requiredAnswers.length > 1) {
+    return 'BM25 finds keyword matches but may miss conceptually related chunks. Hybrid mode often wins on multi-hop questions.';
+  }
+  if (state.mode === 'manual' && result.verdict === 'partial') {
+    return 'Try a retrieval mode (Vector/BM25/Hybrid) — it shows you which chunks the algorithm would pick.';
+  }
+  if (result.verdict === 'good' && state.mode === 'hybrid') {
+    return 'Hybrid retrieval combines vector (semantic) and BM25 (keyword) — usually the strongest baseline in production RAG.';
+  }
+  return null;
+}
+
+// ========== EVENT WIRING ==========
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.mode = btn.dataset.mode;
+    $('mode-display').textContent = state.mode.toUpperCase();
+    renderChunks();
+  });
+});
+
+$('ask-btn').addEventListener('click', () => {
+  if (state.selected.size === 0 || state.answered) return;
+  state.answered = true;
+  const result = generateLLMResponse();
+  renderLLMOut(result);
+});
+
+$('clear-btn').addEventListener('click', () => {
+  if (state.answered) return;
+  state.selected.clear();
+  renderChunks();
+  renderPile();
+});
+
+function nextLevel() {
+  if (state.level + 1 < LEVELS.length) {
+    state.level++;
+    renderLevel();
+  } else {
+    showWinModal();
+  }
+}
+
+function showWinModal() {
+  $('final-score').textContent = state.score;
+  const max = LEVELS.length * 100;
+  let msg;
+  if (state.score >= max * 0.85) msg = 'Excellent retrieval skills. You understand RAG mechanics deeply.';
+  else if (state.score >= max * 0.6) msg = 'Solid run. Try the modes you didn\'t use much next time.';
+  else msg = 'Keep practicing — try matching mode to question type.';
+  $('final-msg').textContent = msg;
+  $('win-modal').classList.add('show');
+}
+
+$('restart-btn').addEventListener('click', () => {
+  state.level = 0;
+  state.score = 0;
+  state.mode = 'manual';
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.mode-btn[data-mode="manual"]').classList.add('active');
+  $('mode-display').textContent = 'MANUAL';
+  $('win-modal').classList.remove('show');
+  renderLevel();
+});
+
+// Make toggleChunk accessible for inline onclick
+window.toggleChunk = toggleChunk;
+
+// ========== INIT ==========
+renderLevel();
+</script>
+</body>
+</html>
