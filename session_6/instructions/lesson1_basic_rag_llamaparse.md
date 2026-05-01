@@ -39,6 +39,7 @@ The final piece is the generation chain. In LangChain v1 you compose a retriever
 
 ### Before Class -- Preparation (20-25 min)
 
+- **Optional primer:** Worked notebook **Lab 0 — Search spectrum** (exact match through lexical search to semantic retrieval and a tiny RAG): [Open in Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab0_Search_Spectrum_Solutions.ipynb) · [GitHub](https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab0_Search_Spectrum_Solutions.ipynb)
 - **Read:** LangChain RAG tutorial (Part 1): <https://python.langchain.com/docs/tutorials/rag/>
 - **Skim:** LlamaParse documentation introduction: <https://docs.cloud.llamaindex.ai/llamaparse/getting_started>
 - **Get `WT.pdf` (National Wilms Tumor guideline):** The file lives in the course repo under `session_6/data/WT.pdf`. **In Google Colab**, clone the repo once per runtime so that path exists on disk:
@@ -89,6 +90,7 @@ In the provided Colab notebook, complete the guided exercises:
 
 | Resource | Link |
 |----------|------|
+| **Lab 0 solutions — Search spectrum** (exact → RAG): [Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab0_Search_Spectrum_Solutions.ipynb) · [GitHub](https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab0_Search_Spectrum_Solutions.ipynb) | Optional primer before Lab 1 |
 | **Lab 1 solutions (instructor / after class)** — [Open in Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb) · [View on GitHub](https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb) | Same notebook as the student lab, fully worked |
 | Colab + `session_6/data/` (clone + `WT.pdf` path) | <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md> |
 | LangChain RAG Tutorial | <https://python.langchain.com/docs/tutorials/rag/> |
