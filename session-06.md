@@ -341,6 +341,12 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-colab" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/student/Lab1_Basic_RAG_LlamaParse_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Colab Notebook
       </a>
+      <a class="s1-btn s1-btn-resource" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9989;</span> Lab 1 solutions (Colab)
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128203;</span> Lab 1 solutions (GitHub)
+      </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_6/data/WT.pdf" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128196;</span> WT.pdf (guideline)
       </a>
@@ -382,6 +388,9 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson2_score_the_rag.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Score the RAG
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/deepeval_wilms_tumor_playground_v2.html" target="_blank">
+        <span class="s1-btn-icon">&#128300;</span> Practice: DeepEval metrics (explainer)
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson2_deepeval.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
@@ -538,6 +547,12 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session6/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/tree/main/session6/solutions" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9989;</span> Worked solutions (GitHub: Labs 0&ndash;5)
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9989;</span> Lab 1 solutions (Colab)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI.io/blob/main/session_6/session_6_curriculum.md" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Full curriculum (markdown)

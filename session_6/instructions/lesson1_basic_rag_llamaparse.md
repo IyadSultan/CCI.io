@@ -89,6 +89,7 @@ In the provided Colab notebook, complete the guided exercises:
 
 | Resource | Link |
 |----------|------|
+| **Lab 1 solutions (instructor / after class)** — [Open in Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb) · [View on GitHub](https://github.com/IyadSultan/CCI/blob/main/session6/solutions/Lab1_Basic_RAG_LlamaParse_Solutions.ipynb) | Same notebook as the student lab, fully worked |
 | Colab + `session_6/data/` (clone + `WT.pdf` path) | <https://github.com/IyadSultan/CCI.io/blob/main/session_6/data/README.md> |
 | LangChain RAG Tutorial | <https://python.langchain.com/docs/tutorials/rag/> |
 | LlamaParse Getting Started | <https://docs.cloud.llamaindex.ai/llamaparse/getting_started> |

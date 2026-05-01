@@ -74,6 +74,7 @@ In the provided Colab notebook, complete the guided exercises:
 
 **Extra practice (optional):**
 
+- **Interactive explainer:** Open the browser playground [**DeepEval metrics (Wilms cases)**]({{ site.baseurl }}/session_6/practices/deepeval_wilms_tumor_playground_v2.html) — walk through the four RAG metrics on sample Wilms tumor answers (gold / partial / bad) before you run DeepEval in Python.
 - Add a `BiasMetric` and a `ToxicityMetric` to verify your clinical assistant does not produce biased or harmful content.
 - Export the test set as JSON so it can live in version control.
 
@@ -87,6 +88,7 @@ In the provided Colab notebook, complete the guided exercises:
 
 | Resource | Link |
 |----------|------|
+| Interactive DeepEval playground (four metrics, Wilms cases) | [Open in browser]({{ site.baseurl }}/session_6/practices/deepeval_wilms_tumor_playground_v2.html) |
 | DeepEval Documentation | <https://docs.confident-ai.com/docs/getting-started> |
 | DeepEval RAG Metrics | <https://docs.confident-ai.com/docs/metrics-introduction> |
 | RAGAS Conceptual Reference | <https://docs.ragas.io/en/stable/concepts/metrics/index.html> |
