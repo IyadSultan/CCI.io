@@ -335,6 +335,9 @@ permalink: /session-06/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/practice_lesson1_pipeline_builder.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Pipeline Builder
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/rag_game.html" target="_blank">
+        <span class="s1-btn-icon">&#127918;</span> Practice: RAG Quest (be the retriever)
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson1_basic_rag.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
@@ -397,6 +400,9 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/deepeval_wilms_tumor_playground_v2.html" target="_blank">
         <span class="s1-btn-icon">&#128300;</span> Practice: DeepEval metrics (explainer)
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/rankers.html" target="_blank">
+        <span class="s1-btn-icon">&#128200;</span> Practice: Rankers (field guide)
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_6/quizzes/quiz_lesson2_deepeval.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
@@ -550,6 +556,12 @@ permalink: /session-06/
       </a>
       <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/391b5876-e522-45e4-9fbe-af316f5b1461" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM: Summary
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/rag_game.html" target="_blank">
+        <span class="s1-btn-icon">&#127918;</span> Review: RAG Quest
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_6/practices/rankers.html" target="_blank">
+        <span class="s1-btn-icon">&#128200;</span> Review: Rankers
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/tree/main/session6/student" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> All Colab Notebooks

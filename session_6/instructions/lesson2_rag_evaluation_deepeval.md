@@ -89,6 +89,7 @@ In the provided Colab notebook, complete the guided exercises:
 | Resource | Link |
 |----------|------|
 | Interactive DeepEval playground (four metrics, Wilms cases) | [Open in browser]({{ site.baseurl }}/session_6/practices/deepeval_wilms_tumor_playground_v2.html) |
+| **Rankers — field guide** (cross-encoder, LLM rerank, hybrid fusion, metadata filters) | [Open in browser]({{ site.baseurl }}/session_6/practices/rankers.html) |
 | DeepEval Documentation | <https://docs.confident-ai.com/docs/getting-started> |
 | DeepEval RAG Metrics | <https://docs.confident-ai.com/docs/metrics-introduction> |
 | RAGAS Conceptual Reference | <https://docs.ragas.io/en/stable/concepts/metrics/index.html> |
