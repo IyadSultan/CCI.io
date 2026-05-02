@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Pick Evaluator</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00897B; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #B2DFDB; background: #E0F2F1; margin-bottom: 1rem; }
+    .back-link:hover { background: #B2DFDB; }
+  </style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-07/">&#8249; Back to Session 7</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const METRICS = [
+      {
+        id: 'm1',
+        name: 'Output contains a valid TNM stage (e.g., T2N1M0)',
+        bestEvaluator: 'functional',
+        explanation: "TNM format is a regex pattern (T[0-4]N[0-3]M[0-1]). A functional check is instant, free, and perfectly reproducible. Using an LLM judge here would be slower, more expensive, and noisier."
+      },
+      {
+        id: 'm2',
+        name: 'Summary captures the clinically most important findings from the input case',
+        bestEvaluator: 'judge',
+        explanation: "'Clinically most important' is a contextual judgment that resists code. An LLM judge with a clear rubric and a few-shot examples is the right tool. You will validate it against human labels in Lesson 4 before trusting it."
+      },
+      {
+        id: 'm3',
+        name: 'Output does not include any patient identifiers (name, MRN, date of birth)',
+        bestEvaluator: 'functional',
+        explanation: "PHI patterns are detectable by regex (or a fine-tuned NER model wrapped as a function). Functional first. This metric is also a candidate for a runtime guardrail — the same check used both offline (eval) and online (block)."
+      },
+      {
+        id: 'm4',
+        name: 'Recommended chemotherapy doses match KHCC-approved protocols within ±5%',
+        bestEvaluator: 'functional',
+        explanation: "Numeric extraction (regex for dose patterns) followed by a tolerance comparison against a reference table is functional. Build a small table of approved doses; the evaluator parses, looks up, compares. No LLM needed."
+      },
+      {
+        id: 'm5',
+        name: 'When the input case is incomplete (missing key data), the tool says it cannot summarize and explains why',
+        bestEvaluator: 'judge',
+        explanation: "Refusal-to-answer is a judgment call: did the tool refuse appropriately, with a useful explanation, or did it confabulate? Hard to capture in a regex. An LLM judge with a clear rubric ('rate appropriateness of refusal 1–3, with examples') works well."
+      },
+      {
+        id: 'm6',
+        name: 'For the highest-stakes 5% of cases, ground-truth label that the summary is clinically safe',
+        bestEvaluator: 'human',
+        explanation: "The safety-critical sample is exactly where humans belong. You cannot — and should not — automate the final safety check on the highest-risk cases. This is also how you produce ground truth that validates everything else."
+      }
+    ];
+
+    const EVALUATORS = [
+      { id: 'functional', label: 'Functional (code/regex/schema)' },
+      { id: 'judge', label: 'LLM-as-judge with a rubric' },
+      { id: 'human', label: 'Human evaluator (clinician)' }
+    ];
+
+    function Practice() {
+      const [idx, setIdx] = React.useState(0);
+      const [picked, setPicked] = React.useState(null);
+      const [submitted, setSubmitted] = React.useState(false);
+      const [score, setScore] = React.useState(0);
+
+      const m = METRICS[idx];
+
+      const submit = () => {
+        if (picked === m.bestEvaluator) setScore(s => s + 1);
+        setSubmitted(true);
+      };
+
+      const next = () => { setIdx(i => i + 1); setPicked(null); setSubmitted(false); };
+      const reset = () => { setIdx(0); setPicked(null); setSubmitted(false); setScore(0); };
+
+      if (idx >= METRICS.length) {
+        return (
+          <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+            <h2>Evaluator Selection Complete!</h2>
+            <p style={{ fontSize: 20 }}>You matched {score} / {METRICS.length} metrics to the right evaluator family.</p>
+            <div style={{ background: score >= 5 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+              {score >= 5 ? "Excellent — you have the 'functional first, judge second, human as ground truth' rule internalized." : "Review which kinds of metric resist code (clinical relevance, refusal appropriateness) vs which are pure structure (TNM, PHI, dose ranges)."}
+            </div>
+            <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+          <h3>Pick the Right Evaluator</h3>
+          <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+            <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((idx + 1) / METRICS.length) * 100}%` }} />
+          </div>
+          <p style={{ background: '#fff3cd', padding: 12, borderRadius: 8 }}><strong>Metric {idx + 1}:</strong> {m.name}</p>
+
+          {EVALUATORS.map(e => {
+            const isPicked = picked === e.id;
+            const isCorrect = submitted && e.id === m.bestEvaluator;
+            const isWrong = submitted && isPicked && e.id !== m.bestEvaluator;
+            return (
+              <div key={e.id} onClick={() => !submitted && setPicked(e.id)} style={{
+                padding: 12, margin: '6px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+                border: `2px solid ${isCorrect ? '#198754' : isWrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+                background: isCorrect ? '#d4edda' : isWrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff'
+              }}>{e.label}</div>
+            );
+          })}
+
+          {!submitted && <button onClick={submit} disabled={!picked} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: !picked ? 'default' : 'pointer', opacity: !picked ? 0.5 : 1 }}>Submit</button>}
+
+          {submitted && (
+            <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+              <p>{m.explanation}</p>
+              <button onClick={next} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{idx + 1 < METRICS.length ? 'Next Metric' : 'See Score'}</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Practice />);
+  </script>
+</body>
+</html>
