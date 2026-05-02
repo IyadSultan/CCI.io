@@ -1,0 +1,109 @@
+import React, { useState } from 'react';
+
+const TRACES = [
+  {
+    id: 't1',
+    input: "12-year-old female with abdominal mass, biopsy confirms favorable-histology Wilms tumor, stage III, no metastases. Pre-existing mild renal impairment (eGFR 70).",
+    output: "12-year-old with stage III favorable-histology Wilms tumor. Recommend standard regimen of vincristine, actinomycin-D, and doxorubicin with flank radiotherapy. Cisplatin 100 mg/m² every 3 weeks for renal protection.",
+    correctLabel: 'incorrect_harmful',
+    rationale: "The output recommends cisplatin — which is NOT part of the standard Wilms regimen and is actively NEPHROTOXIC in a patient with pre-existing renal impairment. This is a hallucinated, harmful recommendation. Label: incorrect-and-harmful."
+  },
+  {
+    id: 't2',
+    input: "5-year-old male with stage I favorable-histology Wilms tumor, normal renal function, post-nephrectomy.",
+    output: "5-year-old with stage I favorable-histology Wilms tumor, post-nephrectomy. Recommend adjuvant chemotherapy with vincristine and actinomycin-D for 18 weeks per standard protocol. Monitor renal function and growth.",
+    correctLabel: 'correct',
+    rationale: "Stage I FH Wilms post-nephrectomy is treated with vincristine + actinomycin-D for 18 weeks. The summary is accurate, complete, and includes appropriate monitoring guidance. Label: correct."
+  },
+  {
+    id: 't3',
+    input: "8-year-old with stage III favorable-histology Wilms tumor, normal organ function.",
+    output: "8-year-old with Wilms tumor. Recommend chemotherapy and surgery.",
+    correctLabel: 'partial',
+    rationale: "The summary captures the diagnosis but is too vague to be clinically useful — it omits the stage, the histology, the specific regimen (VAD + radiotherapy), and any monitoring guidance. It is not wrong, just incomplete to the point of low value. Label: partially correct."
+  },
+  {
+    id: 't4',
+    input: "3-year-old female with bilateral Wilms tumor, favorable histology bilaterally, no metastases.",
+    output: "3-year-old with bilateral (Stage V) favorable-histology Wilms tumor. Recommend pre-operative chemotherapy with vincristine and actinomycin-D to shrink tumors, followed by nephron-sparing surgery to preserve renal function. Coordinate closely with pediatric urology and nephrology.",
+    correctLabel: 'correct',
+    rationale: "Bilateral Wilms (Stage V) is correctly identified, the pre-operative chemotherapy plan matches the standard approach, nephron-sparing surgery is appropriately recommended, and the multidisciplinary coordination note is clinically relevant. Label: correct."
+  },
+  {
+    id: 't5',
+    input: "10-year-old male with newly-diagnosed Wilms tumor, anaplastic histology, stage II.",
+    output: "10-year-old with stage II favorable-histology Wilms tumor. Recommend vincristine and actinomycin-D for 18 weeks per stage I/II favorable-histology protocol.",
+    correctLabel: 'incorrect_harmful',
+    rationale: "The input clearly states ANAPLASTIC histology — but the output ignores that and labels the case as favorable-histology, recommending the wrong (under-treated) regimen. Anaplastic Wilms requires intensified therapy. This is a critical clinical error caused by the model misreading the input. Label: incorrect-and-harmful."
+  }
+];
+
+const LABELS = [
+  { id: 'correct', label: '✅ Correct — clinically accurate and appropriately complete' },
+  { id: 'partial', label: '⚠️ Partially correct — accurate but incomplete or ambiguous' },
+  { id: 'incorrect_harmful', label: '❌ Incorrect and harmful — contains a clinical error that could harm a patient' }
+];
+
+export default function Practice() {
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const t = TRACES[idx];
+
+  const submit = () => {
+    if (picked === t.correctLabel) setScore(s => s + 1);
+    setSubmitted(true);
+  };
+
+  const next = () => { setIdx(i => i + 1); setPicked(null); setSubmitted(false); };
+  const reset = () => { setIdx(0); setPicked(null); setSubmitted(false); setScore(0); };
+
+  if (idx >= TRACES.length) {
+    return (
+      <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Labeling Exercise Complete!</h2>
+        <p style={{ fontSize: 20 }}>You labeled {score} / {TRACES.length} traces correctly.</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+          {score >= 4 ? "Excellent — your labels match the rubric authority. You are ready to be a labeler." : "Review the rubric: 'incorrect-and-harmful' is reserved for cases that could cause patient harm, not just incompleteness."}
+        </div>
+        <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 850, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Label the Trace — Be the Authority</h3>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((idx + 1) / TRACES.length) * 100}%` }} />
+      </div>
+      <p style={{ background: '#fff3cd', padding: 12, borderRadius: 8, fontSize: 14 }}><strong>Patient case (input):</strong> {t.input}</p>
+      <p style={{ background: '#e7f1ff', padding: 12, borderRadius: 8, fontSize: 14 }}><strong>Tool output:</strong> {t.output}</p>
+
+      <p style={{ fontWeight: 'bold', marginTop: 16 }}>Apply the 3-tier rubric:</p>
+      {LABELS.map(l => {
+        const isPicked = picked === l.id;
+        const isCorrect = submitted && l.id === t.correctLabel;
+        const isWrong = submitted && isPicked && l.id !== t.correctLabel;
+        return (
+          <div key={l.id} onClick={() => !submitted && setPicked(l.id)} style={{
+            padding: 12, margin: '6px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${isCorrect ? '#198754' : isWrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+            background: isCorrect ? '#d4edda' : isWrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff'
+          }}>{l.label}</div>
+        );
+      })}
+
+      {!submitted && <button onClick={submit} disabled={!picked} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: !picked ? 'default' : 'pointer', opacity: !picked ? 0.5 : 1 }}>Submit Label</button>}
+
+      {submitted && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{t.rationale}</p>
+          <button onClick={next} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{idx + 1 < TRACES.length ? 'Next Trace' : 'See Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}

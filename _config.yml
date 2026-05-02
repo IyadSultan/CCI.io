@@ -21,3 +21,5 @@ exclude:
   - "session_5/practices/*.jsx"
   - "session_5/quizzes/*.jsx"
   - "session_6/session_6_curriculum.md"
+  - "session_7/session_7_curriculum.md"
+  - "session_7/session_7_outline.md"

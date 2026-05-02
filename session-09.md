@@ -4,22 +4,22 @@ title: Session 9
 permalink: /session-09/
 ---
 
-# Session 9: Midterm Project
+# Session 9: IDEs &amp; Repo Building
 
 Key topics:
-- End-to-end clinical NLP pipeline design, build, evaluation, and presentation.
+- Cursor, VS Code, GitHub, CI/CD, wiring the Session 7 eval harness into your repo as a CI step.
 
 ## Instructions
-- Build a complete mini pipeline with prompt rationale and structured outputs.
-- Include at least one retrieval or tool-use component.
+- Set up a structured clinical AI project repo with a clear README, data/, src/, evals/, and notebooks/ layout.
+- Wire the eval pipeline from Session 7 as a GitHub Actions CI step that runs on every commit.
+- Practice AI-assisted coding in Cursor / VS Code: refactoring, code review, documentation generation.
 
 ## Practice
-- Prepare a 10-minute demo and technical walkthrough.
-- Submit GitHub repo and short evaluation report.
+- Scaffold a repo for one of your Session 3–7 tools.
+- Add a CI workflow that runs evals and reports pass/fail.
+- Submit a pull request with a meaningful change and CI green.
 
-## Quiz
-1. Midterm must include:
-   - A) Prompt design rationale + structured output + evaluation **(Correct)**
-   - B) UI only
-   - C) No code
-   - D) No documentation
+## Resources
+- [Cursor](https://cursor.com) — AI-first IDE
+- [GitHub Actions docs](https://docs.github.com/en/actions)
+- [DeepEval CI integration](https://docs.confident-ai.com/docs/integrations-github-actions)
