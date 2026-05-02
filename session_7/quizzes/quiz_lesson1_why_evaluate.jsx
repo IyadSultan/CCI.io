@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "You ship your Oncology Summary Assistant to KHCC and check 5 outputs that look great. A week later a clinician reports a hallucinated chemotherapy dose. What was the core mistake?",
+    options: [
+      "You used the wrong model — a bigger model would have caught it",
+      "Vibe-checking on 5 examples does not scale and cannot detect rare-but-serious failures; you needed systematic evaluation",
+      "Hallucinations are unavoidable with LLMs and there is no way to catch them",
+      "The clinician should have used a different prompt"
+    ],
+    correct: 1,
+    explanation: "Vibe-checking is fast and feels productive, but it cannot find rare failure modes — and in clinical settings, rare failures (a wrong dose) are exactly the ones that hurt patients. Systematic evaluation on a labeled dataset, with metrics that catch hallucinations specifically (faithfulness, factual accuracy), is the only way to know your system's true error rate."
+  },
+  {
+    question: "What are the three layers of evaluation, and where does each one run?",
+    options: [
+      "Unit tests, integration tests, end-to-end tests — all in CI",
+      "Development optimization (offline, while iterating), pre-merge regression testing (CI on every commit), production monitoring (continuous on live traffic)",
+      "Prompt evaluation, model evaluation, output evaluation — all in production",
+      "Faithfulness, relevancy, recall — all on a single test set"
+    ],
+    correct: 1,
+    explanation: "Evaluation runs in three layers. Development is fast iteration on small benchmarks while you build. Pre-merge regression testing catches regressions before they ship. Production monitoring catches drift on live traffic. Each layer has different speed, cost, and signal characteristics — and a mature system uses all three."
+  },
+  {
+    question: "Which statement correctly distinguishes a guardrail from an evaluator?",
+    options: [
+      "Guardrails and evaluators are the same thing with different names",
+      "A guardrail is a runtime check that blocks or modifies a bad output before it reaches the user; an evaluator is an offline scorer that tells you how good your outputs are on a labeled dataset",
+      "Guardrails are for production and evaluators are for development",
+      "A guardrail uses an LLM and an evaluator uses regex"
+    ],
+    correct: 1,
+    explanation: "Guardrails defend the user at runtime — they intercept and block bad outputs in real time. Evaluators defend the engineer — they score outputs offline so you can measure whether the system is improving. Both matter, and the threshold of a guardrail is itself something you should evaluate."
+  },
+  {
+    question: "A model scores 95% on MedQA. What does this tell you about its performance on your KHCC oncology summary tool?",
+    options: [
+      "It will score 95% on KHCC tasks too — MedQA is a comprehensive medical benchmark",
+      "Almost nothing — MedQA score is a proxy for one kind of medical knowledge, not for performance on your specific task with your specific data and your specific quality bar",
+      "It will score lower because KHCC tasks are harder",
+      "It will score higher because KHCC tasks are easier"
+    ],
+    correct: 1,
+    explanation: "Benchmark scores are weak proxies for real-world task performance. MedQA tests one specific format of multiple-choice medical knowledge, which may not match how clinicians actually use your tool. The strongest signal comes from evaluations built on your own data, for your own task. Benchmark-shopping is a poor way to choose a clinical model."
+  },
+  {
+    question: "What are 'saturation' and 'contamination' in the context of benchmarks?",
+    options: [
+      "Saturation = benchmark is too long; contamination = benchmark contains PHI",
+      "Saturation = the benchmark is too easy and no longer discriminates between models; contamination = the benchmark leaked into the model's training data, so high scores reflect memorization not capability",
+      "Saturation = too many users; contamination = too few annotators",
+      "Saturation and contamination are both terms for prompt injection"
+    ],
+    correct: 1,
+    explanation: "Saturation means the benchmark has lost discriminative power — every modern model scores near 100% so the metric tells you nothing about which model is better. Contamination means the benchmark questions have appeared in the model's training data, so high scores reflect memorization rather than generalization. Both are why benchmark scores should always be interpreted with skepticism."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You understand why evaluation is the foundation, not an afterthought." : score >= 3 ? "Good — review the three layers and the difference between guardrails and evaluators." : "Review the lesson on what evaluation is and the three layers before moving on."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

@@ -1,0 +1,103 @@
+import React, { useState } from 'react';
+
+const SCENARIOS = [
+  {
+    id: 's1',
+    text: "You change the system prompt of the Oncology Summary Assistant from 'be concise' to 'include all positive findings'. Before merging the change, you want to make sure summaries do not get worse on your existing 30 test cases.",
+    correctLayer: 'regression',
+    rationale: "This is exactly what pre-merge regression testing is for: a curated test suite that runs on every change to catch regressions before they ship."
+  },
+  {
+    id: 's2',
+    text: "You are iterating on a new chain-of-thought prompt. Each time you tweak a word, you want to know in 30 seconds whether the change helped on a small set of representative cases.",
+    correctLayer: 'development',
+    rationale: "Fast offline iteration with a small representative benchmark is the development optimization layer. The goal is sub-minute feedback so you can experiment without breaking flow."
+  },
+  {
+    id: 's3',
+    text: "Your tool has been deployed at KHCC for 3 months. You want to know whether GPT-4o's silent model update last week changed the quality of your summaries on real cases.",
+    correctLayer: 'production',
+    rationale: "Drift detection on live traffic is production monitoring. Sample real interactions, score them continuously, alert on quality drops. Without this layer, silent vendor model changes go unnoticed until a user complains."
+  },
+  {
+    id: 's4',
+    text: "You want a runtime check that automatically blocks any summary containing patient identifiers (name, MRN, date of birth) before it is shown to a clinician.",
+    correctLayer: 'guardrail',
+    rationale: "This is a guardrail, not an evaluator. It intercepts bad outputs at runtime and blocks them. You should still evaluate the guardrail itself (does it catch all PHI?) — but the runtime block is a guardrail by definition."
+  },
+  {
+    id: 's5',
+    text: "You want to know how often your tool produces a clinically incorrect summary on a labeled set of 100 historical cases reviewed by oncologists.",
+    correctLayer: 'regression',
+    rationale: "An offline scoring run against a labeled dataset is the pre-merge regression testing layer (you would run this before merging changes) — and depending on cost may also run as part of development. Either way, it is an evaluator, not a guardrail."
+  }
+];
+
+const LAYERS = [
+  { id: 'development', label: 'Development optimization' },
+  { id: 'regression', label: 'Pre-merge regression testing' },
+  { id: 'production', label: 'Production monitoring' },
+  { id: 'guardrail', label: 'Guardrail (not an eval layer)' }
+];
+
+export default function Practice() {
+  const [idx, setIdx] = useState(0);
+  const [picked, setPicked] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const s = SCENARIOS[idx];
+
+  const submit = () => {
+    if (picked === s.correctLayer) setScore(sc => sc + 1);
+    setSubmitted(true);
+  };
+
+  const next = () => { setIdx(i => i + 1); setPicked(null); setSubmitted(false); };
+  const reset = () => { setIdx(0); setPicked(null); setSubmitted(false); setScore(0); };
+
+  if (idx >= SCENARIOS.length) {
+    return (
+      <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Layer Quiz Complete!</h2>
+        <p style={{ fontSize: 20 }}>You got {score} / {SCENARIOS.length} scenarios right.</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+          {score >= 4 ? "Excellent — you can place an evaluation activity into the right layer." : "Review the difference between development, regression, production, and guardrails."}
+        </div>
+        <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Place the Activity in the Right Layer</h3>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((idx + 1) / SCENARIOS.length) * 100}%` }} />
+      </div>
+      <p style={{ background: '#fff3cd', padding: 12, borderRadius: 8 }}><strong>Scenario {idx + 1}:</strong> {s.text}</p>
+
+      {LAYERS.map(l => {
+        const isPicked = picked === l.id;
+        const isCorrect = submitted && l.id === s.correctLayer;
+        const isWrong = submitted && isPicked && l.id !== s.correctLayer;
+        return (
+          <div key={l.id} onClick={() => !submitted && setPicked(l.id)} style={{
+            padding: 12, margin: '6px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${isCorrect ? '#198754' : isWrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+            background: isCorrect ? '#d4edda' : isWrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff'
+          }}>{l.label}</div>
+        );
+      })}
+
+      {!submitted && <button onClick={submit} disabled={!picked} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: !picked ? 'default' : 'pointer', opacity: !picked ? 0.5 : 1 }}>Submit</button>}
+
+      {submitted && (
+        <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p>{s.rationale}</p>
+          <button onClick={next} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{idx + 1 < SCENARIOS.length ? 'Next Scenario' : 'See Score'}</button>
+        </div>
+      )}
+    </div>
+  );
+}

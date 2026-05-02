@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "What is 'harm asymmetry' and why does it reshape clinical evaluation?",
+    options: [
+      "Harm asymmetry means clinical errors are rare — so evaluation is easy",
+      "In clinical AI, false positives and false negatives have unequal and unbounded costs (a wrong dose can kill a patient) — so evaluation must bound worst-case harm rather than just maximize average accuracy",
+      "Harm asymmetry means LLMs always over-estimate doses",
+      "Harm asymmetry is about gender bias in medical training data"
+    ],
+    correct: 1,
+    explanation: "In a movie recommender, errors are mildly annoying and roughly symmetric. In a clinical tool, errors can be catastrophic and unequal — missing a contraindication or recommending a dangerous dose has unbounded downside. The math of evaluation must change: optimize to bound worst-case harm, not just maximize average accuracy."
+  },
+  {
+    question: "Your model scores 95% on MedQA. What does this tell you about its safety as a clinical assistant?",
+    options: [
+      "It is safe — 95% is a high score",
+      "It tells you about the model's medical knowledge on USMLE-style multiple-choice questions; it tells you very little about its real clinical safety, which depends on hallucination rate, contraindication recall, calibrated refusal, and fairness on YOUR task with YOUR data",
+      "It tells you the model is safer than a human clinician",
+      "It is meaningless — MedQA is a bad benchmark"
+    ],
+    correct: 1,
+    explanation: "MedQA measures one specific format of medical knowledge. It is a useful sanity check but a weak proxy for clinical safety. Real safety depends on hallucination, contraindication recall, calibrated refusal, demographic fairness, and performance on YOUR specific task with YOUR clinical data — none of which MedQA captures."
+  },
+  {
+    question: "Which of these is NOT one of the four safety sub-metrics this lesson recommends building into a clinical evaluation suite?",
+    options: [
+      "Contraindication recall (fraction of contraindicated inputs that get flagged)",
+      "Calibrated uncertainty / refusal-to-answer (fraction of insufficient-information cases where the tool appropriately refuses)",
+      "Hallucination rate on factual claims (fraction of factual claims that are verifiable)",
+      "Token throughput per second (how fast the tool generates output)"
+    ],
+    correct: 3,
+    explanation: "Token throughput is a performance metric, not a safety metric. The four safety sub-metrics in this lesson are: contraindication recall, calibrated uncertainty/refusal, hallucination rate on factual claims, and demographic fairness."
+  },
+  {
+    question: "What is the closed-book vs open-book distinction in clinical evaluation, and which matches how you will actually deploy your tool at KHCC?",
+    options: [
+      "Closed-book = no patient consent; open-book = patient consent is given",
+      "Closed-book = model answers from its parametric memory only; open-book = model has access to relevant guidelines/protocols via retrieval. Most KHCC deployments are open-book, so build your evaluations in the open-book configuration to match production",
+      "Closed-book = paywalled benchmarks; open-book = free benchmarks",
+      "Closed-book and open-book are the same in clinical settings"
+    ],
+    correct: 1,
+    explanation: "Closed-book tests latent knowledge (the model answers without external context). Open-book tests retrieval-augmented performance (the model has access to relevant documents). KHCC deployments are almost always open-book — the model has access to KHCC protocols, guidelines, patient records. Build your evaluations in the configuration you will deploy in, so the numbers predict what users will actually experience."
+  },
+  {
+    question: "Why does this lesson recommend building an audit trail (traceable to dataset version, model version, prompt version, rubric version) from day one — even when you are not submitting to a regulator?",
+    options: [
+      "Because regulators will eventually require it and it is faster to build now than retrofit later — and because you will want to answer 'why did this output happen on this date' months later when a clinician or IRB asks",
+      "Because the FDA explicitly requires it for all clinical AI",
+      "Because version control is required by Python",
+      "Audit trails are only relevant for FDA-cleared devices"
+    ],
+    correct: 0,
+    explanation: "Audit-trail thinking is good engineering regardless of regulatory status. It costs little to build from day one and is extremely painful to retrofit. When a clinician, IRB, or regulator asks 'why did this output happen on this date' months later, you need the trail of dataset/model/prompt/rubric versions to answer."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You can frame clinical evaluation under harm asymmetry and regulatory expectations." : score >= 3 ? "Good — review the four safety sub-metrics and the closed-book vs open-book distinction." : "Review the lesson on harm asymmetry, the safety sub-metrics, and the regulatory framing."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

@@ -294,8 +294,8 @@ title: CCI.io
   <a class="cci-card" href="{{ site.baseurl }}/session-07/">
     <div class="cci-num" style="background:#558B2F;">7</div>
     <div class="cci-card-body">
-      <p class="title">Cursor + Codebase Building</p>
-      <p class="desc">AI-assisted coding, project scaffolding</p>
+      <p class="title">LLM Evaluation</p>
+      <p class="desc">Eval layers, eval datasets, LLM-as-judge, clinical safety metrics, Opik observability</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
@@ -303,8 +303,8 @@ title: CCI.io
   <a class="cci-card" href="{{ site.baseurl }}/session-08/">
     <div class="cci-num" style="background:#F4511E;">8</div>
     <div class="cci-card-body">
-      <p class="title">Model Evaluation &amp; Clinical Validation</p>
-      <p class="desc">Metrics, benchmarks, safety evaluation</p>
+      <p class="title">Mid-term Presentations</p>
+      <p class="desc">Journal club, evaluation critiques, peer feedback on clinical AI projects</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
@@ -312,8 +312,8 @@ title: CCI.io
   <a class="cci-card" href="{{ site.baseurl }}/session-09/">
     <div class="cci-num" style="background:#6A1B9A;">9</div>
     <div class="cci-card-body">
-      <p class="title">Midterm Project</p>
-      <p class="desc">End-to-end clinical AI pipeline</p>
+      <p class="title">IDEs &amp; Repo Building</p>
+      <p class="desc">Cursor, VS Code, GitHub, CI/CD, wiring eval harness into your repo</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
