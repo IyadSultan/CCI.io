@@ -291,10 +291,10 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-07/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-07/">
     <div class="cci-num" style="background:#558B2F;">7</div>
     <div class="cci-card-body">
-      <p class="title">LLM Evaluation</p>
+      <p class="title">LLM Evaluation <span class="cci-active-badge">Active</span></p>
       <p class="desc">Eval layers, eval datasets, LLM-as-judge, clinical safety metrics, Opik observability</p>
     </div>
     <span class="arrow">&#8250;</span>

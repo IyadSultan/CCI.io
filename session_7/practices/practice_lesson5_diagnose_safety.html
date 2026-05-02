@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Diagnose Safety</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00897B; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #B2DFDB; background: #E0F2F1; margin-bottom: 1rem; }
+    .back-link:hover { background: #B2DFDB; }
+  </style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-07/">&#8249; Back to Session 7</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const SAFETY_CASES = [
+      {
+        id: 'sc1',
+        description: "12-year-old with stage III FH Wilms tumor and pre-existing renal impairment (eGFR 70). Tool recommends cisplatin 100 mg/m² every 3 weeks.",
+        failure: 'contraindication',
+        correctMetric: 'contraindication_recall',
+        explanation: "Cisplatin is nephrotoxic and contraindicated (or requires dose reduction) in renal impairment. The tool recommended it without any flag. This is a CONTRAINDICATION RECALL failure — for an input containing a known contraindication, the tool should have flagged it. Recall here should be near 1.0 for safety."
+      },
+      {
+        id: 'sc2',
+        description: "Input is 'patient has cancer, what regimen?' — no age, no diagnosis, no stage, no histology. Tool generates: 'Recommend FOLFOX every 2 weeks per standard protocol.'",
+        failure: 'refusal',
+        correctMetric: 'calibrated_refusal',
+        explanation: "The input is grossly insufficient — no diagnosis, no stage, no age. The right response is refusal with explanation ('I cannot recommend a regimen without diagnosis, stage, and patient details'). Instead the tool confabulated a colorectal regimen for an unspecified cancer. This is a CALIBRATED REFUSAL failure — the tool should know its limits."
+      },
+      {
+        id: 'sc3',
+        description: "Tool output: 'Vincristine causes peripheral neuropathy in 100% of patients within the first cycle.' (The actual published rate is around 30–40% over the course of treatment.)",
+        failure: 'hallucination',
+        correctMetric: 'hallucination_rate',
+        explanation: "The output makes a specific factual claim ('100% within first cycle') that is not supported by the literature. This is a HALLUCINATION RATE failure — for outputs that make factual claims, those claims should be verifiable against authoritative sources."
+      },
+      {
+        id: 'sc4',
+        description: "Two identical clinical cases vary only in the patient's name and stated insurance status (private vs public). The tool recommends a more aggressive treatment plan for the privately-insured patient.",
+        failure: 'fairness',
+        correctMetric: 'demographic_fairness',
+        explanation: "Recommendations should be invariant to non-clinical attributes (insurance, name, ethnicity, age within range, sex when not clinically relevant). Drift across these attributes is a DEMOGRAPHIC FAIRNESS failure — and a regulatory and ethical concern."
+      },
+      {
+        id: 'sc5',
+        description: "Tool is asked 'what is the recommended cisplatin dose for stage IV testicular cancer?' (a question outside the Oncology Summary Assistant's intended Wilms tumor scope). Tool answers: 'Cisplatin 20 mg/m² days 1–5 with bleomycin and etoposide per BEP regimen.'",
+        failure: 'refusal',
+        correctMetric: 'calibrated_refusal',
+        explanation: "The question is out of scope for this Wilms-tumor-focused tool. The right response is refusal with redirection ('This tool is scoped to Wilms tumor; please consult the testicular cancer protocol or another resource'). Instead the tool answered confidently from training data. This is a CALIBRATED REFUSAL / scope-management failure."
+      }
+    ];
+
+    const METRICS_LIST = [
+      { id: 'contraindication_recall', label: 'Contraindication recall' },
+      { id: 'calibrated_refusal', label: 'Calibrated uncertainty / refusal-to-answer' },
+      { id: 'hallucination_rate', label: 'Hallucination rate on factual claims' },
+      { id: 'demographic_fairness', label: 'Demographic fairness' }
+    ];
+
+    function Practice() {
+      const [idx, setIdx] = React.useState(0);
+      const [picked, setPicked] = React.useState(null);
+      const [submitted, setSubmitted] = React.useState(false);
+      const [score, setScore] = React.useState(0);
+
+      const c = SAFETY_CASES[idx];
+
+      const submit = () => {
+        if (picked === c.correctMetric) setScore(s => s + 1);
+        setSubmitted(true);
+      };
+
+      const next = () => { setIdx(i => i + 1); setPicked(null); setSubmitted(false); };
+      const reset = () => { setIdx(0); setPicked(null); setSubmitted(false); setScore(0); };
+
+      if (idx >= SAFETY_CASES.length) {
+        return (
+          <div style={{ maxWidth: 800, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+            <h2>Safety Triage Complete!</h2>
+            <p style={{ fontSize: 20 }}>You diagnosed {score} / {SAFETY_CASES.length} cases correctly.</p>
+            <div style={{ background: score >= 4 ? '#d4edda' : '#fff3cd', padding: 20, borderRadius: 8 }}>
+              {score >= 4 ? "Excellent — you can map a clinical failure to the safety metric that catches it." : "Review the four safety sub-metrics. The most commonly confused are calibrated refusal (the tool should have said 'I do not know') and contraindication recall (the tool should have flagged the conflict)."}
+            </div>
+            <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+          </div>
+        );
+      }
+
+      return (
+        <div style={{ maxWidth: 850, margin: '40px auto', fontFamily: 'system-ui' }}>
+          <h3>Diagnose the Safety Failure</h3>
+          <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+            <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((idx + 1) / SAFETY_CASES.length) * 100}%` }} />
+          </div>
+          <p style={{ background: '#f8d7da', padding: 12, borderRadius: 8, fontSize: 14 }}><strong>Case {idx + 1}:</strong> {c.description}</p>
+
+          <p style={{ fontWeight: 'bold', marginTop: 16 }}>Which safety sub-metric should catch this?</p>
+          {METRICS_LIST.map(m => {
+            const isPicked = picked === m.id;
+            const isCorrect = submitted && m.id === c.correctMetric;
+            const isWrong = submitted && isPicked && m.id !== c.correctMetric;
+            return (
+              <div key={m.id} onClick={() => !submitted && setPicked(m.id)} style={{
+                padding: 12, margin: '6px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+                border: `2px solid ${isCorrect ? '#198754' : isWrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+                background: isCorrect ? '#d4edda' : isWrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff'
+              }}>{m.label}</div>
+            );
+          })}
+
+          {!submitted && <button onClick={submit} disabled={!picked} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: !picked ? 'default' : 'pointer', opacity: !picked ? 0.5 : 1 }}>Diagnose</button>}
+
+          {submitted && (
+            <div style={{ marginTop: 12, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+              <p>{c.explanation}</p>
+              <button onClick={next} style={{ marginTop: 8, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{idx + 1 < SAFETY_CASES.length ? 'Next Case' : 'See Score'}</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Practice />);
+  </script>
+</body>
+</html>
