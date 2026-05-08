@@ -11,7 +11,11 @@ permalink: /session-07/lesson-1-instructions/
 # CCI Session 7 -- Lesson 1: Why Evaluate, and Where Evals Live
 
 **Estimated time:** 25 minutes (15 min content / 10 min discussion)
-**Lab mode:** Slide-based discussion (no Colab) — follow [**CCI LLMs Evaluation** slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) and the [**PDF handout**]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf).
+**Lab mode:** Slide-based discussion (no Colab) — **watch the required intro video first**, then follow [**CCI LLMs Evaluation** slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) and the [**PDF handout**]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf).
+
+---
+
+> **Before anything else:** Watch [**Session 7 introduction (video)**]({{ site.baseurl }}/session_7/data/introduction.mp4) — required for Lesson 1.
 
 ---
 
@@ -39,6 +43,7 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 
 ### Before Class -- Preparation (15-20 min)
 
+- **Must watch (required):** [Introduction video — `introduction.mp4`]({{ site.baseurl }}/session_7/data/introduction.mp4) (opens in your browser or downloads; watch before class).
 - **Class deck & handout:** [CCI LLMs Evaluation — Google Slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) · PDF handout: [llm_evaluation_handout.pdf]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf)
 - **Read:** Hugging Face LLM Evaluation Guidebook, sections "What is model evaluation about?" and "LLM basics to understand evaluation": <https://github.com/huggingface/evaluation-guidebook>
 - **Read:** Paul Iusztin, "The AI Evals Roadmap I Wish I Had", Lesson 1 (Integration Strategy): <https://www.decodingai.com/p/the-ai-evals-roadmap-i-wish-i-had>
@@ -75,6 +80,7 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 
 | Resource | Link |
 |----------|------|
+| **Introduction video (required)** — `session_7/data/introduction.mp4` | [Watch / download]({{ site.baseurl }}/session_7/data/introduction.mp4) |
 | **Slides — CCI LLMs Evaluation** | [Google Slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) |
 | **Handout (PDF)** — `session_7/data/llm_evaluation_handout.pdf` | [Open PDF]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf) |
 | Hugging Face LLM Evaluation Guidebook | <https://github.com/huggingface/evaluation-guidebook> |
