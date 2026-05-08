@@ -15,6 +15,56 @@ permalink: /session-07/lesson-6-instructions/
 
 ---
 
+## Comet ML & Opik — API keys for Colab
+{: #comet-opik-keys}
+
+This lab uses **[Opik](https://www.comet.com/docs/opik/)** (Comet’s LLM observability stack). You need a **free Comet account**, your **API key**, **workspace name**, and (optionally) a **project** name for traces.
+
+### How to get `COMET_API_KEY`, workspace, and Opik env vars
+
+1. **Sign up** at [comet.com/signup](https://www.comet.com/signup) if you do not already have an account (free tier includes default workspaces and projects).
+2. **Install & log in locally or in a notebook** (stores credentials in `~/.comet.config` when not using Colab secrets):  
+   `pip install comet_ml` then run `comet login` in the terminal, **or** use `import comet_ml; comet_ml.login()` once in the notebook.
+3. **API key:** In the Comet UI go to **Settings → API Keys** and copy your key. **The same key is used for Opik:** `OPIK_API_KEY` = `COMET_API_KEY`.
+4. **Workspace:** Your default workspace is usually your **username** (check in the Comet dashboard under **Settings** or after `comet login`). Set **`OPIK_WORKSPACE`** to that value, or create a workspace in the UI at [comet.com](https://www.comet.com).
+5. **Project name:** Use `oncology-summary-assistant` for this course (create the project in your workspace in the Comet/Opik UI if it does not exist).
+
+### Google Colab — secrets (recommended)
+
+In Colab, open **Secrets** (key icon in the left sidebar) and add:
+
+| Secret name | Value |
+|-------------|--------|
+| `COMET_API_KEY` | Your API key from Comet Settings |
+| `COMET_WORKSPACE` | Your workspace name (often your username) |
+
+Then run:
+
+```python
+import os
+from google.colab import userdata
+
+os.environ['COMET_API_KEY']       = userdata.get('COMET_API_KEY')
+os.environ['OPIK_API_KEY']        = userdata.get('COMET_API_KEY')   # same key as Comet
+os.environ['OPIK_WORKSPACE']      = userdata.get('COMET_WORKSPACE')
+os.environ['OPIK_PROJECT_NAME']   = 'oncology-summary-assistant'
+```
+
+### Outside Colab
+
+Export variables in your shell (or use a `.env` file that you **do not** commit):
+
+```bash
+export COMET_API_KEY='your_key_here'
+export OPIK_API_KEY="$COMET_API_KEY"
+export OPIK_WORKSPACE='your_workspace'
+export OPIK_PROJECT_NAME='oncology-summary-assistant'
+```
+
+This pattern works for Python workflows on **Azure**, **Databricks**, or local machines once the environment variables are set securely.
+
+---
+
 ## Instructor Introduction
 
 Let us step back. You started by understanding why evaluation is the foundation of clinical AI -- three layers, guardrails vs evaluators, the limits of benchmarks. You learned to build a labeled evaluation dataset from real traces using the error-analysis flywheel and the one-labeler authority principle. You learned to choose between functional, LLM-judge, and human evaluators and built one of each. You learned to validate the evaluator itself with the judge--clinician alignment loop, so your numbers actually mean something. You added the clinical layer -- harm asymmetry, safety as a first-class metric, regulatory framing. Now we put it all together: a live walkthrough on the Oncology Summary Assistant where we design a complete eval pipeline end-to-end, push synthetic production traces to Opik for monitoring, and demonstrate drift detection on a deliberately-degraded prompt. You will leave with a runnable scaffold you can drop into your own repo in Session 9 -- and you will have a clear answer for the question "how do you know your tool is safe?"
@@ -45,7 +95,7 @@ The take-home assignment is the seed for Session 9 work -- a complete evaluation
 - **Browse:** Opik tracing & monitoring quickstart: <https://www.comet.com/docs/opik/>
 - **Read:** Microsoft "Responsible AI dashboard" overview (regulated-environment perspective): <https://learn.microsoft.com/en-us/azure/machine-learning/concept-responsible-ai-dashboard>
 - **Skim:** HF Guidebook -- "The forgotten children of evaluation" (statistical validity, cost, environmental impact): <https://github.com/huggingface/evaluation-guidebook>
-- **Set up:** Create a free Opik account (Comet free tier, ~25K spans/month) and confirm you can authenticate from a notebook.
+- **Set up Comet / Opik:** Complete **[Comet ML & Opik — API keys for Colab](#comet-opik-keys)** at the top of this page (free tier at [comet.com](https://www.comet.com); ~25K spans/month). Confirm you can authenticate from the Lesson 6 notebook.
 - **Warm-up exercise:** Pick the clinical AI tool you intend to use for the assignment. Write down (a) your top 3 failure modes, (b) one functional + one judge metric per failure mode, (c) what you would monitor in production.
 
 ### During Class -- What to Focus On

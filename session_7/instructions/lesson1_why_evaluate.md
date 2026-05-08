@@ -67,6 +67,7 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 **Practice (no Colab this lesson):**
 
 - Complete the interactive practice artifact "Place the Activity in the Right Layer" (in `practices/practice_lesson1_eval_layer.jsx` or embedded in the curriculum doc) -- 5 scenarios where you classify each as development / regression / production / guardrail.
+- Play the browser games **[Cohen's kappa (simple)]({{ site.baseurl }}/session_7/practices/cohen_kappa_simple_game.html)** and **[F1 / precision-recall]({{ site.baseurl }}/session_7/practices/f1_precision_recall_game.html)** — quick intuition for agreement and classification metrics used later in the session.
 - Take one CCI tool you have built or seen, and write one sentence per layer describing what you would do at each layer for that tool.
 
 **Self-check questions:**
@@ -83,6 +84,8 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 | **Introduction video (required)** — `session_7/data/introduction.mp4` | [Watch / download]({{ site.baseurl }}/session_7/data/introduction.mp4) |
 | **Slides — CCI LLMs Evaluation** | [Google Slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) |
 | **Handout (PDF)** — `session_7/data/llm_evaluation_handout.pdf` | [Open PDF]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf) |
+| **Cohen's kappa game** — `session_7/practices/cohen_kappa_simple_game.html` | [Open in browser]({{ site.baseurl }}/session_7/practices/cohen_kappa_simple_game.html) |
+| **F1 / precision-recall game** — `session_7/practices/f1_precision_recall_game.html` | [Open in browser]({{ site.baseurl }}/session_7/practices/f1_precision_recall_game.html) |
 | Hugging Face LLM Evaluation Guidebook | <https://github.com/huggingface/evaluation-guidebook> |
 | Hugging Face Evaluation Guidebook (Spaces preview) | <https://huggingface.co/spaces/OpenEvals/evaluation-guidebook> |
 | AI Evals Roadmap (Iusztin) | <https://www.decodingai.com/p/the-ai-evals-roadmap-i-wish-i-had> |

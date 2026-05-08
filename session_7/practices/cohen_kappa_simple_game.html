@@ -1,0 +1,351 @@
+<h2 class="sr-only">Interactive game teaching Cohen's kappa by labeling images as ripe, unripe, or rotten and comparing with an AI judge.</h2>
+
+<div style="padding: 1rem 0;">
+
+<div id="intro-screen" style="text-align: center; padding: 1.5rem 1rem;">
+  <div style="display: inline-block; padding: 8px 16px; background: #EEEDFE; color: #3C3489; border-radius: 999px; font-size: 13px; font-weight: 500; margin-bottom: 1.25rem;">
+    <i class="ti ti-scale" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"></i> The kappa game
+  </div>
+  <h1 style="font-size: 26px; margin: 0 0 0.5rem;">How much do two judges <em style="font-style: italic; color: #534AB7;">really</em> agree?</h1>
+  <p style="font-size: 15px; color: var(--color-text-secondary); max-width: 480px; margin: 0 auto 1.5rem; line-height: 1.6;">You will sort 10 fruits as <strong style="font-weight: 500;">ripe</strong>, <strong style="font-weight: 500;">unripe</strong>, or <strong style="font-weight: 500;">rotten</strong>. An AI judge sorts the same fruits. Then we measure agreement two different ways — and they tell very different stories.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 480px; margin: 0 auto 1.5rem;">
+    <div style="background: #EAF3DE; padding: 14px 10px; border-radius: var(--border-radius-md);">
+      <div style="font-size: 28px;">🍎</div>
+      <div style="font-size: 12px; color: #3B6D11; margin-top: 4px;">Ripe</div>
+    </div>
+    <div style="background: #EAF3DE; padding: 14px 10px; border-radius: var(--border-radius-md);">
+      <div style="font-size: 28px;">🍏</div>
+      <div style="font-size: 12px; color: #3B6D11; margin-top: 4px;">Unripe</div>
+    </div>
+    <div style="background: #FCEBEB; padding: 14px 10px; border-radius: var(--border-radius-md);">
+      <div style="font-size: 28px;">🦠</div>
+      <div style="font-size: 12px; color: #791F1F; margin-top: 4px;">Rotten</div>
+    </div>
+  </div>
+
+  <button id="start-btn" style="background: #534AB7; color: white; border: none; padding: 12px 28px; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; cursor: pointer;">Start sorting <i class="ti ti-arrow-right" style="vertical-align: -2px;" aria-hidden="true"></i></button>
+</div>
+
+<div id="game-screen" style="display: none;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);">Fruit <span id="case-num" style="font-weight: 500; color: var(--color-text-primary);">1</span> of 10</div>
+    <div id="progress-dots" style="display: flex; gap: 6px;"></div>
+  </div>
+
+  <div id="case-card" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem 1.25rem; margin-bottom: 1rem; text-align: center;">
+    <div id="case-emoji" style="font-size: 96px; line-height: 1; margin-bottom: 12px;">🍎</div>
+    <p id="case-desc" style="font-size: 16px; margin: 0; color: var(--color-text-secondary);"></p>
+  </div>
+
+  <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 8px; text-align: center;">How would you label this fruit?</p>
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem;">
+    <button class="label-btn" data-label="ripe" style="background: #EAF3DE; color: #27500A; border: 0.5px solid #639922; padding: 14px 8px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;">
+      <i class="ti ti-circle-check" style="font-size: 18px; display: block; margin: 0 auto 4px;" aria-hidden="true"></i>
+      Ripe
+    </button>
+    <button class="label-btn" data-label="unripe" style="background: #FAEEDA; color: #633806; border: 0.5px solid #BA7517; padding: 14px 8px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;">
+      <i class="ti ti-clock" style="font-size: 18px; display: block; margin: 0 auto 4px;" aria-hidden="true"></i>
+      Unripe
+    </button>
+    <button class="label-btn" data-label="rotten" style="background: #FCEBEB; color: #501313; border: 0.5px solid #E24B4A; padding: 14px 8px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;">
+      <i class="ti ti-x" style="font-size: 18px; display: block; margin: 0 auto 4px;" aria-hidden="true"></i>
+      Rotten
+    </button>
+  </div>
+
+  <div id="reveal" style="display: none; background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px;">
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;"><i class="ti ti-user" style="vertical-align: -2px; margin-right: 2px;" aria-hidden="true"></i> You</div>
+        <div id="you-said" style="font-size: 15px; font-weight: 500;"></div>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;"><i class="ti ti-robot" style="vertical-align: -2px; margin-right: 2px;" aria-hidden="true"></i> AI judge</div>
+        <div id="judge-said" style="font-size: 15px; font-weight: 500;"></div>
+      </div>
+    </div>
+    <div id="match-banner" style="padding: 8px 12px; border-radius: var(--border-radius-md); font-size: 13px;"></div>
+    <button id="next-btn" style="margin-top: 12px; background: #534AB7; color: white; border: none; padding: 10px 20px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;">Next fruit <i class="ti ti-arrow-right" style="vertical-align: -2px;" aria-hidden="true"></i></button>
+  </div>
+
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 12px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Live score</span>
+      <span id="live-count" style="font-size: 12px; color: var(--color-text-secondary);">0 of 0</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: end;">
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">Match rate</div>
+        <div id="live-acc" style="font-size: 22px; font-weight: 500;">—</div>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">Lucky guesses</div>
+        <div id="live-chance" style="font-size: 22px; font-weight: 500; color: var(--color-text-secondary);">—</div>
+      </div>
+      <div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">Real agreement (κ)</div>
+        <div id="live-kappa" style="font-size: 22px; font-weight: 500;">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="end-screen" style="display: none;">
+  <div style="text-align: center; margin-bottom: 1.5rem;">
+    <div style="font-size: 36px; margin-bottom: 8px;"><i class="ti ti-trophy" style="color: #BA7517;" aria-hidden="true"></i></div>
+    <h1 style="font-size: 24px; margin: 0 0 4px;">Final score</h1>
+    <p style="font-size: 14px; color: var(--color-text-secondary); margin: 0;">Two ways of measuring the same agreement</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem;">
+    <div style="background: #E6F1FB; padding: 1rem; border-radius: var(--border-radius-md);">
+      <div style="font-size: 12px; color: #185FA5; margin-bottom: 4px;">Match rate</div>
+      <div id="end-acc" style="font-size: 28px; font-weight: 500; color: #042C53;">—</div>
+      <div style="font-size: 11px; color: #185FA5; margin-top: 2px;">Times you agreed</div>
+    </div>
+    <div style="background: #EEEDFE; padding: 1rem; border-radius: var(--border-radius-md);">
+      <div style="font-size: 12px; color: #534AB7; margin-bottom: 4px;">Cohen's κ</div>
+      <div id="end-kappa" style="font-size: 28px; font-weight: 500; color: #26215C;">—</div>
+      <div id="end-kappa-label" style="font-size: 11px; color: #534AB7; margin-top: 2px;">Real agreement</div>
+    </div>
+  </div>
+
+  <div style="background: var(--color-background-secondary); padding: 1.25rem; border-radius: var(--border-radius-lg); margin-bottom: 1.25rem;">
+    <h2 style="font-size: 16px; margin: 0 0 0.75rem;">The story behind your two scores</h2>
+    <div id="kappa-story" style="font-size: 14px; line-height: 1.7; color: var(--color-text-secondary);"></div>
+
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--color-border-tertiary); font-family: var(--font-mono); font-size: 13px; background: var(--color-background-primary); padding: 12px; border-radius: var(--border-radius-md);">
+      <div style="color: var(--color-text-secondary); margin-bottom: 6px;">κ = (match rate − lucky guesses) ÷ (1 − lucky guesses)</div>
+      <div id="kappa-math" style="color: var(--color-text-primary);"></div>
+    </div>
+  </div>
+
+  <h2 style="font-size: 16px; margin: 0 0 0.5rem;">Where your κ lands</h2>
+  <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 1.25rem;">
+    <div class="kappa-band" data-min="-1" data-max="0.2" style="background: #FCEBEB; padding: 8px 4px; border-radius: var(--border-radius-md); text-align: center;">
+      <div style="font-size: 10px; color: #791F1F; font-weight: 500;">&lt; 0.2</div>
+      <div style="font-size: 10px; color: #A32D2D;">Poor</div>
+    </div>
+    <div class="kappa-band" data-min="0.2" data-max="0.4" style="background: #FAEEDA; padding: 8px 4px; border-radius: var(--border-radius-md); text-align: center;">
+      <div style="font-size: 10px; color: #633806; font-weight: 500;">0.2–0.4</div>
+      <div style="font-size: 10px; color: #854F0B;">Fair</div>
+    </div>
+    <div class="kappa-band" data-min="0.4" data-max="0.6" style="background: #E6F1FB; padding: 8px 4px; border-radius: var(--border-radius-md); text-align: center;">
+      <div style="font-size: 10px; color: #0C447C; font-weight: 500;">0.4–0.6</div>
+      <div style="font-size: 10px; color: #185FA5;">Moderate</div>
+    </div>
+    <div class="kappa-band" data-min="0.6" data-max="0.8" style="background: #E1F5EE; padding: 8px 4px; border-radius: var(--border-radius-md); text-align: center;">
+      <div style="font-size: 10px; color: #085041; font-weight: 500;">0.6–0.8</div>
+      <div style="font-size: 10px; color: #0F6E56;">Substantial</div>
+    </div>
+    <div class="kappa-band" data-min="0.8" data-max="1.01" style="background: #EAF3DE; padding: 8px 4px; border-radius: var(--border-radius-md); text-align: center;">
+      <div style="font-size: 10px; color: #173404; font-weight: 500;">≥ 0.8</div>
+      <div style="font-size: 10px; color: #27500A;">Almost perfect</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <button id="restart-btn" style="background: transparent; color: var(--color-text-primary); border: 0.5px solid var(--color-border-secondary); padding: 12px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;"><i class="ti ti-refresh" style="vertical-align: -2px;" aria-hidden="true"></i> Play again</button>
+    <button id="learn-btn" style="background: #534AB7; color: white; border: none; padding: 12px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;">What does my κ mean? ↗</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const CASES = [
+  {emoji: "🍎", desc: "Bright red apple, firm and shiny", judge: "ripe"},
+  {emoji: "🍌", desc: "Yellow banana with a few brown spots", judge: "ripe"},
+  {emoji: "🍏", desc: "Hard green apple, no give when pressed", judge: "unripe"},
+  {emoji: "🍓", desc: "Strawberry with white shoulders", judge: "ripe"},
+  {emoji: "🍑", desc: "Peach that's soft and dripping juice", judge: "ripe"},
+  {emoji: "🥝", desc: "Kiwi covered in fuzzy gray mold", judge: "rotten"},
+  {emoji: "🍐", desc: "Pear that's pale green and rock hard", judge: "unripe"},
+  {emoji: "🍇", desc: "Grapes that have shriveled into raisins", judge: "rotten"},
+  {emoji: "🥭", desc: "Mango with black spots and a sour smell", judge: "rotten"},
+  {emoji: "🍊", desc: "Orange with a small bruise on one side", judge: "ripe"}
+];
+
+const LABELS = ["ripe", "unripe", "rotten"];
+const LABEL_COLORS = {
+  ripe: {bg: "#EAF3DE", fg: "#27500A"},
+  unripe: {bg: "#FAEEDA", fg: "#633806"},
+  rotten: {bg: "#FCEBEB", fg: "#501313"}
+};
+const LABEL_NAMES = {ripe: "Ripe", unripe: "Unripe", rotten: "Rotten"};
+
+let state = {idx: 0, picks: []};
+
+function renderDots() {
+  const el = document.getElementById("progress-dots");
+  el.innerHTML = "";
+  for (let i = 0; i < CASES.length; i++) {
+    const d = document.createElement("div");
+    d.style.width = "8px";
+    d.style.height = "8px";
+    d.style.borderRadius = "50%";
+    if (i < state.idx) d.style.background = "#534AB7";
+    else if (i === state.idx) d.style.background = "#AFA9EC";
+    else d.style.background = "var(--color-border-tertiary)";
+    el.appendChild(d);
+  }
+}
+
+function renderCase() {
+  const c = CASES[state.idx];
+  document.getElementById("case-num").textContent = state.idx + 1;
+  document.getElementById("case-emoji").textContent = c.emoji;
+  document.getElementById("case-desc").textContent = c.desc;
+  document.getElementById("reveal").style.display = "none";
+  document.querySelectorAll(".label-btn").forEach(b => {
+    b.disabled = false;
+    b.style.opacity = "1";
+    b.style.cursor = "pointer";
+  });
+  renderDots();
+  updateLive();
+}
+
+function updateLive() {
+  const n = state.picks.length;
+  document.getElementById("live-count").textContent = n + " of " + CASES.length;
+  if (n === 0) {
+    document.getElementById("live-acc").textContent = "—";
+    document.getElementById("live-chance").textContent = "—";
+    document.getElementById("live-kappa").textContent = "—";
+    return;
+  }
+  const {acc, kappa, pe} = computeMetrics(state.picks);
+  document.getElementById("live-acc").textContent = Math.round(acc * 100) + "%";
+  document.getElementById("live-chance").textContent = Math.round(pe * 100) + "%";
+  const kappaEl = document.getElementById("live-kappa");
+  kappaEl.textContent = kappa.toFixed(2);
+  kappaEl.style.color = kappaColor(kappa);
+}
+
+function computeMetrics(picks) {
+  const n = picks.length;
+  let agree = 0;
+  const youCounts = {ripe: 0, unripe: 0, rotten: 0};
+  const judgeCounts = {ripe: 0, unripe: 0, rotten: 0};
+  picks.forEach(p => {
+    if (p.you === p.judge) agree++;
+    youCounts[p.you]++;
+    judgeCounts[p.judge]++;
+  });
+  const acc = agree / n;
+  let pe = 0;
+  LABELS.forEach(l => { pe += (youCounts[l] / n) * (judgeCounts[l] / n); });
+  const kappa = pe === 1 ? 1 : (acc - pe) / (1 - pe);
+  return {acc, kappa, pe, agree, n};
+}
+
+function kappaColor(k) {
+  if (k < 0.2) return "#A32D2D";
+  if (k < 0.4) return "#854F0B";
+  if (k < 0.6) return "#185FA5";
+  if (k < 0.8) return "#0F6E56";
+  return "#27500A";
+}
+
+function kappaBand(k) {
+  if (k < 0.2) return "Poor — barely better than random";
+  if (k < 0.4) return "Fair — meaningful but weak";
+  if (k < 0.6) return "Moderate — useful, not great";
+  if (k < 0.8) return "Substantial — solid agreement";
+  return "Almost perfect — rare in the wild";
+}
+
+function pickLabel(label) {
+  const c = CASES[state.idx];
+  state.picks.push({you: label, judge: c.judge, idx: state.idx});
+
+  document.querySelectorAll(".label-btn").forEach(b => {
+    b.disabled = true;
+    b.style.cursor = "default";
+    if (b.dataset.label !== label) b.style.opacity = "0.4";
+  });
+
+  document.getElementById("you-said").textContent = LABEL_NAMES[label];
+  document.getElementById("you-said").style.color = LABEL_COLORS[label].fg;
+  document.getElementById("judge-said").textContent = LABEL_NAMES[c.judge];
+  document.getElementById("judge-said").style.color = LABEL_COLORS[c.judge].fg;
+
+  const banner = document.getElementById("match-banner");
+  if (label === c.judge) {
+    banner.textContent = "✓ You and the judge agree.";
+    banner.style.background = "#EAF3DE";
+    banner.style.color = "#27500A";
+  } else {
+    banner.textContent = "✗ You disagree. This is what kappa measures.";
+    banner.style.background = "#FCEBEB";
+    banner.style.color = "#501313";
+  }
+  document.getElementById("reveal").style.display = "block";
+  updateLive();
+}
+
+function renderEnd() {
+  document.getElementById("game-screen").style.display = "none";
+  document.getElementById("end-screen").style.display = "block";
+  const {acc, kappa, pe} = computeMetrics(state.picks);
+  const accPct = Math.round(acc * 100);
+  const pePct = Math.round(pe * 100);
+  document.getElementById("end-acc").textContent = accPct + "%";
+  document.getElementById("end-kappa").textContent = kappa.toFixed(2);
+  document.getElementById("end-kappa-label").textContent = kappaBand(kappa);
+
+  const story = document.getElementById("kappa-story");
+  story.innerHTML =
+    "<p style='margin: 0 0 0.5rem;'>You and the AI judge matched on <strong style='color: var(--color-text-primary); font-weight: 500;'>" + accPct + "%</strong> of fruits. Sounds good — but how much of that was real agreement, and how much was lucky overlap?</p>" +
+    "<p style='margin: 0;'>Given how often each of you picked each label, two random raters with the same habits would have stumbled into matching <strong style='color: var(--color-text-primary); font-weight: 500;'>" + pePct + "%</strong> of the time by pure chance. Kappa subtracts that floor, so what's left is genuine agreement.</p>";
+
+  const diff = (acc - pe);
+  const denom = (1 - pe);
+  document.getElementById("kappa-math").innerHTML =
+    "κ = (" + acc.toFixed(2) + " − " + pe.toFixed(2) + ") ÷ (1 − " + pe.toFixed(2) + ")<br>" +
+    "&nbsp;&nbsp;= " + diff.toFixed(2) + " ÷ " + denom.toFixed(2) + " = <strong style='font-weight: 500;'>" + kappa.toFixed(2) + "</strong>";
+
+  document.querySelectorAll(".kappa-band").forEach(b => {
+    const min = parseFloat(b.dataset.min);
+    const max = parseFloat(b.dataset.max);
+    if (kappa >= min && kappa < max) {
+      b.style.outline = "2px solid var(--color-text-primary)";
+      b.style.outlineOffset = "1px";
+    }
+  });
+}
+
+document.getElementById("start-btn").addEventListener("click", () => {
+  document.getElementById("intro-screen").style.display = "none";
+  document.getElementById("game-screen").style.display = "block";
+  renderCase();
+});
+
+document.querySelectorAll(".label-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    if (!b.disabled) pickLabel(b.dataset.label);
+  });
+});
+
+document.getElementById("next-btn").addEventListener("click", () => {
+  state.idx++;
+  if (state.idx >= CASES.length) {
+    renderEnd();
+  } else {
+    renderCase();
+  }
+});
+
+document.getElementById("restart-btn").addEventListener("click", () => {
+  state = {idx: 0, picks: []};
+  document.getElementById("end-screen").style.display = "none";
+  document.getElementById("intro-screen").style.display = "block";
+});
+
+document.getElementById("learn-btn").addEventListener("click", () => {
+  const {acc, kappa, pe} = computeMetrics(state.picks);
+  sendPrompt("In the kappa game I matched the AI judge " + Math.round(acc*100) + "% of the time, with chance agreement of " + Math.round(pe*100) + "% and a final Cohen's kappa of " + kappa.toFixed(2) + ". Explain in plain language what this score means about how much the judge actually agrees with me.");
+});
+</script>
