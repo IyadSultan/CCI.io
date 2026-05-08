@@ -292,6 +292,12 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-1-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-resource" href="https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128218;</span> Slides: CCI LLMs Evaluation
+      </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128196;</span> Handout (PDF)
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson1_eval_layer.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Eval Layer
       </a>
