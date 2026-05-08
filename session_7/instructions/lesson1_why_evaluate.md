@@ -11,7 +11,7 @@ permalink: /session-07/lesson-1-instructions/
 # CCI Session 7 -- Lesson 1: Why Evaluate, and Where Evals Live
 
 **Estimated time:** 25 minutes (15 min content / 10 min discussion)
-**Lab mode:** Slide-based discussion (no Colab)
+**Lab mode:** Slide-based discussion (no Colab) — follow [**CCI LLMs Evaluation** slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) and the [**PDF handout**]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf).
 
 ---
 
@@ -39,6 +39,7 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 
 ### Before Class -- Preparation (15-20 min)
 
+- **Class deck & handout:** [CCI LLMs Evaluation — Google Slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) · PDF handout: [llm_evaluation_handout.pdf]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf)
 - **Read:** Hugging Face LLM Evaluation Guidebook, sections "What is model evaluation about?" and "LLM basics to understand evaluation": <https://github.com/huggingface/evaluation-guidebook>
 - **Read:** Paul Iusztin, "The AI Evals Roadmap I Wish I Had", Lesson 1 (Integration Strategy): <https://www.decodingai.com/p/the-ai-evals-roadmap-i-wish-i-had>
 - **Warm-up exercise:** List five clinical workflows at KHCC where you have heard "the AI tool seems fine, we tested it." For each one, write one sentence on what could go silently wrong if no systematic evaluation is in place.
@@ -74,6 +75,8 @@ Guardrails are not evaluators. A guardrail is a runtime check that blocks or mod
 
 | Resource | Link |
 |----------|------|
+| **Slides — CCI LLMs Evaluation** | [Google Slides](https://docs.google.com/presentation/d/1sWM2npc5pKaVYMwDTGPbPZU0EYYoEeUMKxOWLpfewNU/edit?usp=sharing) |
+| **Handout (PDF)** — `session_7/data/llm_evaluation_handout.pdf` | [Open PDF]({{ site.baseurl }}/session_7/data/llm_evaluation_handout.pdf) |
 | Hugging Face LLM Evaluation Guidebook | <https://github.com/huggingface/evaluation-guidebook> |
 | Hugging Face Evaluation Guidebook (Spaces preview) | <https://huggingface.co/spaces/OpenEvals/evaluation-guidebook> |
 | AI Evals Roadmap (Iusztin) | <https://www.decodingai.com/p/the-ai-evals-roadmap-i-wish-i-had> |
