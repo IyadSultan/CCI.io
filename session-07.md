@@ -535,6 +535,9 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-resource" href="https://docs.confident-ai.com/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> DeepEval docs
       </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session-07/databricks-guide/" target="_blank">
+        <span class="s1-btn-icon">&#9729;</span> KHCC Databricks Production Guide
+      </a>
     </div>
   </div>
 </div>
