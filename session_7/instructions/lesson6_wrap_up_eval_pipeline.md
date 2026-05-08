@@ -33,7 +33,7 @@ Hand-off: Session 8 (every paper presentation must include an evaluation critiqu
 
 The take-home assignment is the seed for Session 9 work -- a complete evaluation pipeline for one chosen clinical AI tool, including dataset (with Cohen's kappa reported), evaluators (one of each family), validated judge (alignment loop with before/after delta), three of four clinical safety sub-metrics, and a one-page regulatory defense framing the tool under FDA SaMD risk-class thinking.
 
-> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add the AI Evals Roadmap article and the Opik documentation as sources, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
+> **NotebookLM — class notebooks:** [Lesson 6 wrap-up](https://notebooklm.google.com/notebook/e7401278-2da8-4eaa-9a87-b06e08a4a79e) · [Session 7 full review](https://notebooklm.google.com/notebook/7c5b9853-594c-46df-b753-c15ce60ff472) (same links as the Session 7 hub). You can also paste this summary into [NotebookLM](https://notebooklm.google.com), add the AI Evals Roadmap article and the Opik documentation as sources, and use *Audio Overview* to generate a podcast-style summary students can listen to before or after class.
 
 ---
 
@@ -97,6 +97,8 @@ See the **SESSION 7 ASSIGNMENT** section in `session_7_curriculum.md` for the fu
 
 | Resource | Link |
 |----------|------|
+| NotebookLM — Lesson 6 wrap-up (eval pipeline) | [Open notebook](https://notebooklm.google.com/notebook/e7401278-2da8-4eaa-9a87-b06e08a4a79e) |
+| NotebookLM — Session 7 full review | [Open notebook](https://notebooklm.google.com/notebook/7c5b9853-594c-46df-b753-c15ce60ff472) |
 | AI Evals Roadmap, Lesson 7 (Production) | <https://www.decodingai.com/p/the-ai-evals-roadmap-i-wish-i-had> |
 | Opik Documentation | <https://www.comet.com/docs/opik/> |
 | LangSmith (alternative observability) | <https://docs.smith.langchain.com/> |
