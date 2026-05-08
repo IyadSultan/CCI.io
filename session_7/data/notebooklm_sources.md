@@ -2,6 +2,18 @@
 
 Instructions: Create 7 notebooks in NotebookLM (notebooklm.google.com), then paste each source text below. For Lesson 5 add the FDA SaMD action plan PDF and the IMDRF Good Machine Learning Practice principles as additional sources.
 
+### Live notebooks (also on Session 7 hub)
+
+| # | Topic | Open in NotebookLM |
+|---|--------|---------------------|
+| 1 | Why Evaluate — and Where Evals Live | [Open](https://notebooklm.google.com/notebook/eaabfe5a-4c92-4ab5-bce0-9e70069d3423) |
+| 2 | Building the Evaluation Dataset | [Open](https://notebooklm.google.com/notebook/6a959499-d470-4809-83f2-f74e74f3caf3) |
+| 3 | Choosing Your Evaluator | [Open](https://notebooklm.google.com/notebook/b1a511f2-cd6f-4cff-8e34-6026fb2a7ea8) |
+| 4 | Validating the Evaluator Itself | [Open](https://notebooklm.google.com/notebook/39bba13f-f269-4678-8e85-b6cab2d2317f) |
+| 5 | Medical Evaluation — The Clinical Layer | [Open](https://notebooklm.google.com/notebook/ac7e5474-ade0-4289-977a-ff8ff760bbdb) |
+| 6 | Wrap-Up — Build Your Best Eval Pipeline | [Open](https://notebooklm.google.com/notebook/e7401278-2da8-4eaa-9a87-b06e08a4a79e) |
+| 7 | LLM Evaluation Review (full session recap) | [Open](https://notebooklm.google.com/notebook/7c5b9853-594c-46df-b753-c15ce60ff472) |
+
 ---
 
 ## Notebook 1: CCI Session 7 - Lesson 1: Why Evaluate, and Where Evals Live

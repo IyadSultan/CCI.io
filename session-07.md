@@ -292,6 +292,9 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-1-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/eaabfe5a-4c92-4ab5-bce0-9e70069d3423" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-colab" href="{{ site.baseurl }}/session_7/data/introduction.mp4" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#9654;</span> Intro video (required)
       </a>
@@ -337,6 +340,9 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-2-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/6a959499-d470-4809-83f2-f74e74f3caf3" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson2_label_traces.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Label Traces
       </a>
@@ -375,6 +381,9 @@ permalink: /session-07/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-3-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b1a511f2-cd6f-4cff-8e34-6026fb2a7ea8" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson3_pick_evaluator.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Pick Evaluator
@@ -415,6 +424,9 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-4-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/39bba13f-f269-4678-8e85-b6cab2d2317f" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson4_alignment_loop.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Alignment Loop
       </a>
@@ -454,6 +466,9 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-5-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/ac7e5474-ade0-4289-977a-ff8ff760bbdb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson5_diagnose_safety.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Diagnose Safety
       </a>
@@ -492,6 +507,12 @@ permalink: /session-07/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session-07/lesson-6-instructions/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Review
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/e7401278-2da8-4eaa-9a87-b06e08a4a79e" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM: Lesson 6 wrap-up
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/7c5b9853-594c-46df-b753-c15ce60ff472" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM: Session 7 review
       </a>
       <a class="s1-btn s1-btn-colab" href="https://github.com/IyadSultan/CCI/blob/main/session7/student/Lab6_End_to_End_Eval_Pipeline_Student.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> Student Notebook
