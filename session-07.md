@@ -307,6 +307,12 @@ permalink: /session-07/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/practice_lesson1_eval_layer.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Eval Layer
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/cohen_kappa_simple_game.html" target="_blank">
+        <span class="s1-btn-icon">&#127918;</span> Practice: Cohen's kappa game
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_7/practices/f1_precision_recall_game.html" target="_blank">
+        <span class="s1-btn-icon">&#127918;</span> Practice: F1 / precision-recall
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_7/quizzes/quiz_lesson1_why_evaluate.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>

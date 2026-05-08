@@ -1,0 +1,333 @@
+<h2 class="sr-only">Interactive game teaching precision, recall, and F1 score by classifying apples as good or bad and seeing how each metric responds.</h2>
+
+<div style="padding: 1rem 0;">
+
+<div id="intro-screen" style="text-align: center; padding: 1.5rem 1rem;">
+  <div style="display: inline-block; padding: 8px 16px; background: #E1F5EE; color: #085041; border-radius: 999px; font-size: 13px; font-weight: 500; margin-bottom: 1.25rem;">
+    <i class="ti ti-target" style="vertical-align: -2px; margin-right: 4px;" aria-hidden="true"></i> The classifier game
+  </div>
+  <h1 style="font-size: 26px; margin: 0 0 0.5rem;">Catch the bad apples</h1>
+  <p style="font-size: 15px; color: var(--color-text-secondary); max-width: 500px; margin: 0 auto 1.5rem; line-height: 1.6;">A conveyor belt brings 20 apples. Some are bad. You play the inspector — flag every apple you think is bad, let the rest pass. Then we score you four ways and you'll see why <strong style="font-weight: 500;">accuracy alone is misleading</strong>.</p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 420px; margin: 0 auto 1.5rem;">
+    <div style="background: #EAF3DE; padding: 14px 10px; border-radius: var(--border-radius-md);">
+      <div style="font-size: 32px;">🍎</div>
+      <div style="font-size: 12px; color: #3B6D11; margin-top: 4px; font-weight: 500;">Good — let it pass</div>
+    </div>
+    <div style="background: #FCEBEB; padding: 14px 10px; border-radius: var(--border-radius-md);">
+      <div style="font-size: 32px;">🪱</div>
+      <div style="font-size: 12px; color: #791F1F; margin-top: 4px; font-weight: 500;">Bad — flag it</div>
+    </div>
+  </div>
+
+  <button id="start-btn" style="background: #1D9E75; color: white; border: none; padding: 12px 28px; border-radius: var(--border-radius-md); font-size: 15px; font-weight: 500; cursor: pointer;">Start inspecting <i class="ti ti-arrow-right" style="vertical-align: -2px;" aria-hidden="true"></i></button>
+</div>
+
+<div id="game-screen" style="display: none;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+    <div style="font-size: 13px; color: var(--color-text-secondary);"><i class="ti ti-flag" style="vertical-align: -2px; margin-right: 2px;" aria-hidden="true"></i> Flagged: <span id="flagged-count" style="font-weight: 500; color: var(--color-text-primary);">0</span> of 20</div>
+    <button id="finish-btn" style="background: #1D9E75; color: white; border: none; padding: 8px 16px; border-radius: var(--border-radius-md); font-size: 13px; font-weight: 500; cursor: pointer;">Score me <i class="ti ti-arrow-right" style="vertical-align: -2px;" aria-hidden="true"></i></button>
+  </div>
+
+  <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 12px; text-align: center;">Tap any apple to flag it as bad. Tap again to unflag. The truth stays hidden until you score.</p>
+
+  <div id="apple-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 1rem;"></div>
+</div>
+
+<div id="end-screen" style="display: none;">
+  <div style="text-align: center; margin-bottom: 1.25rem;">
+    <h1 style="font-size: 24px; margin: 0 0 4px;">The truth, revealed</h1>
+    <p style="font-size: 14px; color: var(--color-text-secondary); margin: 0;">Green border = your flag · 🪱 = actually bad</p>
+  </div>
+
+  <div id="result-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 1.25rem;"></div>
+
+  <h2 style="font-size: 16px; margin: 0 0 0.5rem;">The four numbers</h2>
+  <div id="confusion-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.25rem;"></div>
+
+  <h2 style="font-size: 16px; margin: 0 0 0.5rem;">Your scorecard</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1.25rem;">
+    <div id="m-acc" class="metric-card" style="background: #E6F1FB; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer;">
+      <div style="font-size: 11px; color: #185FA5; text-transform: uppercase; letter-spacing: 0.5px;">Accuracy</div>
+      <div class="metric-val" style="font-size: 24px; font-weight: 500; color: #042C53;">—</div>
+      <div class="metric-formula" style="font-size: 10px; color: #185FA5; margin-top: 2px; font-family: var(--font-mono);">(TP + TN) / total</div>
+    </div>
+    <div id="m-prec" class="metric-card" style="background: #EEEDFE; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer;">
+      <div style="font-size: 11px; color: #534AB7; text-transform: uppercase; letter-spacing: 0.5px;">Precision</div>
+      <div class="metric-val" style="font-size: 24px; font-weight: 500; color: #26215C;">—</div>
+      <div class="metric-formula" style="font-size: 10px; color: #534AB7; margin-top: 2px; font-family: var(--font-mono);">TP / (TP + FP)</div>
+    </div>
+    <div id="m-rec" class="metric-card" style="background: #FAEEDA; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer;">
+      <div style="font-size: 11px; color: #854F0B; text-transform: uppercase; letter-spacing: 0.5px;">Recall</div>
+      <div class="metric-val" style="font-size: 24px; font-weight: 500; color: #412402;">—</div>
+      <div class="metric-formula" style="font-size: 10px; color: #854F0B; margin-top: 2px; font-family: var(--font-mono);">TP / (TP + FN)</div>
+    </div>
+    <div id="m-f1" class="metric-card" style="background: #E1F5EE; padding: 12px; border-radius: var(--border-radius-md); cursor: pointer;">
+      <div style="font-size: 11px; color: #0F6E56; text-transform: uppercase; letter-spacing: 0.5px;">F1 score</div>
+      <div class="metric-val" style="font-size: 24px; font-weight: 500; color: #04342C;">—</div>
+      <div class="metric-formula" style="font-size: 10px; color: #0F6E56; margin-top: 2px; font-family: var(--font-mono);">2·P·R / (P+R)</div>
+    </div>
+  </div>
+
+  <p id="metric-hint" style="font-size: 12px; color: var(--color-text-tertiary); margin: 0 0 1rem; text-align: center;"><i class="ti ti-hand-finger" style="vertical-align: -2px;" aria-hidden="true"></i> Tap any score above to see what it really means</p>
+
+  <div id="metric-detail" style="display: none; background: var(--color-background-secondary); padding: 1.25rem; border-radius: var(--border-radius-lg); margin-bottom: 1.25rem;">
+    <h3 id="md-title" style="font-size: 16px; margin: 0 0 0.5rem;"></h3>
+    <p id="md-question" style="font-size: 14px; font-weight: 500; margin: 0 0 0.75rem; color: var(--color-text-primary);"></p>
+    <div id="md-math" style="font-family: var(--font-mono); font-size: 13px; background: var(--color-background-primary); padding: 10px 12px; border-radius: var(--border-radius-md); margin: 0 0 0.75rem;"></div>
+    <p id="md-meaning" style="font-size: 13px; line-height: 1.7; color: var(--color-text-secondary); margin: 0;"></p>
+  </div>
+
+  <h2 style="font-size: 16px; margin: 0 0 0.5rem;">Story of your scorecard</h2>
+  <div id="narrative" style="background: var(--color-background-secondary); padding: 1.25rem; border-radius: var(--border-radius-lg); font-size: 14px; line-height: 1.7; color: var(--color-text-secondary); margin-bottom: 1.25rem;"></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <button id="restart-btn" style="background: transparent; color: var(--color-text-primary); border: 0.5px solid var(--color-border-secondary); padding: 12px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;"><i class="ti ti-refresh" style="vertical-align: -2px;" aria-hidden="true"></i> Play again</button>
+    <button id="learn-btn" style="background: #1D9E75; color: white; border: none; padding: 12px; border-radius: var(--border-radius-md); font-size: 14px; font-weight: 500; cursor: pointer;">Explain my scores ↗</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+// 20 apples · 6 bad · 14 good (imbalanced — that's the lesson)
+const APPLES = [
+  {bad: false}, {bad: true},  {bad: false}, {bad: false}, {bad: false},
+  {bad: true},  {bad: false}, {bad: false}, {bad: true},  {bad: false},
+  {bad: false}, {bad: false}, {bad: true},  {bad: false}, {bad: false},
+  {bad: true},  {bad: false}, {bad: false}, {bad: true},  {bad: false}
+];
+
+let state = {flagged: new Set()};
+
+function renderApples() {
+  const grid = document.getElementById("apple-grid");
+  grid.innerHTML = "";
+  APPLES.forEach((a, i) => {
+    const cell = document.createElement("button");
+    cell.style.background = "var(--color-background-primary)";
+    cell.style.border = "0.5px solid var(--color-border-tertiary)";
+    cell.style.borderRadius = "var(--border-radius-md)";
+    cell.style.padding = "16px 4px";
+    cell.style.fontSize = "32px";
+    cell.style.cursor = "pointer";
+    cell.style.transition = "transform 0.1s";
+    cell.textContent = "🍎";
+    if (state.flagged.has(i)) {
+      cell.style.background = "#FCEBEB";
+      cell.style.border = "2px solid #E24B4A";
+      cell.style.transform = "scale(0.95)";
+    }
+    cell.addEventListener("click", () => {
+      if (state.flagged.has(i)) state.flagged.delete(i);
+      else state.flagged.add(i);
+      renderApples();
+      document.getElementById("flagged-count").textContent = state.flagged.size;
+    });
+    grid.appendChild(cell);
+  });
+}
+
+function renderResult() {
+  const grid = document.getElementById("result-grid");
+  grid.innerHTML = "";
+  APPLES.forEach((a, i) => {
+    const cell = document.createElement("div");
+    const flagged = state.flagged.has(i);
+    cell.style.padding = "12px 4px";
+    cell.style.fontSize = "28px";
+    cell.style.textAlign = "center";
+    cell.style.borderRadius = "var(--border-radius-md)";
+    cell.style.position = "relative";
+    let color, ramp;
+    if (flagged && a.bad) { color = "#27500A"; ramp = "#EAF3DE"; } // TP
+    else if (!flagged && !a.bad) { color = "#27500A"; ramp = "#EAF3DE"; } // TN
+    else if (flagged && !a.bad) { color = "#854F0B"; ramp = "#FAEEDA"; } // FP
+    else { color = "#791F1F"; ramp = "#FCEBEB"; } // FN
+    cell.style.background = ramp;
+    if (flagged) cell.style.border = "2px solid #534AB7";
+    cell.textContent = a.bad ? "🪱" : "🍎";
+
+    const tag = document.createElement("div");
+    tag.style.fontSize = "9px";
+    tag.style.fontWeight = "500";
+    tag.style.color = color;
+    tag.style.marginTop = "2px";
+    tag.style.letterSpacing = "0.5px";
+    if (flagged && a.bad) tag.textContent = "TP";
+    else if (!flagged && !a.bad) tag.textContent = "TN";
+    else if (flagged && !a.bad) tag.textContent = "FP";
+    else tag.textContent = "FN";
+    cell.appendChild(tag);
+    grid.appendChild(cell);
+  });
+}
+
+function computeScores() {
+  let TP = 0, FP = 0, FN = 0, TN = 0;
+  APPLES.forEach((a, i) => {
+    const flagged = state.flagged.has(i);
+    if (flagged && a.bad) TP++;
+    else if (flagged && !a.bad) FP++;
+    else if (!flagged && a.bad) FN++;
+    else TN++;
+  });
+  const acc = (TP + TN) / APPLES.length;
+  const prec = (TP + FP) === 0 ? 0 : TP / (TP + FP);
+  const rec = (TP + FN) === 0 ? 0 : TP / (TP + FN);
+  const f1 = (prec + rec) === 0 ? 0 : 2 * prec * rec / (prec + rec);
+  return {TP, FP, FN, TN, acc, prec, rec, f1};
+}
+
+function renderConfusion(s) {
+  const grid = document.getElementById("confusion-grid");
+  const cells = [
+    {label: "True positives", val: s.TP, sub: "Bad apples you caught", bg: "#EAF3DE", fg: "#27500A", code: "TP"},
+    {label: "False positives", val: s.FP, sub: "Good apples you wrongly flagged", bg: "#FAEEDA", fg: "#633806", code: "FP"},
+    {label: "False negatives", val: s.FN, sub: "Bad apples that slipped past", bg: "#FCEBEB", fg: "#501313", code: "FN"},
+    {label: "True negatives", val: s.TN, sub: "Good apples correctly let pass", bg: "#E6F1FB", fg: "#0C447C", code: "TN"}
+  ];
+  grid.innerHTML = "";
+  cells.forEach(c => {
+    const div = document.createElement("div");
+    div.style.background = c.bg;
+    div.style.padding = "12px";
+    div.style.borderRadius = "var(--border-radius-md)";
+    div.innerHTML =
+      "<div style='font-size: 10px; color: " + c.fg + "; font-weight: 500; letter-spacing: 0.5px;'>" + c.code + " · " + c.label.toUpperCase() + "</div>" +
+      "<div style='font-size: 22px; font-weight: 500; color: " + c.fg + "; margin: 2px 0;'>" + c.val + "</div>" +
+      "<div style='font-size: 11px; color: " + c.fg + ";'>" + c.sub + "</div>";
+    grid.appendChild(div);
+  });
+}
+
+function renderScores(s) {
+  document.querySelector("#m-acc .metric-val").textContent = (s.acc * 100).toFixed(0) + "%";
+  document.querySelector("#m-prec .metric-val").textContent = (s.prec * 100).toFixed(0) + "%";
+  document.querySelector("#m-rec .metric-val").textContent = (s.rec * 100).toFixed(0) + "%";
+  document.querySelector("#m-f1 .metric-val").textContent = s.f1.toFixed(2);
+}
+
+function renderNarrative(s) {
+  const total = APPLES.length;
+  const totalBad = APPLES.filter(a => a.bad).length;
+  const flaggedCount = state.flagged.size;
+  let lines = [];
+
+  // Headline
+  lines.push("<p style='margin: 0 0 0.75rem;'>You flagged <strong style='color: var(--color-text-primary); font-weight: 500;'>" + flaggedCount + "</strong> apples. " + totalBad + " of the 20 were actually bad.</p>");
+
+  // Accuracy trap
+  if (s.acc >= 0.7 && s.rec < 0.5) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #042C53; font-weight: 500;'>Watch out — accuracy is lying to you.</strong> Most apples are good, so just letting everything pass scores around " + Math.round((total - totalBad) / total * 100) + "% accuracy. Yours is " + Math.round(s.acc*100) + "% but your recall is only " + Math.round(s.rec*100) + "% — meaning <strong style='color: var(--color-text-primary); font-weight: 500;'>" + s.FN + " bad apples slipped past you</strong>. This is why nobody uses raw accuracy on imbalanced problems.</p>");
+  } else if (s.acc >= 0.85) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #042C53; font-weight: 500;'>" + Math.round(s.acc*100) + "% accuracy</strong> looks great, but check the other three before celebrating — accuracy hides errors when classes are imbalanced.</p>");
+  }
+
+  // Precision vs recall trade-off
+  if (s.prec === 0 && flaggedCount > 0) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #26215C; font-weight: 500;'>Zero precision.</strong> Every apple you flagged was actually fine. Your inspection adds work without catching anything.</p>");
+  } else if (s.prec >= 0.9 && s.rec < 0.5) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #26215C; font-weight: 500;'>You're cautious.</strong> Almost everything you flagged really was bad (precision " + Math.round(s.prec*100) + "%) — but you only caught " + Math.round(s.rec*100) + "% of the bad apples. Most slipped through. <em style='font-style: italic;'>Trade-off: clean alerts, missed problems.</em></p>");
+  } else if (s.rec >= 0.9 && s.prec < 0.5) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #854F0B; font-weight: 500;'>You're aggressive.</strong> You caught " + Math.round(s.rec*100) + "% of the bad apples — but only " + Math.round(s.prec*100) + "% of your flags were real (the rest were good apples). <em style='font-style: italic;'>Trade-off: nothing missed, lots of false alarms.</em></p>");
+  } else if (s.prec >= 0.7 && s.rec >= 0.7) {
+    lines.push("<p style='margin: 0 0 0.75rem;'><strong style='color: #04342C; font-weight: 500;'>Balanced.</strong> Your precision (" + Math.round(s.prec*100) + "%) and recall (" + Math.round(s.rec*100) + "%) are both strong — F1 of " + s.f1.toFixed(2) + " reflects that. This is what you want when both kinds of error matter.</p>");
+  }
+
+  // F1 explanation
+  lines.push("<p style='margin: 0;'><strong style='color: #04342C; font-weight: 500;'>F1 = " + s.f1.toFixed(2) + ".</strong> F1 is the harmonic mean of precision and recall — it punishes you whenever one of the two is weak. A simple average would let a 100%/20% split look decent (60%); F1 of the same split is 0.33 because it refuses to ignore the 20%. That's why F1 is the standard summary score for imbalanced classification.</p>");
+
+  document.getElementById("narrative").innerHTML = lines.join("");
+}
+
+const METRIC_DETAILS = {
+  acc: {
+    title: "Accuracy",
+    color: "#042C53",
+    question: "Of all 20 apples, how many did I get right?",
+    formula: function(s) {
+      return "(" + s.TP + " TP + " + s.TN + " TN) / 20 = " + Math.round(s.acc*100) + "%";
+    },
+    meaning: "Looks easy. But notice: if you just let every apple pass, you'd already score 70% accuracy because most apples are good. Accuracy doesn't tell you whether you actually caught any bad ones — it's the wrong metric whenever one class is rare."
+  },
+  prec: {
+    title: "Precision",
+    color: "#26215C",
+    question: "When I sounded the alarm, how often was I right?",
+    formula: function(s) {
+      return s.TP + " TP / (" + s.TP + " TP + " + s.FP + " FP) = " + (s.prec*100).toFixed(0) + "%";
+    },
+    meaning: "Precision asks about your flags only. Of every apple you stopped, what fraction were actually bad? High precision means clean alerts — when you say something's wrong, trust it. Low precision means lots of false alarms."
+  },
+  rec: {
+    title: "Recall",
+    color: "#412402",
+    question: "Of the bad apples that existed, how many did I catch?",
+    formula: function(s) {
+      return s.TP + " TP / (" + s.TP + " TP + " + s.FN + " FN) = " + (s.rec*100).toFixed(0) + "%";
+    },
+    meaning: "Recall asks about the bad apples only. Of every truly bad one in the batch, what fraction made it into your flag list? High recall means nothing slips past. Low recall means real problems got through."
+  },
+  f1: {
+    title: "F1 score",
+    color: "#04342C",
+    question: "Am I both precise and thorough — or am I cheating one to win the other?",
+    formula: function(s) {
+      return "2 · " + s.prec.toFixed(2) + " · " + s.rec.toFixed(2) + " / (" + s.prec.toFixed(2) + " + " + s.rec.toFixed(2) + ") = " + s.f1.toFixed(2);
+    },
+    meaning: "F1 is the harmonic mean of precision and recall. Unlike a regular average, it collapses toward whichever number is smaller — so you can't game it by perfecting one and ignoring the other. A precision-100/recall-20 split has F1 = 0.33, not 0.60. That's why it's the standard summary score for imbalanced problems."
+  }
+};
+
+function showMetricDetail(key) {
+  const s = computeScores();
+  const d = METRIC_DETAILS[key];
+  document.getElementById("md-title").textContent = d.title;
+  document.getElementById("md-title").style.color = d.color;
+  document.getElementById("md-question").textContent = d.question;
+  document.getElementById("md-math").textContent = d.formula(s);
+  document.getElementById("md-meaning").textContent = d.meaning;
+  document.getElementById("metric-detail").style.display = "block";
+  document.getElementById("metric-hint").style.display = "none";
+}
+
+function finishGame() {
+  const s = computeScores();
+  document.getElementById("game-screen").style.display = "none";
+  document.getElementById("end-screen").style.display = "block";
+  renderResult();
+  renderConfusion(s);
+  renderScores(s);
+  renderNarrative(s);
+}
+
+document.getElementById("start-btn").addEventListener("click", () => {
+  document.getElementById("intro-screen").style.display = "none";
+  document.getElementById("game-screen").style.display = "block";
+  renderApples();
+});
+
+document.getElementById("finish-btn").addEventListener("click", finishGame);
+
+document.querySelectorAll(".metric-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const key = card.id.replace("m-", "");
+    showMetricDetail(key);
+  });
+});
+
+document.getElementById("restart-btn").addEventListener("click", () => {
+  state = {flagged: new Set()};
+  document.getElementById("end-screen").style.display = "none";
+  document.getElementById("metric-detail").style.display = "none";
+  document.getElementById("metric-hint").style.display = "block";
+  document.getElementById("intro-screen").style.display = "block";
+  document.getElementById("flagged-count").textContent = "0";
+});
+
+document.getElementById("learn-btn").addEventListener("click", () => {
+  const s = computeScores();
+  sendPrompt("In the apple inspector game I got accuracy=" + Math.round(s.acc*100) + "%, precision=" + Math.round(s.prec*100) + "%, recall=" + Math.round(s.rec*100) + "%, F1=" + s.f1.toFixed(2) + " (with TP=" + s.TP + ", FP=" + s.FP + ", FN=" + s.FN + ", TN=" + s.TN + "). Walk me through what story these four numbers tell about my classification strategy and which metric I should care about most in real-world settings.");
+});
+</script>
