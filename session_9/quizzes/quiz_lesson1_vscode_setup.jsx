@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "Why do we create a virtual environment (venv) for every Python project instead of just using the system Python?",
+    options: [
+      "venvs run faster than the system Python",
+      "venvs isolate each project's packages so two projects with conflicting versions don't break each other",
+      "venvs are required by VS Code — it refuses to run without one",
+      "venvs encrypt your code so others can't read it"
+    ],
+    correct: 1,
+    explanation: "Without a venv, every pip install writes to your global Python. Project A needs pandas 1.5, project B needs pandas 2.1 — they silently overwrite each other. A venv is a private, project-scoped Python with its own packages. This is the single biggest source of 'works on my machine but not yours' bugs in Python."
+  },
+  {
+    question: "You created a venv, activated it in the terminal, and ran `pip install gradio`. You then open `app.py` in VS Code and press Run. VS Code says 'ModuleNotFoundError: No module named gradio'. What did you most likely forget?",
+    options: [
+      "You need to restart your computer for the install to take effect",
+      "You forgot to select the venv's Python as the VS Code interpreter (bottom-right of the status bar)",
+      "gradio is not compatible with VS Code",
+      "You need to install gradio twice — once for the terminal and once for VS Code"
+    ],
+    correct: 1,
+    explanation: "This is THE most common Session 9 mistake. The terminal uses the venv because you activated it, but VS Code's Run button uses whatever interpreter is selected in the status bar — which defaults to the global Python. Click the version in the bottom-right and pick the one inside `.venv`."
+  },
+  {
+    question: "What is the purpose of `requirements.txt`?",
+    options: [
+      "It tells Python which version of the language to use",
+      "It lists the packages your project depends on so colleagues can recreate the same environment with `pip install -r requirements.txt`",
+      "It is a license file that GitHub requires",
+      "It contains your API keys for the project"
+    ],
+    correct: 1,
+    explanation: "`requirements.txt` is the contract that says 'this project needs these packages.' Anyone — a colleague, a CI server, future-you — can clone the repo, create their own venv, and run `pip install -r requirements.txt` to get the exact same set of packages. API keys never go in requirements.txt — they go in .env, which we cover in Lesson 2."
+  },
+  {
+    question: "Notebooks (Colab, Jupyter) are great for experiments but bad for production clinical systems. Why?",
+    options: [
+      "Notebooks cannot import any Python libraries",
+      "Notebooks hold state in memory and execute cells out of order, making them hard to reproduce, version-control, test, and deploy",
+      "Notebooks are slower than .py files",
+      "Notebooks don't work on Windows"
+    ],
+    correct: 1,
+    explanation: "Notebooks let you run cells in any order, hold hidden state in memory, and bury imports halfway down the file. That is fine for exploration. It is a disaster for a clinical system that needs to be reproducible, testable, version-controlled, deployable, and auditable. Every KHCC production pipeline is a folder of .py files, not a notebook."
+  },
+  {
+    question: "Which of the following is the correct full setup ritual for a new Python project in VS Code?",
+    options: [
+      "pip install everything globally → open VS Code → write code",
+      "Open folder → open terminal → create venv → activate venv → select interpreter → create requirements.txt → pip install → create README.md",
+      "Create README first → install Python → open VS Code → done",
+      "Open a Colab notebook → export to .py → upload to VS Code"
+    ],
+    correct: 1,
+    explanation: "The order matters. You must create and activate the venv BEFORE installing packages (otherwise they go to global Python). You must select the interpreter in VS Code or your Run button will use the wrong Python. README and requirements.txt are the human-facing and machine-facing entry points to the project."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You understand venvs, interpreters, and the full setup ritual." : score >= 3 ? "Good foundation — review the interpreter-selection step." : "Review the lesson material before moving on."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
