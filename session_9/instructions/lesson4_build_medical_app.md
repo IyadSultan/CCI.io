@@ -1,4 +1,14 @@
-# CCI Session 9 -- Lesson 4: Build the Medical App -- Gradio + SQLite
+---
+layout: page
+title: "Lesson 4: Build the Medical App — Gradio + SQLite"
+permalink: /session_9/instructions/lesson4_build_medical_app/
+---
+
+<style>.site-nav{display:none!important}.site-header{border-top:5px solid #1565C0!important}.site-title,.site-title:visited{color:#1565C0!important;font-weight:800!important}.back-btn{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#1565C0;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #90CAF9;background:#E3F2FD;margin-bottom:1rem;transition:all .15s}.back-btn:hover{background:#BBDEFB}</style>
+
+<a class="back-btn" href="{{ site.baseurl }}/session-09/">&#8249; Back to Session 9</a>
+
+# CCI Session 9 — Lesson 4: Build the Medical App — Gradio + SQLite
 
 **Estimated time:** 30 minutes (10 min content / 20 min lab)
 **Lab mode:** Guided step-by-step (local laptop)

@@ -1,3 +1,13 @@
+---
+layout: page
+title: "Lesson 6: Python Instead of the Command Line — os, pathlib, shutil, subprocess"
+permalink: /session_9/instructions/lesson6_python_filesystem/
+---
+
+<style>.site-nav{display:none!important}.site-header{border-top:5px solid #1565C0!important}.site-title,.site-title:visited{color:#1565C0!important;font-weight:800!important}.back-btn{display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#1565C0;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #90CAF9;background:#E3F2FD;margin-bottom:1rem;transition:all .15s}.back-btn:hover{background:#BBDEFB}</style>
+
+<a class="back-btn" href="{{ site.baseurl }}/session-09/">&#8249; Back to Session 9</a>
+
 # CCI Session 9 — Lesson 6: Python Instead of the Command Line — os, pathlib, shutil, subprocess
 
 **Estimated time:** 20 minutes (8 min content / 12 min lab)
