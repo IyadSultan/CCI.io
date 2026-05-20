@@ -276,7 +276,7 @@ permalink: /session-09/
   <a class="back" href="{{ site.baseurl }}/">&#8249; Home</a>
   <div class="s1-header-text">
     <h1>Session 9: Local Development — VS Code, Git &amp; Hugging Face</h1>
-    <p class="meta">5 lessons + wrap-up &middot; Interactive practice &amp; quizzes &middot; 1 clinical app assignment &middot; 2 hours</p>
+    <p class="meta">6 lessons + wrap-up &middot; Interactive practice &amp; quizzes &middot; 1 clinical app assignment &middot; 2 hours</p>
   </div>
 </div>
 
@@ -478,10 +478,49 @@ permalink: /session-09/
   </div>
 </div>
 
-<!-- ─── Lesson 6 Wrap-Up ─── -->
+<!-- ─── Lesson 6 ─── -->
 <div class="s1-lesson">
   <div class="s1-lesson-head">
-    <div class="s1-lesson-num" style="background:#1B2A4A;">6</div>
+    <div class="s1-lesson-num" style="background:#00695C;">6</div>
+    <div>
+      <h3>Python Instead of the Command Line &mdash; os, pathlib, shutil, subprocess</h3>
+      <p class="time">~20 min &middot; 8 min content / 12 min lab</p>
+    </div>
+  </div>
+  <div class="s1-lesson-body">
+    <p class="goals-title">Learning goals</p>
+    <ul>
+      <li>Use <code>pathlib.Path</code> for cross-platform paths — <code>Path("data") / "file.csv"</code> works identically on Mac, Linux, and Windows</li>
+      <li>Replace <code>find</code> / <code>ls -R</code> with <code>Path.rglob()</code> and <code>os.walk()</code>; replace <code>cp -p</code> / <code>rm -rf</code> / <code>tar</code> with <code>shutil.copy2</code> / <code>rmtree</code> / <code>make_archive</code></li>
+      <li>Call shell tools safely with <code>subprocess.run([...], capture_output=True, text=True)</code> — args as list, never <code>shell=True</code> with user input</li>
+    </ul>
+    <div class="s1-actions">
+      <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_9/instructions/lesson6_python_filesystem/" target="_blank">
+        <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson6_bash_to_python.html" target="_blank">
+        <span class="s1-btn-icon">&#9997;</span> Practice: Bash &#8594; Python
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson6_python_filesystem.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://docs.python.org/3/library/pathlib.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128218;</span> pathlib docs
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://docs.python.org/3/library/shutil.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128218;</span> shutil docs
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://docs.python.org/3/library/subprocess.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128218;</span> subprocess docs
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Lesson 7 Wrap-Up ─── -->
+<div class="s1-lesson">
+  <div class="s1-lesson-head">
+    <div class="s1-lesson-num" style="background:#1B2A4A;">7</div>
     <div>
       <h3>Wrap-Up &mdash; Review &amp; Consolidation</h3>
       <p class="time">~5 min &middot; reflection + self-check</p>
@@ -495,6 +534,7 @@ permalink: /session-09/
       <li><strong>Lesson 3</strong> — Four states: working → staged → committed → pushed; git status is always your first move</li>
       <li><strong>Lesson 4</strong> — Gradio = function-to-UI; SQLite = single-file DB; Cockcroft-Gault + parameterized queries + auto-init</li>
       <li><strong>Lesson 5</strong> — Space = auto-deploying git repo; YAML README header required; PHI never on public Spaces</li>
+      <li><strong>Lesson 6</strong> — pathlib for cross-platform paths; rglob/os.walk for recursive search; shutil.copy2/rmtree/make_archive for file ops; subprocess.run with arg-list (no shell=True)</li>
     </ul>
     <div class="s1-actions">
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_9/data/notebooklm_sources/" target="_blank">

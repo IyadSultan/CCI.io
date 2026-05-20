@@ -1,16 +1,16 @@
 # CCI Session 9: Local Development with VS Code, Git & Hugging Face
-## Curriculum — 5 Lessons + Wrap-Up
+## Curriculum — 6 Lessons + Wrap-Up
 
 **Audience:** Completed Sessions 1-8. Comfortable with Python and notebooks. First time setting up local development environment, using git from an IDE, and deploying to a public hosting platform.
 **Clinical Anchor:** Cockcroft-Gault creatinine clearance calculator with nephrotoxic-drug alerts — built locally, version-controlled, deployed to Hugging Face Spaces
-**Session Duration:** 2 hours
+**Session Duration:** 2.5 hours
 **Lab Mode:** Guided step-by-step (everyone ships the same app)
 **Pre-session homework:** Install VS Code + Python 3.11, create GitHub and Hugging Face accounts
 **Environment:** Local development on student laptops (Mac/Linux/Windows)
 
 ---
 
-## LESSON 1 OF 6: VS Code Setup — Terminal, venv, requirements, README
+## LESSON 1 OF 7: VS Code Setup — Terminal, venv, requirements, README
 
 **Estimated time:** 20 minutes (10 min content / 10 min lab)
 
@@ -292,7 +292,7 @@ export default function Practice() {
 
 ---
 
-## LESSON 2 OF 6: .gitignore and the Secrets Mindset
+## LESSON 2 OF 7: .gitignore and the Secrets Mindset
 
 **Estimated time:** 15 minutes (8 min content / 7 min lab)
 
@@ -543,7 +543,7 @@ export default function Practice() {
 
 ---
 
-## LESSON 3 OF 6: Git + GitHub from VS Code
+## LESSON 3 OF 7: Git + GitHub from VS Code
 
 **Estimated time:** 25 minutes (12 min content / 13 min lab)
 
@@ -818,7 +818,7 @@ export default function Practice() {
 
 ---
 
-## LESSON 4 OF 6: Build the Medical App (Gradio + SQLite)
+## LESSON 4 OF 7: Build the Medical App (Gradio + SQLite)
 
 **Estimated time:** 30 minutes (12 min content / 18 min lab)
 
@@ -1116,7 +1116,7 @@ export default function Practice() {
 
 ---
 
-## LESSON 5 OF 6: Deploy to Hugging Face Space
+## LESSON 5 OF 7: Deploy to Hugging Face Space
 
 **Estimated time:** 25 minutes (10 min content / 15 min lab)
 
@@ -1400,7 +1400,308 @@ export default function Practice() {
 
 ---
 
-## LESSON 6 OF 6: Wrap-Up — Review & Consolidation
+## LESSON 6 OF 7: Python Instead of the Command Line — os, pathlib, shutil, subprocess
+
+**Estimated time:** 20 minutes (8 min content / 12 min lab)
+
+---
+
+### Instructor Introduction
+
+> "You've been using the terminal — `ls`, `mkdir`, `cp`, `rm`. That works fine on your Mac. But the moment you ship a script to a Windows colleague, half those commands stop working. `ls` becomes `dir`, `cp` becomes `copy`, and your beautiful bash one-liner is suddenly broken across the office. Python's standard library gives you the same power — but it runs the same way on every operating system. Today you learn the four modules that replace the command line: `pathlib` for paths, `os` for environment and walking, `shutil` for copying and moving, and `subprocess` when you really do need to call out to a shell. By the end of this lesson, you'll be able to script clinical file workflows that run identically on your laptop, a KHCC server, and a Hugging Face Space."
+
+---
+
+### NotebookLM Summary
+
+Clinical data pipelines move files. Every day, AIDI scripts at KHCC pull CSV extracts from VistA, organize them into dated folders, archive the previous day's batch, and trigger a downstream R analysis. Doing that in bash works on Linux servers but breaks the moment a colleague tries to run the same logic on a Windows laptop. Python's standard library solves this by giving you the same file operations in a single cross-platform API.
+
+The four modules you need are `pathlib`, `os`, `shutil`, and `subprocess`. `pathlib` is the modern path-handling library — `Path("data") / "vitals.csv"` works on Windows and Mac equally well, replacing fragile string concatenation. Path objects have methods for everything: `.exists()`, `.is_dir()`, `.glob("*.csv")`, `.mkdir(parents=True, exist_ok=True)`, `.read_text()`, `.write_text()`. This is the first thing to reach for in any clinical script.
+
+The `os` module covers environment variables (`os.getenv("OPENAI_API_KEY")`, the same pattern from Lesson 2), platform detection (`os.name`), and the workhorse `os.walk()` which recursively traverses a directory tree yielding `(dirpath, dirnames, filenames)` for each folder. `os.walk` is how you build "find all PDF reports older than 30 days" scripts without ever touching `find` or `Get-ChildItem`. The newer `pathlib` provides `.rglob("*.pdf")` for the same use case in a more readable form.
+
+The `shutil` module handles higher-level file operations: `shutil.copy()` and `shutil.copy2()` copy files, `shutil.copytree()` clones directory trees, `shutil.move()` renames or moves across drives, `shutil.rmtree()` recursively deletes a directory, and `shutil.disk_usage()` checks free space. In clinical contexts, `shutil.copy2` is usually what you want because it preserves modification times — useful for audit trails. `shutil.make_archive()` packages a folder into a zip or tar in one call, perfect for daily backups.
+
+The `subprocess` module is your escape hatch when you really do need to call a shell tool — `git`, `pdftotext`, a domain-specific binary. `subprocess.run(["git", "status"], capture_output=True, text=True)` is the modern pattern: pass arguments as a list (no shell injection), capture stdout, check the returncode. Avoid `shell=True` unless you absolutely need shell features, and never pass untrusted user input to a shell — that's how command injection happens.
+
+The clinical pattern at KHCC: a single Python script using `pathlib` for path math, `os.walk` to find files, `shutil.copy2` to organize them, and `subprocess.run` to call out only when needed. Everything else stays inside Python where it's testable, debuggable, and cross-platform.
+
+> **NotebookLM tip:** Paste this summary into [NotebookLM](https://notebooklm.google.com), add the official Python docs for each module as sources, and generate an *Audio Overview* for commute-friendly review.
+
+---
+
+### Quiz — Interactive Artifact
+
+```jsx
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "You write Path('data') / 'patients' / 'vitals.csv' in your KHCC pipeline. A colleague runs it on Windows. What happens?",
+    options: [
+      "It crashes because of forward slashes",
+      "It works — pathlib handles OS-specific separators automatically",
+      "It works only if you also import os.path",
+      "It produces a malformed path that pandas can't read"
+    ],
+    correct: 1,
+    explanation: "Path objects automatically use the correct separator for the operating system. That's the whole point of pathlib — write the same code, run it anywhere. String concatenation with hardcoded slashes is what breaks on Windows."
+  },
+  {
+    question: "You want to find all CSV files inside data/ and every subfolder beneath it. Which is correct?",
+    options: [
+      "Path('data').glob('*.csv')",
+      "Path('data').rglob('*.csv')",
+      "Path('data').list('*.csv', recursive=True)",
+      "Path('data').find('*.csv')"
+    ],
+    correct: 1,
+    explanation: "glob is one level only. rglob is recursive — it walks into every subdirectory. For 'find all PDFs anywhere under reports/' use rglob('*.pdf'). Forgetting this is the most common pathlib mistake."
+  },
+  {
+    question: "You're writing a script that needs to call git. Which subprocess.run call is SAFEST?",
+    options: [
+      "subprocess.run(f'git commit -m {user_message}', shell=True)",
+      "subprocess.run(['git', 'commit', '-m', user_message], shell=True)",
+      "subprocess.run(['git', 'commit', '-m', user_message], capture_output=True, text=True, check=True)",
+      "subprocess.run('git commit -m ' + user_message)"
+    ],
+    correct: 2,
+    explanation: "Pass arguments as a list (no shell injection), avoid shell=True, capture output, and use check=True to raise on failure. Options 1 and 4 are vulnerable to command injection if user_message contains shell metacharacters like ; or && — exactly how clinical scripts get compromised."
+  },
+  {
+    question: "You write shutil.rmtree('data') and run it. What happens, and is it recoverable?",
+    options: [
+      "Files go to the recycle bin, recoverable for 30 days",
+      "Files are permanently deleted with no recycle bin",
+      "A confirmation dialog appears before deletion",
+      "Only empty subfolders are removed"
+    ],
+    correct: 1,
+    explanation: "rmtree is permanently destructive — no recycle bin, no undo. In clinical contexts where you might accidentally delete a patient data folder, always print the target path and require confirmation BEFORE calling rmtree. Better still, use shutil.move to a 'trash/' folder you can review."
+  },
+  {
+    question: "Path('archive/2026-03-15').mkdir(parents=True, exist_ok=True) — what do parents=True and exist_ok=True do?",
+    options: [
+      "parents=True copies parent folders; exist_ok=True overwrites",
+      "parents=True creates missing intermediate folders; exist_ok=True doesn't raise if the folder already exists",
+      "parents=True sets correct permissions; exist_ok=True creates a .gitignore",
+      "Both are deprecated and ignored in modern Python"
+    ],
+    correct: 1,
+    explanation: "parents=True is like mkdir -p — it creates archive/ if it doesn't exist before creating 2026-03-15/. exist_ok=True suppresses the error if the folder already exists (idempotent, so the script can be re-run safely). Both flags are essential for daily clinical scripts."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! Your scripts will run on any OS." : score >= 3 ? "Good grasp — review subprocess safety and rmtree carefully." : "Review pathlib, shutil, and subprocess before writing production scripts."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+```
+
+---
+
+### Practice — Interactive Artifact
+
+```jsx
+import React, { useState } from 'react';
+
+const challenges = [
+  {
+    bash: "mkdir -p archive/2026-03-15",
+    description: "Create a folder, including any missing parent folders. Don't error if it already exists.",
+    options: [
+      { code: "Path('archive/2026-03-15').mkdir()", correct: false, reason: "Fails if archive/ doesn't exist, and errors if the folder already exists." },
+      { code: "Path('archive/2026-03-15').mkdir(parents=True, exist_ok=True)", correct: true, reason: "parents=True creates archive/, exist_ok=True makes it idempotent." },
+      { code: "os.mkdir('archive/2026-03-15')", correct: false, reason: "os.mkdir only creates the deepest folder, fails if archive/ doesn't exist." },
+      { code: "shutil.copytree('.', 'archive/2026-03-15')", correct: false, reason: "copytree clones a tree of files, not what we want." }
+    ]
+  },
+  {
+    bash: "find . -name '*.csv'",
+    description: "Find all CSV files recursively from the current directory.",
+    options: [
+      { code: "Path('.').glob('*.csv')", correct: false, reason: "glob is one level only — won't find files in subfolders." },
+      { code: "Path('.').rglob('*.csv')", correct: true, reason: "rglob walks recursively. Equivalent to find -name." },
+      { code: "os.listdir('.', recursive=True)", correct: false, reason: "os.listdir has no recursive option — it's flat only." },
+      { code: "subprocess.run(['find', '.', '-name', '*.csv'])", correct: false, reason: "Calls bash find — won't work on Windows. The whole point is cross-platform." }
+    ]
+  },
+  {
+    bash: "cp -p source.csv backup/source.csv",
+    description: "Copy a file, preserving modification time (important for audit trails).",
+    options: [
+      { code: "shutil.copy('source.csv', 'backup/source.csv')", correct: false, reason: "copy doesn't preserve metadata — use copy2 instead." },
+      { code: "shutil.copy2('source.csv', 'backup/source.csv')", correct: true, reason: "copy2 preserves modification time and other metadata — matches cp -p." },
+      { code: "shutil.copytree('source.csv', 'backup/source.csv')", correct: false, reason: "copytree is for directories, not files." },
+      { code: "Path('source.csv').rename('backup/source.csv')", correct: false, reason: "rename MOVES the file (doesn't copy)." }
+    ]
+  },
+  {
+    bash: "rm -rf temp/",
+    description: "Recursively delete a folder and everything in it.",
+    options: [
+      { code: "os.rmdir('temp')", correct: false, reason: "rmdir only removes EMPTY directories — fails if temp/ has files." },
+      { code: "Path('temp').unlink()", correct: false, reason: "unlink is for files, not directories." },
+      { code: "shutil.rmtree('temp')", correct: true, reason: "rmtree recursively deletes a directory tree. ⚠️ NO recycle bin — be sure!" },
+      { code: "shutil.remove('temp')", correct: false, reason: "shutil.remove doesn't exist." }
+    ]
+  },
+  {
+    bash: "tar -czf backup.tar.gz data/",
+    description: "Compress an entire folder into a single archive file.",
+    options: [
+      { code: "shutil.make_archive('backup', 'gztar', 'data')", correct: true, reason: "make_archive packages a folder. Format options: 'zip', 'tar', 'gztar', 'bztar'." },
+      { code: "subprocess.run(['tar', '-czf', 'backup.tar.gz', 'data'])", correct: false, reason: "Works on Linux/Mac but tar isn't standard on Windows. shutil.make_archive is cross-platform." },
+      { code: "shutil.copytree('data', 'backup.tar.gz')", correct: false, reason: "copytree doesn't compress — it just clones the tree." },
+      { code: "Path('data').compress('backup.tar.gz')", correct: false, reason: "Path doesn't have a compress method." }
+    ]
+  },
+  {
+    bash: "git status",
+    description: "Call git from inside a Python script and capture its output.",
+    options: [
+      { code: "subprocess.run('git status', shell=True)", correct: false, reason: "shell=True is a security risk and not needed here. Also doesn't capture output." },
+      { code: "subprocess.run(['git', 'status'], capture_output=True, text=True)", correct: true, reason: "Args as list (safe), capture_output=True to read stdout, text=True for strings instead of bytes." },
+      { code: "os.system('git status')", correct: false, reason: "os.system is the old way — doesn't capture output, returns only the exit code." },
+      { code: "Path('.git').run('status')", correct: false, reason: "Path doesn't run commands." }
+    ]
+  }
+];
+
+export default function Practice() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const c = challenges[current];
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    if (c.options[selected]?.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    setCurrent(cc => cc + 1);
+    setSelected(null);
+    setSubmitted(false);
+  };
+
+  if (current >= challenges.length) {
+    return (
+      <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Bash-to-Python Practice Complete!</h2>
+        <p style={{ fontSize: 20 }}>Score: {score} / {challenges.length}</p>
+        <div style={{ background: score >= 5 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8 }}>
+          {score >= 5 ? "Excellent — your clinical scripts will run anywhere." : score >= 3 ? "Good — review shutil.copy2 vs shutil.copy, and subprocess.run safety." : "Review the lesson and the cheat sheet before writing production scripts."}
+        </div>
+        <button onClick={() => { setCurrent(0); setScore(0); setSelected(null); setSubmitted(false); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / challenges.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Challenge {current + 1} of {challenges.length}</p>
+
+      <h3 style={{ marginBottom: 8 }}>Bash command:</h3>
+      <pre style={{ background: '#1e1e1e', color: '#a3e635', padding: 12, borderRadius: 6, fontSize: 14, fontFamily: 'monospace' }}>{c.bash}</pre>
+
+      <p style={{ background: '#f8f9fa', padding: 12, borderRadius: 6, marginTop: 12 }}>{c.description}</p>
+
+      <h4 style={{ marginTop: 16 }}>Pick the cross-platform Python equivalent:</h4>
+      {c.options.map((opt, i) => (
+        <div key={i} onClick={() => !submitted && setSelected(i)} style={{
+          padding: 12, margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+          border: `2px solid ${submitted ? (opt.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : i === selected ? '#0d6efd' : '#dee2e6'}`,
+          background: submitted ? (opt.correct ? '#d4edda' : i === selected && !opt.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>
+          <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: 13, whiteSpace: 'pre-wrap' }}>{opt.code}</pre>
+          {submitted && (
+            <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: opt.correct ? '#198754' : '#666' }}>
+              <strong>{opt.correct ? '✅' : (i === selected ? '❌' : '○')}</strong> {opt.reason}
+            </p>
+          )}
+        </div>
+      ))}
+
+      {!submitted && selected !== null && (
+        <button onClick={handleSubmit} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Answer</button>
+      )}
+
+      {submitted && (
+        <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{current + 1 < challenges.length ? 'Next Challenge' : 'See Results'}</button>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## LESSON 7 OF 7: Wrap-Up — Review & Consolidation
 
 **Estimated time:** 5 minutes
 
@@ -1421,8 +1722,9 @@ export default function Practice() {
 | 3 | Git + GitHub from VS Code | Four states (working/staged/committed/pushed); Source Control panel = git CLI buttons; HTTPS+PAT or SSH | Every clinical tool you build will be code-reviewed, versioned, and collaborated on through git |
 | 4 | Build the Medical App (Gradio + SQLite) | Gradio = function-to-UI; SQLite = single-file DB; Cockcroft-Gault formula; auto-init pattern for deploy | The Python+DB+UI shape is exactly the shape of iNotes and many KHCC internal tools |
 | 5 | Deploy to Hugging Face Space | Space = auto-deploying git repo; YAML README header; secrets in Settings → Variables; public infrastructure boundary | Spaces are perfect for demos and learning; PHI and KHCC clinical traffic stay on internal infrastructure |
+| 6 | Python Instead of the Command Line — os, pathlib, shutil, subprocess | pathlib for cross-platform paths; os.walk and rglob for recursive search; shutil.copy2/rmtree/make_archive for file ops; subprocess.run with arg-list (no shell=True) | AIDI file pipelines (VistA CSV extracts, archived batches, downstream R triggers) run the same on Mac laptop, Linux server, and Windows colleague's machine |
 
-**Connecting the Dots:** This session moved you from notebooks to a complete local-development loop. Lesson 1 gave you the project foundation: a folder, a venv, an interpreter, requirements.txt. Lesson 2 made it safe to share: .gitignore and the secrets pattern that prevents the most common catastrophic mistakes in clinical AI. Lesson 3 gave you version control and collaboration: git states, the Source Control panel, GitHub authentication. Lesson 4 put something real inside: a Gradio UI, a SQLite database, the Cockcroft-Gault formula, drug alerts — the exact architectural shape of iNotes and most KHCC internal tools. Lesson 5 put it on the open internet: a Hugging Face Space, a public URL, secrets injected at runtime, the firm boundary against ever putting PHI on public infrastructure. Each lesson is a layer of the same stack. From now on, every clinical AI tool you build can follow the same path — and crucially, you now know which boundaries you must respect (no secrets in code, no PHI on public infrastructure, no databases without parameterized queries) when the stakes are real.
+**Connecting the Dots:** This session moved you from notebooks to a complete local-development loop. Lesson 1 gave you the project foundation: a folder, a venv, an interpreter, requirements.txt. Lesson 2 made it safe to share: .gitignore and the secrets pattern that prevents the most common catastrophic mistakes in clinical AI. Lesson 3 gave you version control and collaboration: git states, the Source Control panel, GitHub authentication. Lesson 4 put something real inside: a Gradio UI, a SQLite database, the Cockcroft-Gault formula, drug alerts — the exact architectural shape of iNotes and most KHCC internal tools. Lesson 5 put it on the open internet: a Hugging Face Space, a public URL, secrets injected at runtime, the firm boundary against ever putting PHI on public infrastructure. Lesson 6 replaced the command line with Python's standard library — pathlib, os, shutil, subprocess — so the file-orchestration glue around your clinical pipelines runs identically on every operating system. Each lesson is a layer of the same stack. From now on, every clinical AI tool you build can follow the same path — and crucially, you now know which boundaries you must respect (no secrets in code, no PHI on public infrastructure, no databases without parameterized queries) when the stakes are real.
 
 ---
 
@@ -1467,7 +1769,7 @@ export default function Practice() {
 ### NotebookLM Notebook
 
 Create a NotebookLM notebook for this session:
-1. Paste all 5 lesson summaries as text sources
+1. Paste all 6 lesson summaries as text sources
 2. Add the VS Code Python docs, the Gradio Quickstart, and the Hugging Face Spaces docs as URL sources
 3. Generate an Audio Overview for pre-class listening
 4. Use the notebook to quiz yourself on the four git states and the deploy workflow
