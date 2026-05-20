@@ -23,3 +23,7 @@ exclude:
   - "session_6/session_6_curriculum.md"
   - "session_7/session_7_curriculum.md"
   - "session_7/session_7_outline.md"
+  - "session_9/session_9_curriculum.md"
+  - "session_9/quizzes/*.jsx"
+  - "session_9/practices/*.jsx"
+  - "session_9/data/notebooklm_sources.md"

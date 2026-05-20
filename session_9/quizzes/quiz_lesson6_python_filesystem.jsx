@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "You write Path('data') / 'patients' / 'vitals.csv' in your KHCC pipeline. A colleague runs it on Windows. What happens?",
+    options: [
+      "It crashes because of forward slashes",
+      "It works — pathlib handles OS-specific separators automatically",
+      "It works only if you also import os.path",
+      "It produces a malformed path that pandas can't read"
+    ],
+    correct: 1,
+    explanation: "Path objects automatically use the correct separator for the operating system. That's the whole point of pathlib — write the same code, run it anywhere. String concatenation with hardcoded slashes is what breaks on Windows."
+  },
+  {
+    question: "You want to find all CSV files inside data/ and every subfolder beneath it. Which is correct?",
+    options: [
+      "Path('data').glob('*.csv')",
+      "Path('data').rglob('*.csv')",
+      "Path('data').list('*.csv', recursive=True)",
+      "Path('data').find('*.csv')"
+    ],
+    correct: 1,
+    explanation: "glob is one level only. rglob is recursive — it walks into every subdirectory. For 'find all PDFs anywhere under reports/' use rglob('*.pdf'). Forgetting this is the most common pathlib mistake."
+  },
+  {
+    question: "You're writing a script that needs to call git. Which subprocess.run call is SAFEST?",
+    options: [
+      "subprocess.run(f'git commit -m {user_message}', shell=True)",
+      "subprocess.run(['git', 'commit', '-m', user_message], shell=True)",
+      "subprocess.run(['git', 'commit', '-m', user_message], capture_output=True, text=True, check=True)",
+      "subprocess.run('git commit -m ' + user_message)"
+    ],
+    correct: 2,
+    explanation: "Pass arguments as a list (no shell injection), avoid shell=True, capture output, and use check=True to raise on failure. Options 1 and 4 are vulnerable to command injection if user_message contains shell metacharacters like ; or && — exactly how clinical scripts get compromised."
+  },
+  {
+    question: "You write shutil.rmtree('data') and run it. What happens, and is it recoverable?",
+    options: [
+      "Files go to the recycle bin, recoverable for 30 days",
+      "Files are permanently deleted with no recycle bin",
+      "A confirmation dialog appears before deletion",
+      "Only empty subfolders are removed"
+    ],
+    correct: 1,
+    explanation: "rmtree is permanently destructive — no recycle bin, no undo. In clinical contexts where you might accidentally delete a patient data folder, always print the target path and require confirmation BEFORE calling rmtree. Better still, use shutil.move to a 'trash/' folder you can review."
+  },
+  {
+    question: "Path('archive/2026-03-15').mkdir(parents=True, exist_ok=True) — what do parents=True and exist_ok=True do?",
+    options: [
+      "parents=True copies parent folders; exist_ok=True overwrites",
+      "parents=True creates missing intermediate folders; exist_ok=True doesn't raise if the folder already exists",
+      "parents=True sets correct permissions; exist_ok=True creates a .gitignore",
+      "Both are deprecated and ignored in modern Python"
+    ],
+    correct: 1,
+    explanation: "parents=True is like mkdir -p — it creates archive/ if it doesn't exist before creating 2026-03-15/. exist_ok=True suppresses the error if the folder already exists (idempotent, so the script can be re-run safely). Both flags are essential for daily clinical scripts."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! Your scripts will run on any OS." : score >= 3 ? "Good grasp — review subprocess safety and rmtree carefully." : "Review pathlib, shutil, and subprocess before writing production scripts."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

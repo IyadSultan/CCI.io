@@ -309,11 +309,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-09/">
-    <div class="cci-num" style="background:#6A1B9A;">9</div>
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-09/">
+    <div class="cci-num" style="background:#1565C0;">9</div>
     <div class="cci-card-body">
-      <p class="title">IDEs &amp; Repo Building</p>
-      <p class="desc">Cursor, VS Code, GitHub, CI/CD, wiring eval harness into your repo</p>
+      <p class="title">Local Dev — VS Code, Git &amp; Hugging Face <span class="cci-active-badge">Active</span></p>
+      <p class="desc">venv, .gitignore &amp; secrets, git workflow, Gradio + SQLite CrCl app, Hugging Face Spaces deploy</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
