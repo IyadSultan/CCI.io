@@ -156,6 +156,7 @@ permalink: /session_9/handouts/vs_code_for_dummies/
     line-height: 1.7;
     margin: 0.75rem 0 0;
     overflow-x: auto;
+    white-space: pre;
   }
   .fd-code-block .comment { color: #6A9955; }
   .fd-code-block .keyword { color: #569CD6; }
@@ -435,52 +436,87 @@ permalink: /session_9/handouts/vs_code_for_dummies/
       Every Python project you build should look like this. Each file has exactly one job. No clutter, no mystery files.
     </p>
 
-    <div class="fd-code-block"><span class="comment"># Your project folder — open this in VS Code</span>
-my-project/
-├── .venv/               <span class="comment"># Private Python + packages — NEVER commit this</span>
-├── .gitignore           <span class="comment"># Tells git what to ignore (venv, secrets, databases)</span>
-├── .env                 <span class="comment"># Your actual secret values — NEVER commit this</span>
-├── .env.example         <span class="comment"># Shows the shape of secrets — DO commit this</span>
-├── README.md            <span class="comment"># What the project does and how to run it — commit</span>
-├── requirements.txt     <span class="comment"># List of packages your project needs — commit</span>
-├── app.py               <span class="comment"># Main Python file — commit</span>
-├── init_db.py           <span class="comment"># Creates the database — commit</span>
-└── data/                <span class="comment"># Local data files — usually .gitignored</span></div>
+    <!-- Visual folder tree -->
+    <div style="background:#1e1e1e;border-radius:0.6rem;padding:1rem 1.25rem;margin:0.75rem 0 1rem;overflow-x:auto;border:1px solid #333;">
+      <div style="font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.85;color:#D4D4D4;">
+        <div style="color:#6A9955;margin-bottom:0.25rem;"># Your project folder — open this in VS Code</div>
+        <div style="color:#4EC9B0;font-weight:700;">my-project/</div>
+        <div>├── <span style="color:#CE9178;">.venv/</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Private Python + packages — NEVER commit</span></div>
+        <div>├── <span style="color:#9CDCFE;">.gitignore</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Tells git what to ignore</span></div>
+        <div>├── <span style="color:#F44747;">.env</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Actual secret values — NEVER commit</span></div>
+        <div>├── <span style="color:#DCDCAA;">.env.example</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Template showing which secrets exist — commit</span></div>
+        <div>├── <span style="color:#9CDCFE;">README.md</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# What this is &amp; how to run it — commit</span></div>
+        <div>├── <span style="color:#9CDCFE;">requirements.txt</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Python packages list — commit</span></div>
+        <div>├── <span style="color:#569CD6;">app.py</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Main Python file — commit</span></div>
+        <div>├── <span style="color:#569CD6;">init_db.py</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Creates the database — commit</span></div>
+        <div>└── <span style="color:#CE9178;">data/</span><span style="color:#6A9955;margin-left:1rem;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Local data files — usually .gitignored</span></div>
+      </div>
+    </div>
 
-    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">The 5 files every project must have — and whether to commit them:</p>
+    <!-- Commit/don't commit table -->
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1.25rem 0 0.5rem;">Every file's rule — commit or never?</p>
 
-    <div class="fd-file-card">
-      <span class="fd-file-badge fd-badge-yes">COMMIT ✓</span>
-      <div><strong><code>README.md</code></strong> — What is this project? How do I run it? What does it do clinically? Any safety caveats?</div>
-    </div>
-    <div class="fd-file-card">
-      <span class="fd-file-badge fd-badge-yes">COMMIT ✓</span>
-      <div><strong><code>requirements.txt</code></strong> — The list of Python packages. Anyone clones your repo and runs <code>pip install -r requirements.txt</code> to reproduce your environment exactly.</div>
-    </div>
-    <div class="fd-file-card">
-      <span class="fd-file-badge fd-badge-yes">COMMIT ✓</span>
-      <div><strong><code>.gitignore</code></strong> — The exclusion list that tells git what NOT to track. Commit it so colleagues get the same rules.</div>
-    </div>
-    <div class="fd-file-card">
-      <span class="fd-file-badge fd-badge-yes">COMMIT ✓</span>
-      <div><strong><code>.env.example</code></strong> — Shows which environment variables exist (e.g., <code>OPENAI_API_KEY=your-key-here</code>), with fake placeholder values. Safe to share.</div>
-    </div>
-    <div class="fd-file-card">
-      <span class="fd-file-badge fd-badge-no">NEVER ✗</span>
-      <div><strong><code>.env</code></strong> — Contains your actual API keys, passwords, and database strings. <strong>This file must be in .gitignore. Never commit it. Never. Not even once.</strong></div>
-    </div>
+    <table class="fd-table">
+      <tr>
+        <th style="width:140px;">File</th>
+        <th style="width:90px;text-align:center;">Commit?</th>
+        <th>Why</th>
+      </tr>
+      <tr>
+        <td><code>README.md</code></td>
+        <td style="text-align:center;"><span style="background:#C8E6C9;color:#1B5E20;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">YES ✓</span></td>
+        <td style="font-size:0.82rem;">What is this project? How do I run it? Any clinical caveats? Every repo starts here.</td>
+      </tr>
+      <tr>
+        <td><code>requirements.txt</code></td>
+        <td style="text-align:center;"><span style="background:#C8E6C9;color:#1B5E20;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">YES ✓</span></td>
+        <td style="font-size:0.82rem;">The list of packages. Anyone runs <code>pip install -r requirements.txt</code> to reproduce your exact environment.</td>
+      </tr>
+      <tr>
+        <td><code>.gitignore</code></td>
+        <td style="text-align:center;"><span style="background:#C8E6C9;color:#1B5E20;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">YES ✓</span></td>
+        <td style="font-size:0.82rem;">The exclusion list. Commit it so all collaborators share the same "don't track" rules.</td>
+      </tr>
+      <tr>
+        <td><code>.env.example</code></td>
+        <td style="text-align:center;"><span style="background:#C8E6C9;color:#1B5E20;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">YES ✓</span></td>
+        <td style="font-size:0.82rem;">Shows <em>which</em> secret variables exist with placeholder values like <code>OPENAI_API_KEY=your-key-here</code>. Safe to share.</td>
+      </tr>
+      <tr>
+        <td><code>app.py</code></td>
+        <td style="text-align:center;"><span style="background:#C8E6C9;color:#1B5E20;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">YES ✓</span></td>
+        <td style="font-size:0.82rem;">Your source code — this is the whole point of the repo.</td>
+      </tr>
+      <tr>
+        <td><code>.env</code></td>
+        <td style="text-align:center;"><span style="background:#FFCDD2;color:#B71C1C;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">NEVER ✗</span></td>
+        <td style="font-size:0.82rem;"><strong>Contains your actual API keys, passwords, database strings.</strong> Must be in <code>.gitignore</code>. Not once, not by accident, not even "just to test."</td>
+      </tr>
+      <tr>
+        <td><code>.venv/</code></td>
+        <td style="text-align:center;"><span style="background:#FFCDD2;color:#B71C1C;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">NEVER ✗</span></td>
+        <td style="font-size:0.82rem;">Hundreds of MB of installed packages. Anyone can recreate it with <code>pip install -r requirements.txt</code>. Never commit it.</td>
+      </tr>
+      <tr>
+        <td><code>*.db</code></td>
+        <td style="text-align:center;"><span style="background:#FFCDD2;color:#B71C1C;padding:2px 8px;border-radius:4px;font-size:0.75rem;font-weight:700;">NEVER ✗</span></td>
+        <td style="font-size:0.82rem;">Databases may contain patient data or PHI. Exclude by default; regenerate from <code>init_db.py</code>.</td>
+      </tr>
+    </table>
 
     <div class="fd-tip">
-      <strong>💡 When you finish a project:</strong> Run <code>pip freeze > requirements.txt</code> to capture the exact version of every package installed. Future-you (and your colleagues) will thank you.
+      <strong>💡 When you finish a project:</strong> Run <code>pip freeze &gt; requirements.txt</code> to capture the exact version of every installed package. Future-you (and your colleagues) will thank you.
     </div>
 
     <div class="fd-danger">
-      <strong>🚨 The .gitignore must include at minimum:</strong><br>
-      <code>.env</code> — your secrets<br>
-      <code>.venv/</code> — hundreds of MB of packages (regenerated from requirements.txt)<br>
-      <code>__pycache__/</code> — compiled Python cache files<br>
-      <code>*.db</code> — databases (may contain patient data)<br>
-      <code>.DS_Store</code> — macOS metadata junk
+      <strong>🚨 Minimum .gitignore entries — copy this into every project:</strong>
+      <div style="background:#2a0a0a;border-radius:0.4rem;padding:0.75rem 1rem;margin-top:0.5rem;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.8;color:#FFCDD2;">
+        <div><span style="color:#F44747;">.env</span><span style="color:#888;margin-left:1rem;"># secrets — never commit</span></div>
+        <div><span style="color:#F44747;">.venv/</span><span style="color:#888;margin-left:1rem;"># virtual environment — regenerate with pip install</span></div>
+        <div><span style="color:#F44747;">__pycache__/</span><span style="color:#888;margin-left:1rem;"># compiled Python cache</span></div>
+        <div><span style="color:#F44747;">*.db</span><span style="color:#888;margin-left:1rem;"># databases — may contain patient data</span></div>
+        <div><span style="color:#F44747;">.DS_Store</span><span style="color:#888;margin-left:1rem;"># macOS metadata junk</span></div>
+      </div>
     </div>
   </div>
 </div>
