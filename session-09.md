@@ -230,6 +230,13 @@ permalink: /session-09/
   }
   .s1-btn-resource:hover { background: #CFD8DC; transform: translateY(-1px); }
 
+  .s1-btn-notebook {
+    background: #FFF8E1;
+    border-color: #FFE082;
+    color: #F57F17 !important;
+  }
+  .s1-btn-notebook:hover { background: #FFECB3; transform: translateY(-1px); }
+
   .s1-btn-handout {
     background: #E0F7FA;
     border-color: #80DEEA;
@@ -315,6 +322,9 @@ permalink: /session-09/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson1_setup_checklist.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Setup Checklist
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/1708c16f-e8fd-4bbe-b102-d521c7d942a2" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson1_vscode_setup.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
@@ -347,6 +357,9 @@ permalink: /session-09/
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson2_should_commit.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Should I Commit?
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/9d3f522c-070d-4dc2-9bad-ec0c1ddf1665" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson2_gitignore_secrets.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
@@ -386,6 +399,9 @@ permalink: /session-09/
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson3_git_command_picker.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Git Command Picker
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/9529f8c7-7a3e-4af6-a31b-5a71c94bdf8e" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson3_git_github.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
@@ -429,6 +445,9 @@ permalink: /session-09/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson4_crcl_logic.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: CrCl Logic Builder
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/6899c00f-fbb1-4f0a-b3b3-b08796d43256" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson4_medical_app.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
@@ -464,6 +483,9 @@ permalink: /session-09/
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson5_deploy_sanity.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Deployment Sanity Check
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/a2a537a7-a71e-473f-a6a7-c4c3e991ba46" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson5_huggingface_deploy.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
@@ -501,6 +523,9 @@ permalink: /session-09/
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_9/practices/practice_lesson6_bash_to_python.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Bash &#8594; Python
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/6e3e7d3a-dd5e-4fb8-bd9e-7916ae4da953" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_9/quizzes/quiz_lesson6_python_filesystem.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
@@ -537,6 +562,9 @@ permalink: /session-09/
       <li><strong>Lesson 6</strong> — pathlib for cross-platform paths; rglob/os.walk for recursive search; shutil.copy2/rmtree/make_archive for file ops; subprocess.run with arg-list (no shell=True)</li>
     </ul>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b6e42183-055b-4761-ad0b-2c47ac4d1777" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_9/data/notebooklm_sources/" target="_blank">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM Sources
       </a>
