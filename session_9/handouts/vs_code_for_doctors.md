@@ -275,6 +275,133 @@ git push        # send your commits up
 
 ---
 
+**Branching — working without breaking main:**
+
+A branch is a parallel copy of your code. You experiment on a branch; `main` stays clean and working. This is how every AIDI project is developed — never directly on `main`.
+
+```
+# See all branches (current branch has a * beside it)
+git branch
+
+# Create a new branch and switch to it immediately
+git checkout -b feature/crcl-pdf-export
+
+# Switch to an existing branch
+git checkout main
+
+# Push a new branch to GitHub for the first time
+git push -u origin feature/crcl-pdf-export
+
+# Delete a branch after it's been merged (local)
+git branch -d feature/crcl-pdf-export
+
+# Delete it on GitHub too
+git push origin --delete feature/crcl-pdf-export
+```
+
+| Command | What it does |
+|---|---|
+| `git branch` | List all local branches |
+| `git branch -a` | List local AND remote branches |
+| `git checkout -b branchname` | Create + switch in one command |
+| `git checkout branchname` | Switch to an existing branch |
+| `git branch -d branchname` | Delete a branch (safe — won't delete if unmerged) |
+| `git branch -D branchname` | Force-delete even if unmerged ⚠️ |
+
+---
+
+**Forking — your own copy of someone else's repo:**
+
+A **fork** is a copy of a repo under *your* GitHub account. Forking is a GitHub concept, not a git command. You fork on github.com by clicking the Fork button.
+
+| | Fork | Branch |
+|---|---|---|
+| Lives in | Your own GitHub account | Same repo |
+| Use when | You don't have write access to the original | You do have write access |
+| Common for | Contributing to open-source; adapting a template | Team feature work |
+
+After forking, clone your fork locally, make changes, then open a **Pull Request** on GitHub to propose merging your changes back into the original.
+
+```
+# Clone your fork
+git clone https://github.com/YOUR-username/crcl-app.git
+cd crcl-app
+
+# Add the original repo as 'upstream' so you can pull updates from it
+git remote add upstream https://github.com/ORIGINAL-owner/crcl-app.git
+
+# Pull updates from the original into your fork
+git fetch upstream
+git merge upstream/main
+```
+
+---
+
+**Merging — combining branches:**
+
+When your feature branch is ready, merge it back into `main`:
+
+```
+# 1. Switch to the branch you want to merge INTO
+git checkout main
+
+# 2. Pull the latest so you're up to date
+git pull
+
+# 3. Merge your feature branch in
+git merge feature/crcl-pdf-export
+
+# 4. Push the updated main to GitHub
+git push
+```
+
+**If there is a merge conflict** — git will tell you which files have conflicts. Open the file in VS Code; you will see conflict markers:
+
+```
+<<<<<<< HEAD (your main branch version)
+crcl = (140 - age) * weight / (72 * creatinine)
+=======
+crcl = ((140 - age) * weight) / (72 * creatinine) * (0.85 if sex == "F" else 1)
+>>>>>>> feature/crcl-pdf-export (incoming version)
+```
+
+Edit the file to keep what you want (delete the markers), then:
+
+```
+git add app.py
+git commit -m "merge feature/crcl-pdf-export — keep full formula with sex correction"
+```
+
+> 💡 VS Code shows a visual merge editor — click **Resolve in Merge Editor** in the file header for a side-by-side view with Accept buttons. Much easier than editing conflict markers by hand.
+
+---
+
+**git diff — see exactly what changed:**
+
+`git diff` shows the line-by-line difference between versions. Lines starting with `+` are additions; lines starting with `-` are removals.
+
+| Command | What it shows |
+|---|---|
+| `git diff` | Changes in working directory not yet staged |
+| `git diff --staged` | Changes staged but not yet committed |
+| `git diff main feature/crcl-pdf-export` | Differences between two branches |
+| `git diff HEAD~1` | What changed in the last commit |
+| `git diff abc123 def456` | Differences between two specific commits (use hashes from `git log`) |
+| `git diff filename` | Changes to one specific file only |
+
+```
+$ git diff app.py
+
+-    crcl = (140 - age) * weight / (72 * creatinine)
++    crcl = ((140 - age) * weight) / (72 * creatinine)
++    if sex.lower() == "f":
++        crcl *= 0.85
+```
+
+> 💡 In VS Code, the Source Control panel (`Ctrl+Shift+G`) shows the same diff visually — click any modified file to see a side-by-side comparison. You don't need to run `git diff` at the terminal if you prefer the visual view.
+
+---
+
 ## Chapter 4 — Extensions
 
 The Extensions panel (`Ctrl+Shift+X`) is where VS Code becomes powerful. Install only what you need — every extension slows VS Code down slightly.

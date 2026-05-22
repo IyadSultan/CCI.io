@@ -278,6 +278,11 @@ permalink: /session_9/handouts/vs_code_for_dummies/
     <div class="fd-tip">
       <strong>💡 The status bar is your dashboard.</strong> The bottom strip of VS Code shows: which Python you're using (left side), current git branch (left), open ports, and any errors. Click any of them to change settings. If you don't see <code>(.venv)</code> in the Python selector, you haven't selected the venv yet.
     </div>
+
+    <div class="fd-danger">
+      <strong>⚠️ First thing to do when you open VS Code: turn on Auto Save.</strong><br>
+      Click <strong>File → Auto Save</strong> (a checkmark appears). Without it, VS Code does not save your file until you press <code>Ctrl+S</code> — meaning Python will keep running the <em>old</em> version of your code, and you'll spend 20 minutes debugging a problem that doesn't exist. Turn it on once; it stays on forever.
+    </div>
   </div>
 </div>
 
@@ -310,6 +315,38 @@ permalink: /session_9/handouts/vs_code_for_dummies/
     <div class="fd-danger">
       <strong>🚨 If something doesn't work after pip install:</strong> Check that your prompt shows <code>(.venv)</code>. If not, the venv isn't active — your packages went to the wrong Python. Run <code>which python</code> (Mac/Linux) or <code>where python</code> (Windows) to see which Python is actually being used.
     </div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1.25rem 0 0.5rem;">Working with files from the terminal:</p>
+    <table class="fd-table">
+      <tr><th>Task</th><th>Mac / Linux</th><th>Windows (PowerShell)</th></tr>
+      <tr><td>Create an empty file</td><td><code>touch README.md</code></td><td><code>New-Item README.md</code></td></tr>
+      <tr><td>Open a file in VS Code</td><td><code>code README.md</code></td><td><code>code README.md</code></td></tr>
+      <tr><td>Open whole folder in VS Code</td><td><code>code .</code></td><td><code>code .</code></td></tr>
+      <tr><td>Print a file to terminal</td><td><code>cat requirements.txt</code></td><td><code>Get-Content requirements.txt</code></td></tr>
+      <tr><td>Write one line to a file <em>(overwrites)</em></td><td><code>echo "gradio" &gt; requirements.txt</code></td><td><code>echo "gradio" &gt; requirements.txt</code></td></tr>
+      <tr><td>Append a line <em>(keeps existing)</em></td><td><code>echo "python-dotenv" &gt;&gt; requirements.txt</code></td><td><code>echo "python-dotenv" &gt;&gt; requirements.txt</code></td></tr>
+    </table>
+
+    <div class="fd-tip">
+      <strong>💡 Fastest way to create and edit any file:</strong> type <code>code filename</code> in the terminal. VS Code opens it (creating it if it doesn't exist) and you can type normally. This is quicker than chaining <code>echo</code> commands for anything longer than one line.
+    </div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1.25rem 0 0.5rem;">Environment variables from the terminal:</p>
+    <table class="fd-table">
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>export VAR=value</code> <em>(Mac/Linux)</em><br><code>$env:VAR="value"</code> <em>(Windows)</em></td><td>Set an environment variable for this terminal session. Python reads it with <code>os.getenv("VAR")</code>. Disappears when you close the tab — use <code>.env</code> for persistent secrets.</td></tr>
+      <tr><td><code>echo $VAR</code> <em>(Mac/Linux)</em><br><code>echo $env:VAR</code> <em>(Windows)</em></td><td>Print the current value — use to confirm a secret was set before running your script.</td></tr>
+    </table>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1.25rem 0 0.5rem;">🔍 Finding the right package — PyPI:</p>
+    <p style="font-size:0.82rem;color:#37474F;line-height:1.6;">Before you <code>pip install</code> anything, look it up at <a href="https://pypi.org" target="_blank" rel="noopener noreferrer" style="color:#1565C0;font-weight:700;">pypi.org</a> — the official registry every <code>pip</code> download comes from.</p>
+    <table class="fd-table">
+      <tr><th>What to check</th><th>Why it matters</th></tr>
+      <tr><td><strong>Exact install name</strong></td><td><code>pip install scikit-learn</code> not <code>sklearn</code> — the import name and the install name are often different. PyPI shows the correct install name.</td></tr>
+      <tr><td><strong>Latest stable version</strong></td><td>Pin it in <code>requirements.txt</code> as <code>gradio==4.44.0</code> to prevent surprise upgrades breaking your app later.</td></tr>
+      <tr><td><strong>Release history</strong></td><td>Click <em>Release history</em> to find the version a colleague used when they wrote the code.</td></tr>
+      <tr><td><strong>Project links</strong></td><td>Every page links to the GitHub repo and documentation — fastest path to usage examples.</td></tr>
+    </table>
   </div>
 </div>
 
@@ -343,35 +380,131 @@ permalink: /session_9/handouts/vs_code_for_dummies/
       <a href="https://youtu.be/sXXtA3Jb3PI?si=extuSAa-XjN473Xg" target="_blank" rel="noopener noreferrer" style="color:#1565C0;font-weight:700;">Git Explained in 100 Seconds (YouTube) ↗</a> — 2 minutes, covers exactly what you need.
     </p>
 
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:0.75rem 0 0.5rem;">⚙️ One-time machine setup — run once ever:</p>
+    <div class="fd-code-block">git config --global user.name  "Your Name"
+git config --global user.email "you@khcc.jo"
+
+<span class="comment"># Verify it worked:</span>
+git config --global --list
+<span class="comment"># user.name=Your Name</span>
+<span class="comment"># user.email=you@khcc.jo</span></div>
+
+    <div class="fd-tip">
+      <strong>💡 Why it matters:</strong> every commit is stamped with your name and email. Skip this and your commits show a blank author — which matters when reviewing who changed what in a shared clinical codebase.
+    </div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">🚀 Starting a repository — two situations:</p>
+    <table class="fd-table">
+      <tr><th>Situation</th><th>Command</th><th>What happens</th></tr>
+      <tr><td><strong>Starting fresh</strong> — new folder, no repo yet</td><td><code>git init</code></td><td>Creates a hidden <code>.git</code> folder. Your folder is now a git repo. Nothing committed yet.</td></tr>
+      <tr><td><strong>Joining an existing project</strong> — repo already on GitHub</td><td><code>git clone https://github.com/org/repo.git</code></td><td>Downloads all files + full history into a new sub-folder. Already connected to GitHub.</td></tr>
+    </table>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">Connecting a new <code>git init</code> repo to GitHub:</p>
+    <div class="fd-code-block"><span class="comment"># 1. Create an EMPTY repo on github.com (no README, no .gitignore)</span>
+<span class="comment"># 2. Copy the HTTPS URL, then run:</span>
+git remote add origin https://github.com/your-username/your-repo.git
+git branch -M main
+git push -u origin main   <span class="comment"># -u sets the upstream so future push/pull need no arguments</span>
+
+<span class="comment"># Check your remote is correct at any time:</span>
+git remote -v
+
+<span class="comment"># Fix a wrong remote URL:</span>
+git remote set-url origin https://github.com/correct/repo.git</div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">Your two most important diagnostic commands:</p>
+    <div class="fd-code-block"><span class="comment"># git status — run before and after everything</span>
+git status
+<span class="comment"># On branch main</span>
+<span class="comment"># Changes not staged for commit:</span>
+<span class="comment">#   modified:   app.py       ← edited, not yet staged</span>
+<span class="comment"># Untracked files:</span>
+<span class="comment">#   init_db.py               ← new file, git doesn't know about it yet</span>
+
+<span class="comment"># git log --oneline — see what was committed and whether it was pushed</span>
+git log --oneline
+<span class="comment"># a3f92c1 (HEAD -> main, origin/main)  add nephrotoxic drug alerts</span>
+<span class="comment"># b81e044  add SQLite init and CrCl formula</span>
+<span class="comment"># ↑ HEAD->main AND origin/main on same line = you're in sync with GitHub</span></div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">Daily commands:</p>
     <table class="fd-table">
       <tr><th>Command</th><th>When to use it</th></tr>
-      <tr><td><code>git status</code></td><td><strong>Use this first, always, forever.</strong> Shows you what state every file is in. When confused — run this.</td></tr>
-      <tr><td><code>git add .</code></td><td>Stage all changed files — puts them in the "about to be committed" list</td></tr>
-      <tr><td><code>git commit -m "message"</code></td><td>Save a snapshot locally with a description of what changed</td></tr>
-      <tr><td><code>git push</code></td><td>Upload your local commits to GitHub — others can now see them</td></tr>
+      <tr><td><code>git status</code></td><td><strong>Always first.</strong> Before add, before commit, when confused — run this.</td></tr>
+      <tr><td><code>git log --oneline</code></td><td>See commit history and whether your latest is on GitHub.</td></tr>
+      <tr><td><code>git add .</code></td><td>Stage all changed files</td></tr>
+      <tr><td><code>git add filename</code></td><td>Stage one specific file</td></tr>
+      <tr><td><code>git commit -m "message"</code></td><td>Save a snapshot locally</td></tr>
+      <tr><td><code>git push</code></td><td>Upload commits to GitHub</td></tr>
       <tr><td><code>git pull</code></td><td>Download commits from GitHub — do this before starting work each day</td></tr>
-      <tr><td><code>git log --oneline</code></td><td>See the list of commits, one per line — your project history</td></tr>
-      <tr><td><code>git restore app.py</code></td><td>Throw away changes to a file and go back to the last committed version</td></tr>
+      <tr><td><code>git restore .</code></td><td>Throw away unsaved changes to <strong>all</strong> files</td></tr>
+      <tr><td><code>git restore filename</code></td><td>Throw away unsaved changes to one file</td></tr>
+      <tr><td><code>git diff</code></td><td>See exactly what changed (lines added/removed) since last commit</td></tr>
+      <tr><td><code>git diff --staged</code></td><td>See what's staged but not yet committed</td></tr>
+      <tr><td><code>git diff main feature/my-branch</code></td><td>Compare two branches</td></tr>
     </table>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">🌿 Branching — work without breaking main:</p>
+    <p style="font-size:0.82rem;color:#37474F;line-height:1.5;">A branch is a parallel copy of your code. Experiment on a branch; <code>main</code> stays clean and working. Every AIDI feature is developed on a branch — never directly on <code>main</code>.</p>
+    <table class="fd-table">
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>git branch</code></td><td>List all local branches. Current branch has a <code>*</code> beside it.</td></tr>
+      <tr><td><code>git checkout -b feature/my-feature</code></td><td>Create a new branch and switch to it in one command</td></tr>
+      <tr><td><code>git checkout main</code></td><td>Switch back to main</td></tr>
+      <tr><td><code>git push -u origin feature/my-feature</code></td><td>Push a new branch to GitHub for the first time</td></tr>
+      <tr><td><code>git branch -d feature/my-feature</code></td><td>Delete a branch locally after it's merged</td></tr>
+      <tr><td><code>git push origin --delete feature/my-feature</code></td><td>Delete it on GitHub too</td></tr>
+    </table>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">🍴 Forking — your own copy of someone else's repo:</p>
+    <table class="fd-table">
+      <tr><th></th><th>Fork</th><th>Branch</th></tr>
+      <tr><td><strong>Lives in</strong></td><td>Your own GitHub account</td><td>Same repo</td></tr>
+      <tr><td><strong>Use when</strong></td><td>You don't have write access to the original</td><td>You do have write access</td></tr>
+      <tr><td><strong>Common for</strong></td><td>Adapting a template; contributing to open-source</td><td>Team feature work</td></tr>
+    </table>
+    <div class="fd-code-block"><span class="comment"># After forking on github.com, clone your fork:</span>
+git clone https://github.com/YOUR-username/repo.git
+
+<span class="comment"># Add the original repo as 'upstream' to pull updates from it:</span>
+git remote add upstream https://github.com/ORIGINAL-owner/repo.git
+git fetch upstream
+git merge upstream/main   <span class="comment"># pull latest from original into your fork</span></div>
+
+    <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">🔀 Merging — combining branches:</p>
+    <div class="fd-code-block"><span class="comment"># Switch to the branch you want to merge INTO</span>
+git checkout main
+git pull                             <span class="comment"># make sure you're up to date first</span>
+git merge feature/my-feature
+git push</div>
+
+    <div class="fd-danger">
+      <strong>🚨 Merge conflict?</strong> Git will tell you which files have conflicts. Open the file — you'll see:<br>
+      <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> (your version) ... <code>=======</code> ... <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/my-feature</code> (incoming).<br>
+      Edit the file to keep what you want, delete the markers, then <code>git add filename</code> and <code>git commit</code>.<br>
+      💡 VS Code shows a visual merge editor — click <strong>Resolve in Merge Editor</strong> for a side-by-side view with Accept buttons. Much easier than editing conflict markers by hand.
+    </div>
 
     <p style="font-size:0.82rem;font-weight:700;color:#4A3700;margin:1rem 0 0.5rem;">Connecting to GitHub (authentication):</p>
     <table class="fd-table">
       <tr><th>Method</th><th>How to do it</th><th>Best for</th></tr>
-      <tr><td><strong>HTTPS + Token</strong> (easiest)</td><td>Go to GitHub → Settings → Developer settings → Personal access tokens. Generate a token. When git asks for your password, paste the token.</td><td>First-timers</td></tr>
+      <tr><td><strong>HTTPS + Token</strong> (easiest)</td><td>GitHub → Settings → Developer settings → Personal access tokens. Generate a token. Paste it as your password when git prompts.</td><td>First-timers</td></tr>
       <tr><td><strong>SSH key</strong> (slicker)</td><td>Run <code>ssh-keygen -t ed25519 -C "you@khcc.jo"</code>, then add the <code>.pub</code> key at github.com/settings/keys</td><td>Daily use</td></tr>
       <tr><td><strong>GitHub CLI</strong></td><td>Install <code>gh</code>, run <code>gh auth login</code> and follow the prompts</td><td>Quickest setup</td></tr>
     </table>
 
     <div class="fd-tip">
       <strong>💡 Undo cheat sheet:</strong><br>
-      <code>git restore filename</code> — throw away unsaved edits to a file<br>
+      <code>git restore .</code> — throw away all unsaved changes<br>
+      <code>git restore filename</code> — throw away changes to one file<br>
       <code>git restore --staged filename</code> — unstage a file you accidentally <code>git add</code>-ed<br>
       <code>git reset --soft HEAD~1</code> — undo your last commit but keep the changes<br>
       <code>git commit --amend -m "new message"</code> — fix the message on your last commit (only if not pushed yet)
     </div>
 
     <div class="fd-danger">
-      <strong>🚨 Golden rule:</strong> If you've already pushed to a shared branch, <strong>don't</strong> rewrite history. Make a new commit that fixes the problem instead. Never <code>git push --force</code> unless you know exactly what you're doing — it can permanently overwrite your colleagues' work.
+      <strong>🚨 Golden rule:</strong> If you've already pushed to a shared branch, <strong>don't</strong> rewrite history. Make a new commit that fixes the problem instead. Never <code>git push --force</code> unless you know exactly what you're doing.
     </div>
   </div>
 </div>
