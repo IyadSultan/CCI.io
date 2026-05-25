@@ -659,20 +659,22 @@ git push</div>
   <div class="fd-section-head">
     <span class="ch-icon">🚀</span>
     <div>
-      <h2>The 8-Step Setup Ritual</h2>
+      <h2>The 10-Step Setup Ritual</h2>
       <p class="ch-sub">Do these steps in this exact order for every new Python project</p>
     </div>
   </div>
   <div class="fd-section-body">
     <ul class="fd-steps">
       <li><span class="step-num">1</span><div><strong>Open the project folder</strong> in VS Code — File → Open Folder, or drag the folder onto the VS Code icon.</div></li>
-      <li><span class="step-num">2</span><div><strong>Open the integrated terminal</strong> — press <code>Ctrl+`</code> or go to View → Terminal.</div></li>
-      <li><span class="step-num">3</span><div><strong>Create the virtual environment</strong> — type <code>python -m venv .venv</code> and press Enter. This creates a private Python for this project.</div></li>
-      <li><span class="step-num">4</span><div><strong>Activate the venv</strong> — on Windows: <code>.venv\Scripts\activate</code> &nbsp;|&nbsp; on Mac/Linux: <code>source .venv/bin/activate</code>. You should see <code>(.venv)</code> appear in your prompt.</div></li>
-      <li><span class="step-num">5</span><div><strong>Select the venv as the VS Code interpreter</strong> — click the Python version shown in the <strong>bottom-right</strong> corner of VS Code (or press <code>Ctrl+Shift+P</code> → "Python: Select Interpreter") and pick the one that says <code>.venv</code>. <strong>This is the step everyone forgets.</strong></div></li>
-      <li><span class="step-num">6</span><div><strong>Create requirements.txt</strong> — list the packages your project needs, one per line (e.g., <code>gradio</code>, <code>python-dotenv</code>).</div></li>
-      <li><span class="step-num">7</span><div><strong>Install packages</strong> — run <code>pip install -r requirements.txt</code>. Because the venv is active, packages go to the right place.</div></li>
-      <li><span class="step-num">8</span><div><strong>Create README.md</strong> — write what the project does, how to run it, and any clinical caveats. Future-you will thank you.</div></li>
+      <li><span class="step-num">2</span><div><strong>Create <code>.gitignore</code></strong> — add the minimum entries from above (<code>.env</code>, <code>.venv/</code>, <code>__pycache__/</code>, <code>*.db</code>, etc.) so secrets and junk never get committed.</div></li>
+      <li><span class="step-num">3</span><div><strong>Open the integrated terminal</strong> — press <code>Ctrl+`</code> or go to View → Terminal.</div></li>
+      <li><span class="step-num">4</span><div><strong>Create the virtual environment</strong> — type <code>python -m venv .venv</code> and press Enter. This creates a private Python for this project.</div></li>
+      <li><span class="step-num">5</span><div><strong>Activate the venv</strong> — on Windows: <code>.venv\Scripts\activate</code> &nbsp;|&nbsp; on Mac/Linux: <code>source .venv/bin/activate</code>. You should see <code>(.venv)</code> appear in your prompt.</div></li>
+      <li><span class="step-num">6</span><div><strong>Select the venv as the VS Code interpreter</strong> — click the Python version shown in the <strong>bottom-right</strong> corner of VS Code (or press <code>Ctrl+Shift+P</code> → "Python: Select Interpreter") and pick the one that says <code>.venv</code>. <strong>This is the step everyone forgets.</strong></div></li>
+      <li><span class="step-num">7</span><div><strong>Create requirements.txt</strong> — list the packages your project needs, one per line (e.g., <code>gradio</code>, <code>python-dotenv</code>).</div></li>
+      <li><span class="step-num">8</span><div><strong>Install packages</strong> — run <code>pip install -r requirements.txt</code>. Because the venv is active, packages go to the right place.</div></li>
+      <li><span class="step-num">9</span><div><strong>Create README.md</strong> — write what the project does, how to run it, and any clinical caveats. Future-you will thank you.</div></li>
+      <li><span class="step-num">10</span><div><strong>Create <code>.env</code> and <code>.env.example</code></strong> — put your real API keys and secrets in <code>.env</code> (already ignored by git). In <code>.env.example</code>, list the same variable names with placeholder values so teammates know what to set up — commit <code>.env.example</code>, never <code>.env</code>.</div></li>
     </ul>
 
     <div class="fd-tip">
