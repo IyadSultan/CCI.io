@@ -132,7 +132,7 @@ description: Use when implementing a brief that has a named test list. Writes co
    c. Run `pytest -x` after every file. Stop on the first failure.
 3. After all files are written, run the full suite. Surface any failures.
 4. Never silently skip a test. Never `xfail` a test the brief required.
-5. If a test would require a network call (Azure OpenAI), mock it.
+5. If a test would require a network call (OpenAI API), mock it.
 ```
 
 That is the toolbox for Lesson 9. Save and move on.
@@ -150,11 +150,11 @@ Claude delegates to `backend-builder`. The skill fires automatically because the
 Expect to see, in order:
 
 1. **`requirements.txt`** — django==5.0, pytest==8, pytest-django==4.8, pydantic-ai==0.0.13, openai==1.40, cryptography==42 (for field-level encryption), python-dotenv==1.0.
-2. **`.env.example`** — `AZURE_OPENAI_ENDPOINT=`, `AZURE_OPENAI_API_KEY=`, `AZURE_OPENAI_DEPLOYMENT=gpt-4.1-mini`, `PHI_ENCRYPTION_KEY=`, `PATIENT_ID_HASH_SALT=`.
+2. **`.env.example`** — `OPENAI_API_KEY=`, `OPENAI_MODEL=gpt-4o-mini`, `PHI_ENCRYPTION_KEY=`, `PATIENT_ID_HASH_SALT=`.
 3. **`pytest.ini`** — points pytest-django at `er_triage.settings`.
 4. **`triage/models.py`** — `Patient` and `TriageEvent` as the brief specified. JSONField for vitals, BinaryField for the encrypted name, indexed `patient_id_hash`, indexed `timestamp`.
 5. **`triage/services/acuity.py`** — pure-Python class. The rule table is exactly the brief's. No I/O.
-6. **`triage/services/oncologic_emergency.py`** — PydanticAI agent. System prompt names the four emergencies. Temperature 0. Returns the Pydantic `EmergencyExtraction` model. **Note: in the first pass, this file calls Azure OpenAI without wrapping the call in try/except.** (Hold that thought for Stage 7.)
+6. **`triage/services/oncologic_emergency.py`** — PydanticAI agent backed by the OpenAI API. System prompt names the four emergencies. Temperature 0. Returns the Pydantic `EmergencyExtraction` model. **Note: in the first pass, this file calls the OpenAI client without wrapping the call in try/except.** (Hold that thought for Stage 7.)
 7. **`triage/forms.py`** — `NurseTriageForm` with the ten fields and the range validators.
 8. **`triage/views.py`** — `nurse_form_view` (GET + POST) and `triage_confirmation_view`.
 9. **`triage/urls.py`** + edit to `er_triage/urls.py` — wire `/triage/new` and `/triage/<id>/confirm`.
@@ -176,7 +176,7 @@ triage/tests/test_views.py .                                          [100%]
 
 Six green dots. Stage 4 is done.
 
-> 🔧 **Technical Stuff.** The extractor's tests mock the Azure OpenAI client — `test_extractor_returns_neutropenic_fever_for_known_case` patches `openai.AzureOpenAI` and asserts the Pydantic schema parses the mocked response. No test in the suite actually calls Azure. That is by design — unit tests run offline; the network gets exercised in Stage 6.
+> 🔧 **Technical Stuff.** The extractor's tests mock the OpenAI client — `test_extractor_returns_neutropenic_fever_for_known_case` patches `openai.OpenAI` and asserts the Pydantic schema parses the mocked response. No test in the suite actually calls the OpenAI API. That is by design — unit tests run offline; the network gets exercised only when you manually submit the form in the browser.
 
 ## Stage 5 — Frontend builder (10 minutes)
 
@@ -276,7 +276,7 @@ The call to `self.client.beta.chat.completions.parse(...)` is not wrapped in
 try/except. The brief's acceptance criterion 10 requires graceful degradation:
 "If the LLM call fails for any reason, the TriageEvent is still saved with a
 `extractor_status = 'failed'` flag." Currently a network blip, a 5xx from
-Azure, or a Pydantic ValidationError will raise out of the view and the
+OpenAI, or a Pydantic ValidationError will raise out of the view and the
 nurse will see a 500 page — losing the triage row entirely.
 
 Fix: wrap the call in try/except (openai.APITimeoutError, openai.APIError,
@@ -318,7 +318,7 @@ Claude delegates back to `backend-builder`. The agent reads the validator's find
 ```python
 try:
     result = self.client.beta.chat.completions.parse(
-        model=self.deployment,
+        model=self.model,  # reads OPENAI_MODEL from .env, default gpt-4o-mini
         messages=messages,
         response_format=EmergencyExtraction,
         timeout=10.0,
@@ -387,11 +387,9 @@ Now whenever any future agent edits a service file, the test suite runs automati
 
 > 🔧 **Technical Stuff.** In a production pipeline, this hook would run the full eval suite against a held-out evaluation cohort in your organization's eval database. For the capstone, the local test suite is the eval stand-in. The shape is the same: change a prompt → automatically prove nothing regressed.
 
-### Optional appendix — Azure App Service deploy
+### Optional appendix — production deploy (out of scope for the demo)
 
-If you have time, deploy this app to Azure App Service. The deploy script lives at `templates/solutions/er_triage_app/deploy.sh`. Run it from the project root with your subscription ID and resource group. It provisions a Postgres server, sets the env vars from your `.env`, and pushes the code via the `az webapp up` command. Five minutes if you have the Azure CLI configured; thirty if you don't.
-
-We do not walk through it in this lesson because the deploy is the same as any Django app — and your organization likely has a deployment checklist for it.
+This capstone deliberately uses **SQLite** and the **OpenAI API** so you can run everything on a laptop with no cloud database. For a real deployment you would swap SQLite for a managed database (Postgres, for example), move secrets into your platform's secret store, and follow your organization's deployment checklist. We do not walk through production deploy in this lesson — the focus is the Software Factory pipeline, not hosting.
 
 ## Checkpoint — what you shipped
 

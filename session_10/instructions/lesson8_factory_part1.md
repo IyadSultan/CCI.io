@@ -26,7 +26,7 @@ That sequence — *protocol*, *handoff*, *chart* — is what the first half of t
 
 A two-screen Django app, the ER Triage Extractor — the capstone project for this session. It is the simplest illustration of a real clinical software pipeline that still ships a usable tool.
 
-- **Nurse screen** (this lesson and the first half of Lesson 9). A form: chief complaint as free text, age, vitals (heart rate, blood pressure, respiratory rate, oxygen saturation, temperature), oncology context (known malignancy yes/no, on chemotherapy yes/no, days since last cycle, neutropenia known yes/no). On submit, the system computes an ESI-like acuity 1–5, runs the chief complaint through Azure OpenAI looking for four oncologic emergencies — neutropenic fever, tumor lysis syndrome, spinal cord compression, hypercalcemia of malignancy — and writes a row to the queue.
+- **Nurse screen** (this lesson and the first half of Lesson 9). A form: chief complaint as free text, age, vitals (heart rate, blood pressure, respiratory rate, oxygen saturation, temperature), oncology context (known malignancy yes/no, on chemotherapy yes/no, days since last cycle, neutropenia known yes/no). On submit, the system computes an ESI-like acuity 1–5, runs the chief complaint through the OpenAI API (`gpt-4o-mini`) looking for four oncologic emergencies — neutropenic fever, tumor lysis syndrome, spinal cord compression, hypercalcemia of malignancy — and writes a row to the queue.
 - **Doctor screen** (the *Try This* at the end of Lesson 9). The live queue, color-coded by acuity, with the AI flags surfaced for the on-call attending.
 
 You are going to build the nurse half through the seven-stage pipeline from the freeCodeCamp Software Factory framework: codebase-researcher, story-writer, spec-writer, backend-builder, frontend-builder, test-verifier, implementation-validator. Stages 1 through 3 are this lesson. Stages 4 through 7 are Lesson 9.
@@ -44,7 +44,7 @@ $ django-admin startproject er_triage .
 $ python manage.py startapp triage
 ```
 
-You now have a Django project (`er_triage/`) and a Django app (`triage/`) — the standard scaffold every Django developer recognizes. Open the folder in VS Code and start Claude Code from its integrated terminal.
+You now have a Django project (`er_triage/`) and a Django app (`triage/`) — the standard scaffold every Django developer recognizes. Django's default database is SQLite (`db.sqlite3` in the project root) — that is what we use for this demo. No database server to install. Open the folder in VS Code and start Claude Code from its integrated terminal.
 
 Before any agent runs, three files must exist. The first is `CLAUDE.md`, your project memory.
 
@@ -56,8 +56,8 @@ Create `CLAUDE.md` at the project root:
 # ER Triage — Claude Code Memory
 
 ## Stack
-- Python 3.11, Django 5, Postgres (sqlite for local dev)
-- Azure OpenAI gpt-4.1-mini for the oncologic emergency extractor
+- Python 3.11, Django 5, SQLite (`db.sqlite3`) for the demo database
+- OpenAI API (`gpt-4o-mini`) for the oncologic emergency extractor
 - htmx for the form, Tailwind CDN for styling, pytest for tests
 
 ## Conventions
@@ -163,7 +163,7 @@ That is the toolbox for this lesson. Three subagents, each with the smallest pos
 
 ## Stage 0 — The PRD (10 minutes)
 
-The pipeline starts before the pipeline starts: with the PRD. You met the PRD-Builder skill in Lesson 1 and it lives in `templates/skills/prd-builder/`. Make sure it is installed at `.claude/skills/prd-builder/` for this project too (copy the folder over).
+The pipeline starts before the pipeline starts: with the PRD. You met the **CCI PRD-Builder** skill in Lesson 1. If you have not installed it yet, [download the official course skill](/CCI.io/session_10/skills/cci-prd-builder.skill) and import it into Claude Code (**Settings → Skills → Import**), then copy it into this project's `.claude/skills/` if needed.
 
 Tell Claude what you want to build:
 
@@ -213,7 +213,7 @@ as a flat list and must triage by reading every chart.
 - No PHI leaves the application server. No PHI in logs.
 
 ## Stack
-- Django 5 + Postgres. Azure OpenAI gpt-4.1-mini. Tailwind CDN. htmx.
+- Django 5 + SQLite. OpenAI API (`gpt-4o-mini`). Tailwind CDN. htmx.
 
 ## Eval gate
 - Pre-deployment: held-out evaluation cohort (≥ 200 de-identified cases), sensitivity ≥ 90% per
@@ -264,10 +264,9 @@ er_triage/
 - No requirements.txt yet — Django is installed in the venv but not pinned.
 - No `triage/services/` folder; CLAUDE.md says services live there.
 - No `.env.example`; CLAUDE.md does not yet name required environment variables
-  for the Azure OpenAI client (AZURE_OPENAI_ENDPOINT, _API_KEY, _DEPLOYMENT).
+  for the OpenAI client (`OPENAI_API_KEY`, `OPENAI_MODEL`).
 - No `triage/templates/triage/` folder.
-- Postgres is named in CLAUDE.md but settings.py is still on sqlite — fine for
-  local dev but worth flagging.
+- `settings.py` uses Django's default SQLite backend — correct for this demo.
 ```
 
 This is what a codebase-researcher report looks like — flat, factual, no recommendations. The next stage uses it.
@@ -305,7 +304,7 @@ within 3 seconds, with any oncologic emergencies flagged.**
    deterministic rule set (vitals + age + oncology context). Acuity is
    never computed by the LLM.
 5. On valid submit, the system runs the chief_complaint plus the structured
-   context through gpt-4.1-mini and returns a list of suspected oncologic
+   context through `gpt-4o-mini` and returns a list of suspected oncologic
    emergencies from the closed set {neutropenic_fever, tumor_lysis,
    cord_compression, hypercalcemia_of_malignancy, none}.
 6. A TriageEvent row is created. Patient is upserted (hashed patient identifier
@@ -391,7 +390,7 @@ Claude delegates to `spec-writer` (Sonnet, read-only). It reads the story, the P
   - Acuity 5: stable vitals + minor complaint.
 
 ### OncologicEmergencyExtractor (triage/services/oncologic_emergency.py)
-- Calls Azure OpenAI gpt-4.1-mini through PydanticAI.
+- Calls OpenAI API (`gpt-4o-mini`) through PydanticAI.
 - Input: chief_complaint (str) + oncology_context (dict).
 - Output: List[Literal["neutropenic_fever", "tumor_lysis",
   "cord_compression", "hypercalcemia_of_malignancy"]].
@@ -460,7 +459,7 @@ Same three options: approve, revise, reject. Most teams catch one underspecified
 
 Save the brief to `docs/briefs/01-nurse-form.md`.
 
-> 🔧 **Technical Stuff.** Notice the brief explicitly assigns acuity computation to a pure-Python class with no I/O — not the LLM. This is Rule 5 of the project CLAUDE.md, surfaced into the spec. The brief encodes the rule in the architecture. The build stage cannot accidentally hand acuity to gpt-4.1-mini because the brief did not give it that affordance.
+> 🔧 **Technical Stuff.** Notice the brief explicitly assigns acuity computation to a pure-Python class with no I/O — not the LLM. This is Rule 5 of the project CLAUDE.md, surfaced into the spec. The brief encodes the rule in the architecture. The build stage cannot accidentally hand acuity to `gpt-4o-mini` because the brief did not give it that affordance.
 
 ## Checkpoint — what you have on disk
 

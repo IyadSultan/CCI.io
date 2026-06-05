@@ -195,6 +195,19 @@ permalink: /session-10/
   }
   .s1-btn-notebook:hover { background: #FFECB3; transform: translateY(-1px); }
 
+  .s1-btn-skill-primary {
+    background: linear-gradient(135deg, #E0F7FA, #B2EBF2);
+    border-color: #00838F;
+    border-width: 2px;
+    color: #006064 !important;
+    box-shadow: 0 2px 8px rgba(0, 131, 143, 0.2);
+  }
+  .s1-btn-skill-primary:hover {
+    background: #80DEEA;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 131, 143, 0.28);
+  }
+
   .s1-btn-practice {
     background: #E8F5E9;
     border-color: #A5D6A7;
@@ -286,7 +299,7 @@ permalink: /session-10/
 </div>
 
 <div class="s1-prereq">
-  <strong>Pre-session homework:</strong> Complete Session 9 (venv, git, .env/.gitignore). Install <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer">Claude Code</a> and authenticate with your Anthropic account. Skim the <a href="https://docs.google.com/presentation/d/1p7xHIDY2fA2Gtxw_zD8IEJa6Rs9aCfTVuBdVcAk58ok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Claude Code presentation</a> before class. Bring a laptop with VS Code open and a terminal ready. &middot; <strong>Clinical anchor:</strong> Django ER triage app — nurse intake form, ESI-like acuity, oncologic-emergency extraction, doctor queue.
+  <strong>Pre-session homework:</strong> Complete Session 9 (venv, git, .env/.gitignore). Install <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer">Claude Code</a> and authenticate with your Anthropic account. <strong>Required:</strong> download and import the <a href="{{ site.baseurl }}/session_10/skills/cci-prd-builder.skill" download="cci-prd-builder.skill">CCI PRD-Builder skill</a> (Lesson 1) before class. Skim the <a href="https://docs.google.com/presentation/d/1p7xHIDY2fA2Gtxw_zD8IEJa6Rs9aCfTVuBdVcAk58ok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Claude Code presentation</a>. Bring a laptop with VS Code open and a terminal ready. &middot; <strong>Clinical anchor:</strong> Django ER triage app — nurse intake form, ESI-like acuity, oncologic-emergency extraction, doctor queue.
 </div>
 
 <!-- ─── Lesson 1 ─── -->
@@ -305,12 +318,18 @@ permalink: /session-10/
       <li>Invoke the PRD-Builder skill: classify (AIDI clinical vs generic) &rarr; checkpoint &rarr; draft</li>
       <li>Read <code>[TBD]</code> and <code>[assumed — confirm]</code> markers as surfaced gaps, not errors</li>
     </ul>
+    <p style="margin:0 0 0.75rem;font-size:0.82rem;color:#006064;background:#E0F7FA;border:2px solid #00838F;border-radius:0.5rem;padding:0.55rem 0.75rem;line-height:1.45;">
+      <strong>&#11088; Use this skill:</strong> Download <strong>CCI PRD-Builder</strong> below and import it in Claude Code (<em>Settings &rarr; Skills &rarr; Import</em>). This is the official course skill for every PRD in Session 10.
+    </p>
     <div class="s1-actions">
+      <a class="s1-btn s1-btn-skill-primary" href="{{ site.baseurl }}/session_10/skills/cci-prd-builder.skill" download="cci-prd-builder.skill">
+        <span class="s1-btn-icon">&#128229;</span> Download CCI PRD-Builder Skill
+      </a>
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson1_prd/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_10/templates/skills/prd-builder/SKILL.html" target="_blank">
-        <span class="s1-btn-icon">&#128209;</span> PRD-Builder Skill
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/ebd16653-6f9b-470b-9a82-93f61c82d0bc" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson1_prd.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: PRD Triage
@@ -348,6 +367,12 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson2_claude_md/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_10/templates/CLAUDE.md.txt" download="CLAUDE.md">
+        <span class="s1-btn-icon">&#128229;</span> Download CLAUDE.md
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/434cfb24-dfe9-42df-bfba-82626ce529cf" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson2_claude_md.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: CLAUDE.md Editor
       </a>
@@ -380,6 +405,9 @@ permalink: /session-10/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson3_skills/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/74893b5e-8297-46ef-972e-f5ee726716d6" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson3_skills.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Skill Description Writer
@@ -414,6 +442,9 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson4_mcp_connectors/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/523d2f8e-abcf-4741-859b-b10047b2c953" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson4_mcp_connectors.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: MCP Scope Picker
       </a>
@@ -446,6 +477,9 @@ permalink: /session-10/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson5_subagents/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/0450ca73-5846-4daa-8962-5e3ee7ea5df8" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson5_subagents.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Subagent Designer
@@ -480,6 +514,9 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson6_worktrees_workflows/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/006a1bca-2410-4b63-81e8-76ba0d2b197a" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson6_worktrees_workflows.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Worktree vs Workflow
       </a>
@@ -512,6 +549,9 @@ permalink: /session-10/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson7_loops_schedules_hooks/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/280c272b-a737-488e-843a-41b283f867cf" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson7_loops_schedules_hooks.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Hook Event Matcher
@@ -546,6 +586,9 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson8_factory_part1/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/a145ec9d-cee3-4036-9a64-9c2895ea6ca0" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson8_factory_part1.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Factory Gates Part 1
       </a>
@@ -578,6 +621,9 @@ permalink: /session-10/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson9_factory_part2/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/13e6fc64-47fb-44e4-95af-71bc18b85039" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson9_factory_part2.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Factory Gates Part 2
@@ -612,6 +658,9 @@ permalink: /session-10/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson10_cheat_sheet/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Cheat Sheet
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/9c3b352f-0101-45ff-9fd5-ea571a887536" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson10_cheat_sheet.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Session 10 Synthesis

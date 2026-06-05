@@ -80,7 +80,7 @@ Real skills are usually more than one file. The `SKILL.md` is the spine, and sup
 
 The clever part: `SKILL.md` only references these files. Claude does not load them at session start. It does not load them when the skill fires. It loads `tumor-staging-pitfalls.md` only at the moment, mid-extraction, when it actually needs the pitfall catalog. The reference doc can be hundreds of lines and it costs zero attention until the moment it matters.
 
-Look at the PRD-Builder skill you ran in Lesson 1 — it lives at `templates/skills/prd-builder/SKILL.md`. Its frontmatter description names every phrase a user might say ("create a PRD", "build a PRD", "spec out") so the skill fires reliably. The body of `SKILL.md` references `references/aidi-clinical-template.md` and `references/generic-template.md`; those templates only load when the skill is actually drafting a PRD.
+Look at the **CCI PRD-Builder** skill you installed in Lesson 1 ([download](/CCI.io/session_10/skills/cci-prd-builder.skill)). Its `SKILL.md` frontmatter names every phrase a user might say ("create a PRD", "build a PRD", "spec out") so the skill fires reliably. The body references clinical and generic PRD templates in `references/`; those load only when the skill is actually drafting a PRD.
 
 ## A worked build — `pathology-extraction-skill`
 

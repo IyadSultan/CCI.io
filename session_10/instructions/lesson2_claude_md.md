@@ -14,7 +14,23 @@ permalink: /session_10/instructions/lesson2_claude_md/
 
 # Lesson 2 — Memory: CLAUDE.md
 
-A PRD tells you what to build. It does not tell Claude how to behave while building it. Every time you start a new Claude Code session, the agent comes in fresh — no memory of yesterday's session, no idea which test command you use, no awareness that MRNs at KHCC are Optimus-encoded. Without something to fix that, you spend the first ten minutes of every session re-explaining the same rules. That something is a file called **CLAUDE.md**.
+A PRD tells you what to build. It does not tell Claude how to behave while building it. Every time you start a new Claude Code session, the agent comes in fresh — no memory of yesterday's session, no idea which test command you use, no awareness of your project's conventions. Without something to fix that, you spend the first ten minutes of every session re-explaining the same rules. That something is a file called **CLAUDE.md**.
+
+## CCI master `CLAUDE.md` (start here)
+
+This course ships a **top-level `CLAUDE.md`** you can copy into `~/.claude/CLAUDE.md` (personal, all projects) or `./CLAUDE.md` (one repo). It builds on [Andrej Karpathy's CLAUDE.md guidelines](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md) and adds CCI rules for mistakes, tests, git, secrets, dependencies, Context7 MCP, and LangChain/LangGraph.
+
+<p style="margin:1rem 0;">
+  <a href="/CCI.io/session_10/templates/CLAUDE.md.txt" download="CLAUDE.md" style="display:inline-flex;align-items:center;gap:.4rem;font-weight:600;color:#00838F;text-decoration:none;padding:.5rem .85rem;border-radius:.4rem;border:1px solid #80DEEA;background:#E0F7FA;">
+    &#128229; Download CCI master CLAUDE.md
+  </a>
+  &nbsp;
+  <a href="https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md" target="_blank" rel="noopener noreferrer" style="font-size:0.88rem;color:#00838F;">
+    Karpathy original on GitHub &#8594;
+  </a>
+</p>
+
+**Install it:** download the file, rename if needed to `CLAUDE.md`, and place it in your home `~/.claude/` folder or your project root. Then add project-specific stack and test commands at the bottom (the template has a placeholder section for that).
 
 ## What CLAUDE.md is
 

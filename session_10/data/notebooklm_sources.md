@@ -6,9 +6,28 @@ permalink: /session_10/data/notebooklm_sources/
 
 <a class="back-btn" href="/CCI.io/session-10/" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#00838F;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #80DEEA;background:#E0F7FA;margin-bottom:1rem;">&#8249; Back to Session 10</a>
 
-# Session 10 NotebookLM Sources — Ready to Paste
+# Session 10 NotebookLM Sources
 
-Instructions: Create 10 notebooks in NotebookLM (notebooklm.google.com), then paste each source text below.
+Ten class notebooks are live on NotebookLM — one per lesson. Open them from the [Session 10 hub](/CCI.io/session-10/) or use the links below.
+
+| # | Topic | Open in NotebookLM |
+|---|-------|-------------------|
+| 1 | Lesson 1: Writing a PRD with the PRD-Builder Skill | [Open](https://notebooklm.google.com/notebook/ebd16653-6f9b-470b-9a82-93f61c82d0bc) |
+| 2 | Lesson 2: Memory with CLAUDE.md | [Open](https://notebooklm.google.com/notebook/434cfb24-dfe9-42df-bfba-82626ce529cf) |
+| 3 | Lesson 3: Skills | [Open](https://notebooklm.google.com/notebook/74893b5e-8297-46ef-972e-f5ee726716d6) |
+| 4 | Lesson 4: MCP Servers and Anthropic Connectors | [Open](https://notebooklm.google.com/notebook/523d2f8e-abcf-4741-859b-b10047b2c953) |
+| 5 | Lesson 5: Subagents and Agent Teams | [Open](https://notebooklm.google.com/notebook/0450ca73-5846-4daa-8962-5e3ee7ea5df8) |
+| 6 | Lesson 6: Worktrees and Workflows | [Open](https://notebooklm.google.com/notebook/006a1bca-2410-4b63-81e8-76ba0d2b197a) |
+| 7 | Lesson 7: Long-Running — Loops, Schedules, Hooks | [Open](https://notebooklm.google.com/notebook/280c272b-a737-488e-843a-41b283f867cf) |
+| 8 | Lesson 8: The Software Factory, Part 1 | [Open](https://notebooklm.google.com/notebook/a145ec9d-cee3-4036-9a64-9c2895ea6ca0) |
+| 9 | Lesson 9: The Software Factory, Part 2 | [Open](https://notebooklm.google.com/notebook/13e6fc64-47fb-44e4-95af-71bc18b85039) |
+| 10 | Lesson 10: Cheat Sheet and What to Ship Next | [Open](https://notebooklm.google.com/notebook/9c3b352f-0101-45ff-9fd5-ea571a887536) |
+
+---
+
+## Paste-ready source text (optional)
+
+If you are building your own notebooks, paste each block below into [NotebookLM](https://notebooklm.google.com) as a source.
 
 ---
 

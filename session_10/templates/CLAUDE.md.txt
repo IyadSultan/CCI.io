@@ -1,0 +1,188 @@
+# CLAUDE.md
+
+CCI.io master instructions for Claude Code. Based on [Andrej Karpathy's CLAUDE.md guidelines](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md) (multica-ai/andrej-karpathy-skills), extended for this course.
+
+**How to use:** copy this file to `~/.claude/CLAUDE.md` (personal, all projects) or `./CLAUDE.md` (one project). Merge project-specific stack, test commands, and PHI rules on top — do not duplicate what already lives here.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
+---
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+---
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+---
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
+
+When your changes create orphans:
+
+- Remove imports, variables, and functions that **your** changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: every changed line should trace directly to the user's request.
+
+---
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+
+- "Add validation" → write tests for invalid inputs, then make them pass.
+- "Fix the bug" → write a test that reproduces it, then make it pass.
+- "Refactor X" → ensure tests pass before and after.
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+---
+
+## 5. Learn From Every Mistake
+
+**When you hit an error, record it and update this file.**
+
+- After any mistake you had to correct, end with: *"Update CLAUDE.md so this doesn't happen again."*
+- Add one concrete line — the exact failure mode, not a vague preference.
+- Over time this file becomes a log of real mistakes in **this** codebase, which is more valuable than any generic template.
+
+---
+
+## 6. Tests Before Commits
+
+**No commit without a green test run.**
+
+- Maintain a test agent or subagent (e.g. `test-verifier`, `build-with-tests`) that writes and runs tests.
+- After every meaningful milestone — feature slice, bug fix, refactor — run the full test suite before committing.
+- Never claim "done" without tests passing locally.
+- Encode intent in tests; do not rely on manual spot-checks alone.
+
+---
+
+## 7. Git Early, Push on Major Advances
+
+**Small commits beat big dumps. Remote backup beats local-only work.**
+
+- Initialize git and make the first commit once the scaffold exists (README, `.gitignore`, dependency file).
+- Commit in small, logical steps — one story, one fix, one migration at a time.
+- Push to the remote after every major advance (feature complete, tests green, end of session).
+- Write commit messages that explain *why*, not just *what*.
+
+---
+
+## 8. Project Hygiene
+
+**These files are non-negotiable on every repo.**
+
+### `.gitignore`
+
+- Before the first commit, confirm `.gitignore` exists and covers: `.env`, virtualenvs, `__pycache__/`, `.pytest_cache/`, IDE folders, OS junk, local databases, build artifacts.
+- Never commit secrets, credentials, or patient data.
+
+### `README.md`
+
+- Update `README.md` whenever setup steps, commands, or architecture change.
+- A new developer (or future you) should be able to run the project from README alone.
+
+---
+
+## 9. Secrets — Never Touch `.env` Contents
+
+**Environment files are off limits to the agent.**
+
+- Do **not** read `.env`, print it, quote it, summarize it, or paste values into chat.
+- Do **not** commit `.env` to git. Commit `.env.example` with empty placeholders only.
+- Do **not** send secret values to Claude, logs, error messages, or PR descriptions.
+- If configuration is missing, ask the human to set the variable — never invent or guess secrets.
+
+---
+
+## 10. Versioned Dependencies
+
+**Pin packages. Check PyPI for current stable versions.**
+
+- Always specify package versions in `requirements.txt` or `pyproject.toml` (e.g. `django==5.0`, not bare `django`).
+- Before adding a dependency, check [PyPI](https://pypi.org) for the latest stable release compatible with the project.
+- After changing dependencies, reinstall in the venv and re-run tests.
+
+---
+
+## 11. Live Documentation via Context7 MCP
+
+**Do not guess API shapes from memory — fetch current docs.**
+
+- Use the **Context7** MCP server to pull up-to-date documentation for libraries and APIs.
+- **Required** before implementing or refactoring: LangChain, LangGraph, and any package whose API changes frequently.
+- Prefer official docs over blog posts or outdated examples in training data.
+
+---
+
+## 12. Preferred Agent Stack
+
+**LangChain / LangGraph is the default for agent workflows in this course.**
+
+- For multi-step agents, tool calling, memory, and graphs, use **LangChain** and **LangGraph** unless the user explicitly requests another framework.
+- Consult Context7 for current LangChain/LangGraph patterns before writing agent code.
+- For simple scripts or non-agent tasks, plain Python is fine — do not force LangGraph where a function suffices.
+
+---
+
+## Project-specific section (fill in per repo)
+
+Add below when copying to a project `CLAUDE.md`. Delete this header in the project copy.
+
+```markdown
+## Stack
+[Python version, framework, database, LLM provider — one line each]
+
+## Run / test
+- Install: `pip install -r requirements.txt`
+- Tests: `[your test command]`
+- Lint: `[your lint command]`
+
+## PHI / data rules (clinical projects only)
+- [Patient identifiers, encryption, eval cohort rules]
+```
+
+---
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, clarifying questions come before implementation rather than after mistakes, and every session ends with tests green and git pushed.

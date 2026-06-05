@@ -28,15 +28,22 @@ The medical analogy is the **study protocol** you write before opening an IRB su
 
 A clinical PRD typically answers seven questions on its first page: *Who is the patient? Who is the clinician using this? What data are we reading? What does it produce? Where does the output go? What does success look like? What are the explicit non-goals?* If a PRD cannot answer those seven questions cleanly, it is not finished.
 
-## The PRD-Builder skill
+## The CCI PRD-Builder skill (use this one)
 
-You do not write a PRD from a blank file. Inside this session's templates folder lives a Claude Code **skill** called `prd-builder`. (We will go deep on skills as a concept in Lesson 3 — for now treat it as a named workflow Claude can invoke when you ask.) The skill lives at:
+You do not write a PRD from a blank file. **This is the skill every student should use in Session 10** — the **CCI PRD-Builder** bundle. (We go deep on skills as a concept in Lesson 3; for now treat it as a named workflow Claude runs when you ask.)
 
-```
-session_10/templates/skills/prd-builder/
-```
+<div style="margin:1rem 0;padding:0.85rem 1rem;border:2px solid #00838F;border-radius:0.5rem;background:linear-gradient(135deg,#E0F7FA,#B2EBF2);">
+  <p style="margin:0 0 0.65rem;font-weight:700;color:#006064;">&#11088; Official course skill — download and import before you draft any PRD</p>
+  <a href="/CCI.io/session_10/skills/cci-prd-builder.skill" download="cci-prd-builder.skill" style="display:inline-flex;align-items:center;gap:.4rem;font-weight:700;color:#006064;text-decoration:none;padding:.55rem .9rem;border-radius:.4rem;border:2px solid #00838F;background:#fff;box-shadow:0 2px 6px rgba(0,131,143,.15);">
+    &#128229; Download CCI PRD-Builder (.skill)
+  </a>
+</div>
 
-Open it. There is a `SKILL.md` file that defines the workflow, and a `references/` folder with two PRD templates. The skill is invoked by asking Claude to use it by name — e.g. *"Use prd-builder to draft a PRD for X."*
+**Install it:** save the file, then in Claude Code go to **Settings → Skills → Import** and select `cci-prd-builder.skill`. Claude installs the skill automatically. Do not use ad-hoc PRD prompts for this course — use this bundle so everyone gets the same classify → checkpoint → draft workflow.
+
+Inside the skill there is a `SKILL.md` file that defines the workflow, and a `references/` folder with PRD templates. Invoke it by name — e.g. *"Use prd-builder to draft a PRD for X."*
+
+> 💡 **Tip.** The source files also live at `session_10/templates/skills/prd-builder/` if you prefer copying a folder into `.claude/skills/` manually. The **`.skill` download above is the recommended install path.**
 
 > 🔧 **Technical Stuff.** A skill in Claude Code is a folder with a `SKILL.md` file at its root. The first lines of that file (the **frontmatter**) tell Claude when to load the skill. The rest is the instructions Claude follows once it is loaded. Skills are how Anthropic and the AI Office package repeated workflows — extraction patterns, security reviews, document generation — so they can be triggered by name without re-explaining the recipe each time.
 

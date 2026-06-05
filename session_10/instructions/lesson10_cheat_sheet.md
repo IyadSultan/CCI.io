@@ -110,31 +110,9 @@ your-project/
 }
 ```
 
-### The starter `CLAUDE.md` (clinical AI)
+### The CCI master `CLAUDE.md`
 
-```markdown
-# CLAUDE.md
-## Stack
-Django 5 + Postgres on Azure App Service. Azure OpenAI `gpt-4.1-mini`
-for extraction. PydanticAI for structured output. R + tidymodels for analysis.
-
-## Run / test
-- Tests:  `python manage.py test`
-- Eval:   `python aidi/eval/run_deceased_cohort.py`
-- Lint:   `ruff check . && ruff format .`
-
-## Behavior rules
-1. Think before coding — verify schemas, don't guess.
-2. Simplicity first — minimum code that solves the problem.
-3. Surgical changes — don't touch adjacent code.
-4. Tests encode intent.
-5. Fail loud — surface every skipped row, null, partial success.
-
-## PHI rules
-- MRNs: Optimus-encoded only in outputs.
-- Names: Fernet-encrypted at rest, never in logs.
-- Eval cohort: frozen deceased-patient set only.
-```
+Download the course template: [CCI master CLAUDE.md](/CCI.io/session_10/templates/CLAUDE.md.txt) (based on [Karpathy's guidelines](https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md)). It covers think-first, simplicity, surgical edits, goal-driven execution, mistake logging, tests-before-commit, git hygiene, `.gitignore`, README updates, `.env` never touched, pinned PyPI versions, Context7 MCP for live docs, and LangChain/LangGraph as the preferred agent stack. Add project-specific stack and PHI rules at the bottom.
 
 ### The Software Factory pipeline at a glance
 
@@ -179,8 +157,8 @@ The deploy is in the optional appendix of Lesson 9. Half a day of work. Now your
 ### 2. Add the doctor's queue screen
 The `## Try This` exercise at the end of Lesson 9 has you do this through the same seven-stage pipeline. It's the right second pass — you'll see how much faster the second feature ships once the skills and agents are reused.
 
-### 3. Wire your real PRD-Builder skill into a personal project
-The PRD-Builder skill at `templates/skills/prd-builder/` is general. Use it on the next clinical idea you have — even one outside the AI Office. The skill cares about the structure, not the domain.
+### 3. Wire the CCI PRD-Builder skill into a personal project
+[Download CCI PRD-Builder](/CCI.io/session_10/skills/cci-prd-builder.skill) and use it on your next product idea. The skill cares about structure, not domain — clinical or generic.
 
 ### 4. Replace one Excel workflow with a Claude Code script
 The AI Office didn't start with Django apps. It started with someone replacing a Tuesday-night Excel ritual with a Python script. Find your Tuesday-night ritual and use what you learned to script it. Two hours of work; weeks of saved time.
