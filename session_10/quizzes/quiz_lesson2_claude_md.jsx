@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "Claude Code reads CLAUDE.md from three levels and merges them. What are those three levels?",
+    options: [
+      "Cloud, on-premise, and hybrid",
+      "Personal (~/.claude/CLAUDE.md), project (./CLAUDE.md at the project root), and directory (CLAUDE.md inside any subfolder)",
+      "Read, write, and execute",
+      "Public, private, and admin"
+    ],
+    correct: 1,
+    explanation: "Personal-level rules follow you across every project on your laptop (e.g., your KHCC global instructions). Project-level rules apply to one codebase (stack, tests, PHI policy). Directory-level rules apply only when Claude is working inside a particular subfolder — useful when a backend folder and a frontend folder have different conventions. Most-specific wins on merge."
+  },
+  {
+    question: "You run the slash command `/init` in a new Claude Code project. What does it do?",
+    options: [
+      "Installs Claude Code on your machine",
+      "Scans the repository and proposes a starter CLAUDE.md based on the stack, test runner, and conventions it detects — for you to then prune using the litmus test",
+      "Initializes a new git repository",
+      "Restarts the Claude Code agent and clears all memory"
+    ],
+    correct: 1,
+    explanation: "/init produces a draft CLAUDE.md by inspecting the repo. It is a starting point, not a finished file. Run it once, then apply the litmus test ('would Claude make a real mistake without this line?') and delete anything that does not earn its place. The starter is almost always longer than it should be."
+  },
+  {
+    question: "The litmus test for every line in CLAUDE.md is: 'Would Claude make a real mistake without this line?' Which of the following lines PASSES the test for a KHCC AIDI Databricks project?",
+    options: [
+      "'Please write clean, readable, well-documented code.'",
+      "'Be helpful and respectful in your responses.'",
+      "'MRNs must be Optimus-encoded in any output; names must be Fernet-encrypted at rest; never include either in logs.'",
+      "'Try to use modern best practices when writing software.'"
+    ],
+    correct: 2,
+    explanation: "The PHI rule has a concrete, repeated failure mode — without it, Claude defaults to printing plaintext MRNs in log statements, which is a real PHI leak. The other three are vague pieties: Claude already has good defaults for 'be helpful' and 'write clean code,' and adding them just inflates the file and dilutes attention. The compliance budget is ~150–200 lines; protect it."
+  },
+  {
+    question: "Your CLAUDE.md has grown to 400 lines. You want to keep most of the content but make the root file lean so Claude actually pays attention. What is the right tool?",
+    options: [
+      "Delete half the file at random",
+      "Use @imports — split topic-specific rules into separate files in .claude/rules/ and reference them with @-style import lines so the root CLAUDE.md becomes a short table of contents",
+      "Switch to a different agent that supports longer files",
+      "Store the rules in a database instead"
+    ],
+    correct: 1,
+    explanation: "@imports let CLAUDE.md grow without bloating the root. The root file becomes a short index pointing at topic files (SQL conventions, PHI rules, R style). Conditional rules in .claude/rules/ with file-glob frontmatter take this further — TypeScript rules only activate on .ts files, R rules only on .R/.Rmd files. The agent then loads only what is relevant to the current task."
+  },
+  {
+    question: "CLAUDE.md and hooks both shape Claude's behavior. What is the key difference between them?",
+    options: [
+      "There is no difference — they are two names for the same thing",
+      "CLAUDE.md is a prompt that asks Claude to behave a certain way (judgment-based); hooks are deterministic code that runs before or after tool calls and can hard-block actions (enforcement-based). Use CLAUDE.md for judgment rules and hooks for hard enforcement.",
+      "CLAUDE.md only works on Mac; hooks only work on Windows",
+      "CLAUDE.md is for personal projects; hooks are for company projects"
+    ],
+    correct: 1,
+    explanation: "CLAUDE.md says 'never log MRNs in plaintext' — Claude reads it and tries to comply. A hook actually scans every Bash command for an MRN-shaped string and refuses to run it if one appears. Belt and suspenders. CLAUDE.md is the polite ask; hooks are the lock on the door. Use both together for high-stakes PHI rules."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent — you understand the three levels, the litmus test, and when to reach for hooks instead of CLAUDE.md." : score >= 3 ? "Good — review @imports and the prompt-vs-enforcement distinction." : "Review the lesson — CLAUDE.md is the highest-leverage file in any Claude Code project."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

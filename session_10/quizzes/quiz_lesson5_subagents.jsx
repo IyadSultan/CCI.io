@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "What is the `description` field in a subagent's YAML frontmatter actually for?",
+    options: [
+      "Documentation for human readers; Claude ignores it",
+      "Claude reads it to decide when to delegate to this subagent on its own initiative",
+      "It sets the subagent's system prompt",
+      "It controls which folder the subagent can read"
+    ],
+    correct: 1,
+    explanation: "The `description` is the trigger. Claude reads it when deciding whether to delegate. A precise description — ideally including the word PROACTIVELY and concrete examples of when to use (and when not to) — is what makes a subagent reach for the right job. Vague descriptions get used at the wrong moments or never get used at all."
+  },
+  {
+    question: "You are an hour into building a Django feature. To make the next decision you need to know how three other modules handle errors — that means reading about twenty files. Single agent, subagent, or agent team?",
+    options: [
+      "Single agent — just read the files in the main session",
+      "Subagent — context hygiene; the main session sees only the summary, not the twenty files",
+      "Agent team — coordinate multiple specialists",
+      "None of the above; restart the session first"
+    ],
+    correct: 1,
+    explanation: "This is the textbook subagent use case. Context preservation, not parallelism, is the first reason to reach for one. Reading twenty files in the main session crowds out the design you have been holding in mind. Delegate the read; the subagent burns its own context window; your main session sees a clean summary."
+  },
+  {
+    question: "Which statement about hub-and-spoke (the default subagent shape) is true?",
+    options: [
+      "Subagents can call other subagents directly",
+      "Subagents talk only to the main agent, never to each other — by design",
+      "Subagents share a single context window with the main agent",
+      "Subagents run sequentially; never in parallel"
+    ],
+    correct: 1,
+    explanation: "Hub-and-spoke means every subagent talks only to the main agent — never to each other. This is a deliberate safety property, not a missing feature: subagents cannot conspire behind your back. When you genuinely need specialists to see each other's work, that is the cue to graduate to an agent team."
+  },
+  {
+    question: "You are writing a subagent whose only job is to grep the codebase and summarize what it finds. Which `model` should you set?",
+    options: [
+      "opus — only the strongest model can summarize accurately",
+      "haiku — read-and-summarize work is exactly Haiku's sweet spot, and it is roughly 10× cheaper than Sonnet",
+      "inherit — match whatever the main session uses, always",
+      "sonnet — Sonnet is required for any tool-using subagent"
+    ],
+    correct: 1,
+    explanation: "Haiku is the right default for read-and-summarize subagents. It is roughly ten times cheaper than Sonnet, and for grep-and-summarize work it is just as accurate. Reserve Sonnet for subagents that have to reason (story writer, spec writer); reserve Opus for subagents that genuinely have to think hard about a hard problem."
+  },
+  {
+    question: "What does setting `tools: Read, Grep, Glob` on a subagent accomplish?",
+    options: [
+      "It gives the subagent extra capabilities the main agent does not have",
+      "It restricts the subagent to read-only operations — it literally cannot write or run shell commands",
+      "It speeds up the subagent",
+      "It tells Claude which files to read"
+    ],
+    correct: 1,
+    explanation: "The `tools` field is a restriction, not a grant. A subagent with `Read, Grep, Glob` cannot edit files, cannot write files, and cannot run shell commands — even if the system prompt asks it to. This is one of the cleanest forms of safety in Claude Code: a read-only subagent literally cannot break the codebase. The codebase-researcher, story-writer, and (mostly) spec-writer are all built on this principle."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You understand the subagent model — context hygiene first, then specialization, then parallelism." : score >= 3 ? "Good foundation — re-read the `description` and `tools` sections." : "Review the lesson before moving on — these concepts return in every remaining lesson."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

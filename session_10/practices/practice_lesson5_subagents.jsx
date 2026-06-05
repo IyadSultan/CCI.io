@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+
+const agents = [
+  {
+    name: "codebase-researcher",
+    purpose: "Walks an existing codebase and returns a structured inventory of files, modules, and risks. Never edits anything.",
+    correctModel: "haiku",
+    correctTools: "Read, Grep, Glob",
+    modelReason: "Read-and-summarize is Haiku's sweet spot — accurate enough for inventory, roughly 10× cheaper than Sonnet.",
+    toolsReason: "Inventory work is strictly read-only. No Write, no Edit, no Bash. A read-only subagent literally cannot break the codebase."
+  },
+  {
+    name: "story-writer",
+    purpose: "Turns a rough product idea plus a codebase inventory into a single user story with acceptance criteria. Reads only.",
+    correctModel: "sonnet",
+    correctTools: "Read",
+    modelReason: "Writing a clean story from a vague idea requires reasoning about clinical workflow — Sonnet, not Haiku.",
+    toolsReason: "The story writer reads the PRD and the inventory; it does not need to grep the filesystem itself, and it must not write code. Read-only."
+  },
+  {
+    name: "spec-writer",
+    purpose: "Drafts the technical brief (data model, services, tests) from an approved user story. Reads the codebase to match existing patterns.",
+    correctModel: "sonnet",
+    correctTools: "Read, Grep, Glob",
+    modelReason: "Designing a data model and naming the right tests is reasoning work. Sonnet.",
+    toolsReason: "Needs to look at existing conventions across the codebase — so it gets Grep and Glob — but it produces a written brief, not code. No Write, no Edit, no Bash."
+  },
+  {
+    name: "backend-builder",
+    purpose: "Writes the Django models, services, and unit tests called for by the approved technical brief. Runs pytest.",
+    correctModel: "sonnet",
+    correctTools: "Read, Edit, Write, Bash",
+    modelReason: "Writing working backend code is the workhorse use case for Sonnet — Haiku is too light, Opus is overkill.",
+    toolsReason: "This is where building actually happens — Edit and Write to change code, Bash to run pytest. Read because building requires re-reading the brief and surrounding code."
+  }
+];
+
+const modelChoices = ["haiku", "sonnet", "opus", "inherit"];
+const toolsChoices = [
+  "Read, Grep, Glob",
+  "Read",
+  "Read, Edit, Write, Bash",
+  "Read, Edit, Write, Bash, WebFetch"
+];
+
+export default function Practice() {
+  const [model, setModel] = useState({});
+  const [tools, setTools] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const setM = (name, v) => { if (!submitted) setModel({ ...model, [name]: v }); };
+  const setT = (name, v) => { if (!submitted) setTools({ ...tools, [name]: v }); };
+
+  const check = () => setSubmitted(true);
+  const reset = () => { setModel({}); setTools({}); setSubmitted(false); };
+
+  let score = 0;
+  agents.forEach(a => {
+    if (model[a.name] === a.correctModel) score++;
+    if (tools[a.name] === a.correctTools) score++;
+  });
+  const total = agents.length * 2;
+  const answeredCount = agents.filter(a => model[a.name] && tools[a.name]).length;
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Fill In the Subagent Frontmatter</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        Each card below is an incomplete subagent. Pick the right <code>model</code> and the right <code>tools</code> for each, based on what the subagent is supposed to do. Then submit to grade.
+      </p>
+
+      {agents.map(a => {
+        const mOk = submitted && model[a.name] === a.correctModel;
+        const tOk = submitted && tools[a.name] === a.correctTools;
+        const mWrong = submitted && model[a.name] && model[a.name] !== a.correctModel;
+        const tWrong = submitted && tools[a.name] && tools[a.name] !== a.correctTools;
+        return (
+          <div key={a.name} style={{
+            padding: '16px 20px', margin: '12px 0', borderRadius: 8,
+            border: `2px solid ${submitted ? (mOk && tOk ? '#198754' : '#dc3545') : '#dee2e6'}`,
+            background: submitted ? (mOk && tOk ? '#d4edda' : '#fff7f7') : '#fff'
+          }}>
+            <div style={{ fontFamily: 'monospace', fontSize: 15, fontWeight: 'bold', marginBottom: 4 }}>{a.name}</div>
+            <div style={{ fontSize: 14, color: '#444', marginBottom: 12 }}>{a.purpose}</div>
+
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>model:</div>
+              {modelChoices.map(c => (
+                <button key={c} onClick={() => setM(a.name, c)} disabled={submitted} style={{
+                  marginRight: 6, marginBottom: 4, padding: '6px 12px', borderRadius: 6, cursor: submitted ? 'default' : 'pointer',
+                  border: `2px solid ${model[a.name] === c ? (submitted ? (c === a.correctModel ? '#198754' : '#dc3545') : '#0d6efd') : '#ccc'}`,
+                  background: model[a.name] === c ? (submitted ? (c === a.correctModel ? '#198754' : '#dc3545') : '#0d6efd') : '#fff',
+                  color: model[a.name] === c ? '#fff' : '#000', fontFamily: 'monospace', fontSize: 13
+                }}>{c}</button>
+              ))}
+            </div>
+
+            <div>
+              <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>tools:</div>
+              {toolsChoices.map(c => (
+                <button key={c} onClick={() => setT(a.name, c)} disabled={submitted} style={{
+                  marginRight: 6, marginBottom: 4, padding: '6px 12px', borderRadius: 6, cursor: submitted ? 'default' : 'pointer',
+                  border: `2px solid ${tools[a.name] === c ? (submitted ? (c === a.correctTools ? '#198754' : '#dc3545') : '#0d6efd') : '#ccc'}`,
+                  background: tools[a.name] === c ? (submitted ? (c === a.correctTools ? '#198754' : '#dc3545') : '#0d6efd') : '#fff',
+                  color: tools[a.name] === c ? '#fff' : '#000', fontFamily: 'monospace', fontSize: 13
+                }}>{c}</button>
+              ))}
+            </div>
+
+            {submitted && (
+              <div style={{ marginTop: 12, padding: 10, background: '#f0f4ff', borderRadius: 6, fontSize: 13, color: '#333' }}>
+                <div><strong>Correct model:</strong> <code>{a.correctModel}</code> — {a.modelReason}</div>
+                <div style={{ marginTop: 4 }}><strong>Correct tools:</strong> <code>{a.correctTools}</code> — {a.toolsReason}</div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {!submitted && (
+        <button onClick={check} disabled={answeredCount < agents.length} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: answeredCount < agents.length ? 'default' : 'pointer',
+          opacity: answeredCount < agents.length ? 0.5 : 1
+        }}>Check My Choices ({answeredCount}/{agents.length} complete)</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Score: {score} / {total}</strong></p>
+          <p>{score === total ? "Perfect — you have the read-only-by-default instinct." : score >= total - 2 ? "Good — review the misses. Notice how 'is this subagent allowed to write?' is almost always the load-bearing decision." : "Review the lesson. The Software Factory in Lessons 8 and 9 depends on these four subagents being shaped correctly."}</p>
+          <button onClick={reset} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}

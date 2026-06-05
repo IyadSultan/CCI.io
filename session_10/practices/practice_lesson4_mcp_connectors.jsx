@@ -1,0 +1,118 @@
+import React, { useState } from 'react';
+
+const TOOLS = ["Anthropic Connector", "Custom MCP server", "CLI tool", "No MCP needed"];
+
+const scenarios = [
+  {
+    title: "The on-call hem-onc fellow needs Claude to read triage alerts from a #triage-alerts Slack channel each morning and summarise the stage 2/3 AKI events.",
+    correct: "Anthropic Connector",
+    explanation: "Slack has a productised Anthropic Connector — one-click install with OAuth and channel-scope picker. No code, no custom server. This is exactly the use case Connectors exist for."
+  },
+  {
+    title: "The AI Office needs Claude to query the silver_pathology_reports table in Azure SQL AIDI-DB, with schema introspection and read-only SELECT enforcement.",
+    correct: "Custom MCP server",
+    explanation: "There is no Anthropic Connector for KHCC's private Azure SQL database. You write a small Python MCP server that exposes list_tables/describe_table/run_select, hard-codes a SELECT-only filter, and ships it at project scope so the whole team gets the same connection."
+  },
+  {
+    title: "An analyst wants Claude to open a pull request on GitHub for a PRD-driven change to the chemo-prep checker.",
+    correct: "CLI tool",
+    explanation: "`gh pr create` is one command. Claude knows the gh CLI from training. Installing the GitHub MCP would register dozens of tool definitions in every session's context for a task one command covers. CLI beats MCP here."
+  },
+  {
+    title: "The dashboard team wants Claude to open the chemo-prep Power BI dashboard in a real browser, click into the alerts panel, take a screenshot, and tell them whether the AKI badge is rendering.",
+    correct: "Custom MCP server",
+    explanation: "Playwright (a custom MCP server, installable via `claude mcp add playwright npx @playwright/mcp@latest`) gives Claude a real browser. UI verification through clicks and screenshots has no good CLI equivalent — the typed, stateful MCP interface is exactly what this needs."
+  },
+  {
+    title: "Iyad asks Claude to refactor the AKI staging logic in the file akistage.py that's already open in his current working folder.",
+    correct: "No MCP needed",
+    explanation: "Reading and editing files in the current folder is Claude Code's native capability — Read, Edit, Bash. No MCP, no Connector, no CLI tool beyond what's already there. Installing anything for this would be context tax for zero benefit."
+  },
+  {
+    title: "The R&D team wants Claude to read and write pages in their team Notion workspace so it can update the weekly research log automatically.",
+    correct: "Anthropic Connector",
+    explanation: "Notion has an Anthropic Connector with OAuth and per-workspace scope. Custom Notion MCP servers exist on GitHub, but the Connector is vetted, has proper auth, and installs in one click. Prefer the Connector when one exists for the service."
+  }
+];
+
+export default function Practice() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [scores, setScores] = useState([]);
+
+  const s = scenarios[current];
+
+  const check = () => {
+    setScores([...scores, selected === s.correct ? 1 : 0]);
+    setSubmitted(true);
+  };
+
+  const next = () => {
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setSubmitted(false);
+  };
+
+  const reset = () => {
+    setCurrent(0); setSelected(null); setSubmitted(false); setScores([]);
+  };
+
+  const total = scores.reduce((a, b) => a + b, 0);
+
+  if (current >= scenarios.length) {
+    return (
+      <div style={{ maxWidth: 760, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>MCP-vs-Connector-vs-CLI Practice Complete</h2>
+        <p style={{ fontSize: 20 }}>Score: {total} / {scenarios.length}</p>
+        <div style={{ background: total >= 5 ? '#d4edda' : total >= 4 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8 }}>
+          {total >= 5
+            ? "Excellent — you can pick the right doorway every time. Connectors when one exists, custom MCP for private systems, CLI when a single command answers the question."
+            : total >= 4
+            ? "Good — review the CLI-beats-MCP rule and the Connector-vs-custom-MCP distinction."
+            : "Re-read the lesson; the trade-off between context cost and convenience is the whole point."}
+        </div>
+        <button onClick={reset} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 760, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / scenarios.length) * 100}%` }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Scenario {current + 1} of {scenarios.length}</p>
+      <h3 style={{ marginBottom: 12 }}>{s.title}</h3>
+      <p style={{ background: '#f8f9fa', padding: 12, borderRadius: 8, color: '#444', fontSize: 14 }}>
+        Pick the right doorway: an Anthropic Connector, a custom MCP server, a CLI tool, or no MCP at all.
+      </p>
+
+      {TOOLS.map((opt) => (
+        <div key={opt} onClick={() => !submitted && setSelected(opt)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+          border: `2px solid ${submitted ? (opt === s.correct ? '#198754' : opt === selected ? '#dc3545' : '#dee2e6') : opt === selected ? '#0d6efd' : '#dee2e6'}`,
+          background: submitted ? (opt === s.correct ? '#d4edda' : opt === selected && opt !== s.correct ? '#f8d7da' : '#fff') : '#fff',
+          fontWeight: 500
+        }}>{opt}</div>
+      ))}
+
+      {!submitted && (
+        <button onClick={check} disabled={!selected} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: 'pointer', opacity: !selected ? 0.5 : 1
+        }}>Submit</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>{selected === s.correct ? 'Correct!' : `Not quite. The right pick is: ${s.correct}.`}</strong></p>
+          <p>{s.explanation}</p>
+          <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>
+            {current + 1 < scenarios.length ? 'Next Scenario' : 'See Final Score'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

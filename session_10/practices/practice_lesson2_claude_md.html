@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: CLAUDE.md Editor</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00695C; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #A5D6A7; background: #E8F5E9; margin-bottom: 1rem; }
+    .back-link:hover { background: #C8E6C9; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-10/">&#8249; Back to Session 10</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// A bloated 24-line stand-in for a 200-line CLAUDE.md.
+// Student picks 12 lines that pass the litmus test.
+// "Would Claude make a real mistake without this line?"
+
+const lines = [
+  { id: 1,  text: "Stack: PySpark + Databricks (aidi_catalog), PydanticAI, Azure OpenAI gpt-4.1-mini, R + tidymodels, Django + Postgres.", keep: true,  reason: "Names the tools. Without it Claude guesses your stack every session." },
+  { id: 2,  text: "Please be helpful and polite in your responses.", keep: false, reason: "Vague piety — Claude already defaults to polite. Fails the litmus test." },
+  { id: 3,  text: "Tests: `pytest tests/ -q`. Eval: `python aidi/eval/run_deceased_cohort.py`. Never claim 'done' without one passing.", keep: true,  reason: "Without this Claude cannot verify its own work — the close-the-loop command." },
+  { id: 4,  text: "Try to write clean, readable, well-documented code.", keep: false, reason: "Vague. No concrete failure mode. Add it and you waste compliance budget." },
+  { id: 5,  text: "PHI: MRNs Optimus-encoded only in any output. Names Fernet-encrypted at rest. Never plaintext in logs.", keep: true,  reason: "The single most important line in any KHCC CLAUDE.md. Real PHI-leak failure mode without it." },
+  { id: 6,  text: "Eval cohort: frozen deceased-patient set only. Never include living patients.", keep: true,  reason: "Specific clinical-governance rule with a concrete failure mode (privacy + reproducibility)." },
+  { id: 7,  text: "I prefer modern programming techniques and best practices.", keep: false, reason: "Pure preference. No mistake prevented. Cut." },
+  { id: 8,  text: "Surgical changes: touch only what's needed. Don't rename existing columns in extraction tables.", keep: true,  reason: "Mature pipelines have downstream R/dashboard code keyed to column names — a 'helpful' rename breaks them silently." },
+  { id: 9,  text: "Use comments wherever you think they help.", keep: false, reason: "Vague. No specific failure. Cut." },
+  { id: 10, text: "LLM only for judgment: KDIGO staging is rules — compute it, don't ask the model.", keep: true,  reason: "Without this Claude wastes tokens and produces wrong answers on deterministic clinical math. Concrete failure mode." },
+  { id: 11, text: "Code should be efficient and performant.", keep: false, reason: "Vague aspiration. Premature optimization warning, not a rule." },
+  { id: 12, text: "Fail loud: surface every skipped row, null field, parse failure, partial success. 'Pipeline completed' must mean every row ran.", keep: true,  reason: "Silent failures are the most dangerous mode in clinical pipelines. Real, repeated failure without this line." },
+  { id: 13, text: "Try to make the code maintainable.", keep: false, reason: "Vague. Cut." },
+  { id: 14, text: "Token budget: 4k per task, 30k per session. Summarize and start fresh if approaching; don't push through.", keep: true,  reason: "Without this, a single 50-page discharge summary can silently burn the daily quota. Concrete failure mode." },
+  { id: 15, text: "I use VS Code as my editor — please format code accordingly.", keep: false, reason: "Irrelevant to Claude's behavior. Editor settings are local, not a Claude rule." },
+  { id: 16, text: "Read before write: before adding to a file, read its exports and immediate callers.", keep: true,  reason: "Prevents the 'looks orthogonal to me' regressions that break mature pipelines." },
+  { id: 17, text: "Be creative when solving problems.", keep: false, reason: "Anti-rule for production clinical code — we want predictable, not creative. Cut." },
+  { id: 18, text: "JDBC quirk: PySpark JDBC queries cannot use CTEs or ORDER BY in the subquery string.", keep: true,  reason: "Specific tool quirk that has burned every new AIDI engineer. Concrete repeated failure." },
+  { id: 19, text: "I like clean architecture.", keep: false, reason: "Personal taste, no concrete rule. Cut." },
+  { id: 20, text: "Use `pytest`, not `python -m pytest`. Don't skip pre-commit hooks. Prefer `gh` CLI over the GitHub MCP server.", keep: true,  reason: "Three specific tool quirks with real failure modes. Each one prevented past mistakes." },
+  { id: 21, text: "Output channel for clinical alerts: ACS email from DoNotReply@khcc.jo via ManagedIdentityCredential on standard clusters.", keep: true,  reason: "Specific infra rule. Without it Claude will reach for SMTP or print() and break the audit trail." },
+  { id: 22, text: "Try to follow SOLID principles.", keep: false, reason: "Vague principle, no clinical relevance to the failures we actually see. Cut." },
+  { id: 23, text: "Checkpoint after every significant step: row counts, sample encoded MRNs, expected ranges before proceeding to the next phase.", keep: true,  reason: "Multi-phase pipelines (Phase 1 cohort -> Phase 2 LLM extraction) need verified handoffs. Without this rule Phase 2 runs on bad Phase 1 output." },
+  { id: 24, text: "I appreciate when you explain things in detail.", keep: false, reason: "Personal preference, no failure mode prevented. Cut." }
+];
+
+const KEEP_TARGET = 12;
+
+function App() {
+  const [selected, setSelected] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const toggle = (id) => {
+    if (submitted) return;
+    setSelected(s => ({ ...s, [id]: !s[id] }));
+  };
+  const check = () => setSubmitted(true);
+  const reset = () => { setSelected({}); setSubmitted(false); };
+
+  const selectedCount = Object.values(selected).filter(Boolean).length;
+  const correctSelections = lines.filter(l => l.keep && selected[l.id]).length;
+  const wrongSelections = lines.filter(l => !l.keep && selected[l.id]).length;
+  const missedKeeps = lines.filter(l => l.keep && !selected[l.id]).length;
+  const score = correctSelections - wrongSelections;
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>CLAUDE.md Litmus-Test Practice</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        Below is a bloated 24-line CLAUDE.md. Pick the <strong>12 lines</strong> that pass the litmus test: <em>"Would Claude make a real mistake without this line?"</em> Cut the rest. Click each line to select or deselect it.
+      </p>
+      <p style={{ fontSize: 14, color: '#666' }}>
+        Selected: <strong>{selectedCount}</strong> / target <strong>{KEEP_TARGET}</strong>
+      </p>
+
+      {lines.map(l => {
+        const isSelected = !!selected[l.id];
+        const isCorrect = submitted && (isSelected === l.keep);
+        const isWrong = submitted && (isSelected !== l.keep);
+        return (
+          <div key={l.id} onClick={() => toggle(l.id)} style={{
+            padding: '10px 14px', margin: '6px 0', borderRadius: 8,
+            cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${isCorrect ? '#198754' : isWrong ? '#dc3545' : isSelected ? '#0d6efd' : '#dee2e6'}`,
+            background: isCorrect ? '#d4edda' : isWrong ? '#f8d7da' : isSelected ? '#e7f1ff' : '#fff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <span style={{ marginRight: 10, fontFamily: 'monospace', color: '#666', minWidth: 24 }}>{l.id}.</span>
+              <code style={{ flex: 1, fontFamily: 'monospace', fontSize: 13, whiteSpace: 'pre-wrap' }}>{l.text}</code>
+            </div>
+            {submitted && (
+              <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: '#333' }}>
+                <strong>{l.keep ? 'KEEP.' : 'CUT.'}</strong> {l.reason}
+              </p>
+            )}
+          </div>
+        );
+      })}
+
+      {!submitted && (
+        <button onClick={check} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: 'pointer'
+        }}>Check My Picks</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Correct keeps: {correctSelections} / {KEEP_TARGET}</strong></p>
+          <p>Wrong inclusions (lines that should be cut): {wrongSelections}</p>
+          <p>Missed keeps (rules you should have kept): {missedKeeps}</p>
+          <p style={{ marginTop: 12 }}>
+            {score === KEEP_TARGET && wrongSelections === 0
+              ? "Perfect — you have the litmus test internalised."
+              : score >= 9
+                ? "Strong — re-read the lines you missed. Each one prevents a concrete real-world failure."
+                : "Review the lesson. The litmus test is the single discipline that keeps CLAUDE.md useful."}
+          </p>
+          <button onClick={reset} style={{
+            marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none',
+            background: '#0d6efd', color: '#fff', cursor: 'pointer'
+          }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

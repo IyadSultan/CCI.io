@@ -1,0 +1,116 @@
+import React, { useState } from 'react';
+
+const scenarios = [
+  {
+    id: 1,
+    text: "You want to refactor the AKI staging logic in one module without touching the production pathology pipeline in another module, while running both branches in parallel terminals.",
+    answer: "worktree",
+    explanation: "Two independent tasks, two branches, run in parallel without interference. Classic worktree. No multi-agent orchestration needed."
+  },
+  {
+    id: 2,
+    text: "You want a 7-stage pipeline that turns a one-line feature request into a deployed Django app, with human approval gates after the story and after the technical brief.",
+    answer: "workflow",
+    explanation: "Scripted chain of agents with approval gates. This is the Software Factory — a workflow. (In practice you would run it inside a worktree, but the orchestration is the workflow.)"
+  },
+  {
+    id: 3,
+    text: "You want to ship a new feature for the ER triage app cleanly: isolate it on its own branch, then run the seven-agent pipeline inside that isolation.",
+    answer: "both",
+    explanation: "This is the full-power configuration. One worktree per feature (isolation) with the Software Factory workflow running inside it (orchestration). The two ideas compose."
+  },
+  {
+    id: 4,
+    text: "You want to fix a single typo in a docstring.",
+    answer: "neither",
+    explanation: "One-line fix. No need for a worktree (the setup cost exceeds the work) and no need for a workflow (no chain of stages). Just edit and commit."
+  },
+  {
+    id: 5,
+    text: "Your colleague is mid-refactor on a long-running branch. Production has an urgent bug. You need to ship the bug fix without disturbing her uncommitted work or your own.",
+    answer: "worktree",
+    explanation: "Two branches, two folders, zero interference with her uncommitted state — a worktree is exactly what this is for. No multi-agent chain needed; you are doing a focused fix yourself."
+  },
+  {
+    id: 6,
+    text: "You want every new feature in the AIDI Django codebase to follow the same disciplined sequence: research the code, write the story, write the brief, build, test, validate — with explicit human sign-off at the story, brief, and validator stages.",
+    answer: "workflow",
+    explanation: "Scripted multi-stage pipeline with approval gates — a workflow. Encoded as a workflow skill (`feature-factory`) so the discipline is reusable on every new feature."
+  }
+];
+
+const choices = [
+  { key: "worktree", label: "Worktree" },
+  { key: "workflow", label: "Workflow" },
+  { key: "both", label: "Both (worktree + workflow)" },
+  { key: "neither", label: "Neither" }
+];
+
+export default function Practice() {
+  const [picks, setPicks] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const pick = (id, val) => { if (!submitted) setPicks({ ...picks, [id]: val }); };
+  const check = () => setSubmitted(true);
+  const reset = () => { setPicks({}); setSubmitted(false); };
+
+  const score = scenarios.filter(s => picks[s.id] === s.answer).length;
+  const answered = Object.keys(picks).length;
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Worktree, Workflow, Both, or Neither?</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        For each scenario, decide what tool fits. Remember: <strong>worktrees</strong> are about isolation (a folder on disk holding a branch). <strong>Workflows</strong> are about orchestration (a script that runs several agents in sequence with approval gates).
+      </p>
+
+      {scenarios.map(s => {
+        const userChoice = picks[s.id];
+        const correct = submitted && userChoice === s.answer;
+        const wrong = submitted && userChoice && userChoice !== s.answer;
+        return (
+          <div key={s.id} style={{
+            padding: '16px 20px', margin: '12px 0', borderRadius: 8,
+            border: `2px solid ${correct ? '#198754' : wrong ? '#dc3545' : '#dee2e6'}`,
+            background: correct ? '#d4edda' : wrong ? '#fff7f7' : '#fff'
+          }}>
+            <div style={{ marginBottom: 12, lineHeight: 1.5 }}>
+              <strong>Scenario {s.id}.</strong> {s.text}
+            </div>
+            <div>
+              {choices.map(c => (
+                <button key={c.key} onClick={() => pick(s.id, c.key)} disabled={submitted} style={{
+                  marginRight: 6, marginBottom: 4, padding: '6px 14px', borderRadius: 6, cursor: submitted ? 'default' : 'pointer',
+                  border: `2px solid ${userChoice === c.key ? (submitted ? (c.key === s.answer ? '#198754' : '#dc3545') : '#0d6efd') : '#ccc'}`,
+                  background: userChoice === c.key ? (submitted ? (c.key === s.answer ? '#198754' : '#dc3545') : '#0d6efd') : '#fff',
+                  color: userChoice === c.key ? '#fff' : '#000', fontSize: 13
+                }}>{c.label}</button>
+              ))}
+            </div>
+            {submitted && (
+              <div style={{ marginTop: 10, padding: 10, background: '#f0f4ff', borderRadius: 6, fontSize: 13, color: '#333' }}>
+                <strong>Answer: {choices.find(c => c.key === s.answer).label}.</strong> {s.explanation}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {!submitted && (
+        <button onClick={check} disabled={answered < scenarios.length} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: answered < scenarios.length ? 'default' : 'pointer',
+          opacity: answered < scenarios.length ? 0.5 : 1
+        }}>Check My Choices ({answered}/{scenarios.length})</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Score: {score} / {scenarios.length}</strong></p>
+          <p>{score === scenarios.length ? "Perfect — you can tell isolation from orchestration." : score >= scenarios.length - 1 ? "Good — re-read the misses; these calls return constantly in real work." : "Review the lesson. Worktree vs workflow is the structural distinction the rest of the course is built on."}</p>
+          <button onClick={reset} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}

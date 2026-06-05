@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Factory Gates Part 2</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00695C; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #A5D6A7; background: #E8F5E9; margin-bottom: 1rem; }
+    .back-link:hover { background: #C8E6C9; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-10/">&#8249; Back to Session 10</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// 5 simulated findings the validator could surface. Student labels each.
+const findings = [
+  {
+    id: 1,
+    title: "OncologicEmergencyExtractor does not catch network failures",
+    body: "triage/services/oncologic_emergency.py wraps no try/except around the Azure OpenAI call. The brief's acceptance criterion 10 requires extractor_status='failed' on failure; currently a timeout 500s the nurse form and loses the triage row.",
+    correct: "CRITICAL",
+    reason: "Loses clinical data on a network blip. Violates an explicit acceptance criterion. Patient safety adjacent — this is the planted bug from the lesson."
+  },
+  {
+    id: 2,
+    title: "Variable name `acuityVal` does not match project's snake_case style",
+    body: "triage/services/acuity.py line 23 uses camelCase `acuityVal` once; everywhere else the project uses `acuity_val` or just `acuity`.",
+    correct: "MINOR",
+    reason: "Cosmetic. Does not affect behavior. Worth fixing for consistency but not blocking."
+  },
+  {
+    id: 3,
+    title: "AcuityCalculator returns floats instead of ints",
+    body: "The brief specifies `compute(...) -> int (1..5)` but the implementation returns 1.0, 2.0, etc. Downstream code that does `event.acuity == 1` (int) silently fails because 1.0 != 1 in JSON serialization.",
+    correct: "IMPORTANT",
+    reason: "Deviation from the brief that changes observable behavior. Not safety-critical (the acuity still ranks correctly) but breaks the spec's type contract and will surprise the doctor's queue view. Fix before merging."
+  },
+  {
+    id: 4,
+    title: "The view function is more than 50 lines and could be refactored",
+    body: "triage/views.py's nurse_form_view is 62 lines. The reviewer feels it would read better split into three helpers.",
+    correct: "NOT_REAL",
+    reason: "Style preference dressed as a finding. The brief did not specify a line-count limit. CLAUDE.md Rule 3 says don't refactor what isn't broken. The validator should not be inventing standards that weren't in the contract."
+  },
+  {
+    id: 5,
+    title: "MRN logged in plaintext in the audit_log table",
+    body: "triage/views.py line 78 calls `audit_log.write(mrn=patient.mrn_raw, ...)`. The mrn_raw field bypasses Optimus encoding. CLAUDE.md explicitly forbids plaintext MRNs in any storage.",
+    correct: "CRITICAL",
+    reason: "PHI leak. Violates a project-wide CLAUDE.md rule and the patient-data section of the lesson. Even a 'just an audit log' plaintext MRN is a breach. Block the merge."
+  }
+];
+
+const labels = ["CRITICAL", "IMPORTANT", "MINOR", "NOT_REAL"];
+
+const labelColors = {
+  CRITICAL: "#dc3545",
+  IMPORTANT: "#fd7e14",
+  MINOR: "#6c757d",
+  NOT_REAL: "#0d6efd"
+};
+
+function App() {
+  const [choices, setChoices] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const choose = (id, label) => {
+    if (submitted) return;
+    setChoices({ ...choices, [id]: label });
+  };
+
+  const submit = () => setSubmitted(true);
+  const reset = () => { setChoices({}); setSubmitted(false); };
+
+  const score = findings.filter(f => choices[f.id] === f.correct).length;
+  const answeredCount = Object.keys(choices).length;
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Triage the Validator's Findings</h3>
+      <p style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        The implementation-validator just returned 5 findings on your nurse-form code. For each one, decide whether it's <strong style={{ color: labelColors.CRITICAL }}>CRITICAL</strong> (block the merge), <strong style={{ color: labelColors.IMPORTANT }}>IMPORTANT</strong> (fix before merging but not a safety issue), <strong style={{ color: labelColors.MINOR }}>MINOR</strong> (cosmetic, optional fix), or <strong style={{ color: labelColors.NOT_REAL }}>NOT_REAL</strong> (the validator overreached — this isn't actually a problem).
+      </p>
+
+      {findings.map(f => {
+        const chosen = choices[f.id];
+        const right = submitted && chosen === f.correct;
+        const wrong = submitted && chosen && chosen !== f.correct;
+        return (
+          <div key={f.id} style={{
+            padding: '14px 16px', margin: '10px 0', borderRadius: 8,
+            border: `2px solid ${right ? '#198754' : wrong ? '#dc3545' : '#dee2e6'}`,
+            background: right ? '#d4edda' : wrong ? '#f8d7da' : '#fff'
+          }}>
+            <h4 style={{ marginTop: 0, marginBottom: 6 }}>{f.title}</h4>
+            <p style={{ marginTop: 0, fontSize: 14, color: '#444' }}>{f.body}</p>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {labels.map(lab => (
+                <button
+                  key={lab}
+                  onClick={() => choose(f.id, lab)}
+                  disabled={submitted}
+                  style={{
+                    padding: '6px 14px', borderRadius: 6, cursor: submitted ? 'default' : 'pointer',
+                    border: `2px solid ${chosen === lab ? labelColors[lab] : '#ccc'}`,
+                    background: chosen === lab ? labelColors[lab] : '#fff',
+                    color: chosen === lab ? '#fff' : '#000',
+                    fontSize: 13, fontWeight: 'bold'
+                  }}>
+                  {lab}
+                </button>
+              ))}
+            </div>
+            {submitted && (
+              <p style={{ marginTop: 10, marginBottom: 0, fontSize: 13, color: '#333' }}>
+                <strong style={{ color: labelColors[f.correct] }}>{f.correct}.</strong> {f.reason}
+              </p>
+            )}
+          </div>
+        );
+      })}
+
+      {!submitted && (
+        <button onClick={submit} disabled={answeredCount < findings.length} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: answeredCount < findings.length ? 'default' : 'pointer',
+          opacity: answeredCount < findings.length ? 0.5 : 1
+        }}>Check My Triage ({answeredCount}/{findings.length})</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p><strong>Score: {score} / {findings.length}</strong></p>
+          <p>{score === findings.length
+            ? "Perfect — you can triage validator findings the way an AI Office reviewer would. The two CRITICALs (PHI leak, missing error handling) and the one bogus 'style preference' finding are the calls that matter most."
+            : score >= 3
+              ? "Decent — but the misses matter. CRITICAL means block the merge; mis-classifying a PHI leak as MINOR is exactly how production incidents happen."
+              : "Re-read the lesson. The validator's findings have to be triaged correctly — over-classifying wastes loop iterations; under-classifying ships bugs."}</p>
+          <button onClick={reset} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

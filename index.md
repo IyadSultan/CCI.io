@@ -318,11 +318,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-10/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-10/">
     <div class="cci-num" style="background:#00838F;">10</div>
     <div class="cci-card-body">
-      <p class="title">Claude Code + Azure Cloud</p>
-      <p class="desc">Cloud deployment, API management</p>
+      <p class="title">Building Clinical AI Software with Claude Code <span class="cci-active-badge">Active</span></p>
+      <p class="desc">PRD, CLAUDE.md, skills, MCP, subagents, hooks, Software Factory pipeline, Django ER triage capstone</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

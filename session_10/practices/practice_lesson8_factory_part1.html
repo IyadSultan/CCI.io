@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Factory Gates Part 1</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00695C; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #A5D6A7; background: #E8F5E9; margin-bottom: 1rem; }
+    .back-link:hover { background: #C8E6C9; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-10/">&#8249; Back to Session 10</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// The stub story the student is asked to complete.
+const story = `As a triage nurse, I can submit a new arrival's chief complaint, vitals, age, and oncology context, and see the system assign an ESI acuity 1–5 within 3 seconds, with any oncologic emergencies flagged.`;
+
+// 12 candidate criteria. Mix of: genuine acceptance criteria for THIS story,
+// out-of-scope (doctor view, auth, EMR), and vague/un-checkable.
+const candidates = [
+  // GENUINE (5 correct picks)
+  { id: 1, text: "On valid submit, a TriageEvent row is created with the patient FK, vitals JSON, oncology_context JSON, computed acuity, and oncologic_emergency_flags list.", correct: true, reason: "Concrete, checkable, names the data shape. Genuine acceptance criterion for this story." },
+  { id: 2, text: "If the LLM extraction call fails for any reason, the TriageEvent is still saved with extractor_status='failed' and the nurse sees the confirmation without emergency flags.", correct: true, reason: "Defines the failure-mode behavior — one of the most important acceptance criteria in any clinical AI feature." },
+  { id: 3, text: "Acuity is computed by a deterministic rule set based on vitals + age + oncology context; the LLM never computes acuity.", correct: true, reason: "Encodes CLAUDE.md Rule 5 (LLM for judgment, not arithmetic) into the contract. Prevents Stage 4 from delegating numeric ranking to the model." },
+  { id: 4, text: "Form fields chief_complaint, age, sex, all vitals, and oncology context fields are required; submitting with missing or out-of-range values re-renders the form with per-field errors.", correct: true, reason: "Validation behavior, specific, checkable per-field. Genuine criterion." },
+  { id: 5, text: "MRN is Optimus-encoded before storage; patient name is Fernet-encrypted before storage; neither appears in plaintext in any log line.", correct: true, reason: "Encodes the project's PHI rules from CLAUDE.md into the story. Without this, Stage 4 might silently log plaintext." },
+
+  // OUT OF SCOPE for THIS story (3 distractors)
+  { id: 6, text: "The on-call medical oncology attending sees the queue ordered by acuity with emergency flags color-coded.", correct: false, reason: "Out of scope. This is the doctor's queue story, not the nurse-form story. Belongs in the next pass — adding it here causes Stage 4 to build the wrong thing." },
+  { id: 7, text: "Triage nurses authenticate using hospital SSO before submitting the form.", correct: false, reason: "Out of scope — the PRD names authentication as a v2 concern. Mixing v2 work into v1 acceptance criteria is the most common scope-creep pattern at this gate." },
+  { id: 8, text: "The TriageEvent is written to the EMR via HL7 immediately after submission.", correct: false, reason: "Out of scope — the PRD names EMR integration as v3. Including it would force Stage 4 to invent an HL7 layer that nobody asked for." },
+
+  // VAGUE / UN-CHECKABLE (4 distractors)
+  { id: 9, text: "The form is user-friendly and easy to use.", correct: false, reason: "Not checkable. 'User-friendly' has no pass/fail criterion. Either replace with a measurable statement (e.g., 'median completion time under 90 seconds') or drop it." },
+  { id: 10, text: "The system uses modern, scalable architecture.", correct: false, reason: "Vague and out of scope for an acceptance criterion. Architecture decisions belong in the brief, not the story — and 'modern' and 'scalable' are not testable." },
+  { id: 11, text: "The application performs well.", correct: false, reason: "Un-checkable. 'Performs well' has no number attached. A genuine performance criterion looks like 'median submit→confirmation latency < 3 seconds' (and notice the story stem already covers that)." },
+  { id: 12, text: "The code is clean and well-documented.", correct: false, reason: "Belongs to the engineering bar, not the story. Acceptance criteria describe observable behavior, not code aesthetics." },
+];
+
+function App() {
+  const [picked, setPicked] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const toggle = (id) => {
+    if (submitted) return;
+    setPicked({ ...picked, [id]: !picked[id] });
+  };
+
+  const submit = () => setSubmitted(true);
+  const reset = () => { setPicked({}); setSubmitted(false); };
+
+  const pickedIds = Object.keys(picked).filter(k => picked[k]).map(Number);
+  const correctIds = candidates.filter(c => c.correct).map(c => c.id);
+  const truePositives = pickedIds.filter(id => correctIds.includes(id)).length;
+  const falsePositives = pickedIds.filter(id => !correctIds.includes(id)).length;
+  const falseNegatives = correctIds.filter(id => !pickedIds.includes(id)).length;
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <h3>Pick the 5 Genuine Acceptance Criteria</h3>
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, lineHeight: 1.6 }}>
+        <p style={{ marginTop: 0 }}><strong>Your user story:</strong></p>
+        <p style={{ fontStyle: 'italic', margin: 0 }}>{story}</p>
+      </div>
+      <p style={{ marginTop: 16, lineHeight: 1.6 }}>
+        Below are 12 candidate bullets. Exactly 5 belong as acceptance criteria for THIS story.
+        The other 7 are either out of scope (doctor view, auth, EMR), too vague to be checkable, or describe code aesthetics rather than observable behavior. Pick the 5 keepers.
+      </p>
+
+      {candidates.map((c) => {
+        const isPicked = !!picked[c.id];
+        const shouldBe = c.correct;
+        const right = submitted && isPicked === shouldBe;
+        const wrong = submitted && isPicked !== shouldBe;
+        return (
+          <div key={c.id} onClick={() => toggle(c.id)} style={{
+            padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+            border: `2px solid ${right ? '#198754' : wrong ? '#dc3545' : isPicked ? '#0d6efd' : '#dee2e6'}`,
+            background: right ? '#d4edda' : wrong ? '#f8d7da' : isPicked ? '#e7f1ff' : '#fff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+              <input type="checkbox" checked={isPicked} readOnly style={{ marginTop: 4, marginRight: 10 }} />
+              <div style={{ flex: 1 }}>
+                <div>{c.text}</div>
+                {submitted && (
+                  <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: '#333' }}>
+                    <strong>{c.correct ? "Keep." : "Drop."}</strong> {c.reason}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {!submitted && (
+        <button onClick={submit} disabled={pickedIds.length === 0} style={{
+          marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none',
+          background: '#198754', color: '#fff', cursor: pickedIds.length === 0 ? 'default' : 'pointer',
+          opacity: pickedIds.length === 0 ? 0.5 : 1
+        }}>Check My Choices ({pickedIds.length} picked)</button>
+      )}
+
+      {submitted && (
+        <div style={{ marginTop: 16, padding: 16, background: '#f0f4ff', borderRadius: 8, borderLeft: '4px solid #0d6efd' }}>
+          <p style={{ margin: 0 }}><strong>Score:</strong> {truePositives} of 5 keepers picked, {falsePositives} bad picks, {falseNegatives} keepers missed.</p>
+          <p style={{ marginTop: 8 }}>
+            {truePositives === 5 && falsePositives === 0
+              ? "Perfect — you separated genuine criteria from scope creep and vagueness. This is the discipline the story-writer's approval gate exists to enforce."
+              : falsePositives > 0
+                ? "You picked some out-of-scope or un-checkable items. In the pipeline, those would propagate into the brief and force the backend-builder to build the wrong thing."
+                : "You missed one or more genuine criteria. Stage 4 won't write what isn't in the story — missing criteria become missing features."}
+          </p>
+          <button onClick={reset} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

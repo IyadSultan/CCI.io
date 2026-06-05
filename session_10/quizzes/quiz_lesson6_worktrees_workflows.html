@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: Worktrees & Workflows</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00838F; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #80DEEA; background: #E0F7FA; margin-bottom: 1rem; }
+    .back-link:hover { background: #B2EBF2; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-10/">&#8249; Back to Session 10</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+const questions = [
+  {
+    question: "What is the difference between a git branch and a git worktree?",
+    options: [
+      "They are the same thing with different names",
+      "A branch is a parallel version of the code; a worktree is a folder on disk holding one branch checked out alongside others",
+      "A worktree contains many branches; a branch contains many worktrees",
+      "Branches are for solo work; worktrees are for team work"
+    ],
+    correct: 1,
+    explanation: "A branch is git's abstract concept of a parallel version. Normally you can only see one branch on disk at a time. A worktree is a real folder on disk holding a specific branch, alongside your other worktrees holding other branches. Same history, multiple folders, multiple checkouts at once."
+  },
+  {
+    question: "What does `claude --worktree feature-X` (or `claude -w feature-X`) do?",
+    options: [
+      "Switches your current folder to branch feature-X",
+      "Creates a sibling worktree on branch feature-X, launches Claude inside it, and auto-cleans up on a clean exit with no changes",
+      "Clones the entire repository into a new folder",
+      "Opens Claude in read-only mode on branch feature-X"
+    ],
+    correct: 1,
+    explanation: "The flag creates a new worktree in a sibling folder, checks out (or creates) the branch, and launches Claude with that worktree as its working directory. On a clean exit with no changes, the worktree and the empty branch are auto-cleaned. With uncommitted work, the worktree stays so you can deal with it."
+  },
+  {
+    question: "Which sentence correctly distinguishes a worktree from a workflow?",
+    options: [
+      "Worktree = isolation (a folder on disk); workflow = orchestration (a script that runs several agents in order)",
+      "Workflows are faster than worktrees",
+      "Worktrees are an old feature; workflows replace them",
+      "They are interchangeable terms; both mean a chain of agents"
+    ],
+    correct: 0,
+    explanation: "Keep them straight. A worktree is *where* a Claude runs — a folder on disk holding one branch. A workflow is *what sequence of agents* runs — a script (often expressed as a workflow skill) that chains stages with approval gates. They compose: the right way to run the Software Factory is one worktree per feature with the workflow running inside it."
+  },
+  {
+    question: "In a workflow, what is an approval gate?",
+    options: [
+      "A login screen Claude shows before running",
+      "A point where the workflow stops and waits for a human to read the artifact and explicitly approve, revise, or reject before advancing",
+      "A test that must pass before the next stage runs",
+      "A permissions check that limits which subagents can run"
+    ],
+    correct: 1,
+    explanation: "Approval gates are the human-in-the-loop checkpoints. The Software Factory has three: after the story, after the technical brief, and after the validator findings. The gate is the firewall between 'Claude thinks this is done' and 'this is what we are going to build.' Skip the gates and you ship the wrong thing very efficiently."
+  },
+  {
+    question: "When does Claude Code auto-clean a worktree?",
+    options: [
+      "Always, immediately when you exit the session",
+      "Only on a clean exit AND when the worktree has no uncommitted changes and no new commits",
+      "Once per day at midnight",
+      "Never — you must always clean manually"
+    ],
+    correct: 1,
+    explanation: "Auto-cleanup happens only when you exit cleanly AND the worktree has no uncommitted changes and no new commits. If you made changes, the worktree stays so your work is not lost. If you force-kill Claude or close the terminal abruptly, the worktree also stays — run `git worktree prune` periodically to clean up the dangling references."
+  }
+];
+
+function App() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You can tell worktrees from workflows, and you know when to use each." : score >= 3 ? "Good foundation — re-read the comparison section before Lessons 8 and 9." : "Review the lesson — these two concepts are the structural backbone of the capstone."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

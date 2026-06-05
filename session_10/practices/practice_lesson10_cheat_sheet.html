@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Session 10 Synthesis</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #00695C; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #A5D6A7; background: #E8F5E9; margin-bottom: 1rem; }
+    .back-link:hover { background: #C8E6C9; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-10/">&#8249; Back to Session 10</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// Practice: match each clinical scenario to the right Session-10 concept.
+// Tests cross-lesson synthesis — the whole chain in one exercise.
+
+const challenges = [
+  {
+    scenario: "A clinician describes a new tool for flagging missed AKI events. You haven't written any code yet — what's the next step?",
+    options: [
+      { label: "Open Claude Code and ask it to build the tool", correct: false, reason: "Don't start without scope. PRD first prevents the build-then-realize cycle." },
+      { label: "Invoke the PRD-Builder skill to draft the spec", correct: true, reason: "The PRD is the first artifact. It classifies (AIDI clinical), asks targeted questions about gaps, and produces a structured Markdown spec the rest of the chain consumes." },
+      { label: "Write a CLAUDE.md for the project", correct: false, reason: "CLAUDE.md comes after the PRD — you need the rules the PRD produces before you can encode them." },
+      { label: "Configure a /loop to monitor the EMR for AKI signals", correct: false, reason: "Way too early. Loops come after a working pipeline exists." }
+    ]
+  },
+  {
+    scenario: "You're refactoring the AKI staging logic without disturbing the production pathology pipeline. What feature do you reach for?",
+    options: [
+      { label: "A subagent with restricted tools", correct: false, reason: "Subagents isolate context, not file changes. You need actual file isolation here." },
+      { label: "A git worktree on a feature branch", correct: true, reason: "claude --worktree refactor-aki-staging gives you a parallel working directory tied to a branch. The pathology pipeline files are untouched until you merge." },
+      { label: "A new CLAUDE.md", correct: false, reason: "CLAUDE.md changes rules, not file scope." },
+      { label: "Headless mode with --allowedTools restricted", correct: false, reason: "Headless mode is for unattended scripted runs, not for working on a parallel branch." }
+    ]
+  },
+  {
+    scenario: "Your nurse-form view calls Azure OpenAI without exception handling. A network blip will 500 the page. Which agent in the Software Factory pipeline catches this?",
+    options: [
+      { label: "story-writer", correct: false, reason: "Story-writer produces user stories at Stage 2 — too early to catch implementation bugs." },
+      { label: "backend-builder", correct: false, reason: "The backend-builder wrote the bug. It won't catch its own work." },
+      { label: "implementation-validator", correct: true, reason: "Stage 7. The validator compares code on disk against the brief and flags critical findings (like missing error handling) before the merge gate." },
+      { label: "test-verifier", correct: false, reason: "Test-verifier writes acceptance tests. Tests might pass without exercising the timeout path; the validator catches the gap by reading the code." }
+    ]
+  },
+  {
+    scenario: "You want the deceased-patient eval suite to run automatically every time a Claude Code session ends. What do you configure?",
+    options: [
+      { label: "A line in CLAUDE.md asking Claude to run the eval", correct: false, reason: "CLAUDE.md is suggestions — Claude follows it ~80% of the time. For non-negotiables, use hooks." },
+      { label: "A Stop hook in .claude/settings.json", correct: true, reason: "Stop hooks fire deterministically when Claude tries to end the session. They always run, with no LLM cost. Perfect for the eval gate." },
+      { label: "A /loop command", correct: false, reason: "Loops are for recurring background checks, not session-end events." },
+      { label: "A subagent named eval-runner", correct: false, reason: "A subagent could run the eval, but only if Claude decides to invoke it. The Stop hook makes it automatic." }
+    ]
+  },
+  {
+    scenario: "The hem-onc fellow on call needs Claude Code to read alerts from a Slack channel called #triage-alerts. How do you set it up?",
+    options: [
+      { label: "Write a custom MCP server in Python that wraps the Slack API", correct: false, reason: "Possible, but Anthropic ships a productized Connector. Don't reinvent." },
+      { label: "Install the Slack Connector in Claude.ai or Claude Desktop, sign in once", correct: true, reason: "Connectors are Anthropic's curated MCP integrations — one click, OAuth scopes, maintained by Anthropic. Skip the boilerplate." },
+      { label: "Use the !slack bash prefix in your prompt", correct: false, reason: "There is no !slack bash prefix. Slack is a service, not a shell command." },
+      { label: "Add a CLAUDE.md line saying 'check the triage Slack'", correct: false, reason: "CLAUDE.md cannot give Claude access to Slack. Access requires an MCP server or Connector." }
+    ]
+  },
+  {
+    scenario: "You've finished the ER triage app. Before deploying to the production Azure App Service, what's the non-negotiable check?",
+    options: [
+      { label: "Run the unit test suite", correct: false, reason: "Necessary but not sufficient. Unit tests test behaviors you wrote tests for. They don't tell you the LLM extraction still works on real cases." },
+      { label: "Verify against the frozen deceased-patient eval cohort", correct: true, reason: "The eval gate is the discipline. No prompt or extraction-logic change ships without re-running the eval cohort. If accuracy drops, the change doesn't ship." },
+      { label: "Manual code review", correct: false, reason: "Code review catches structural issues. It doesn't catch model regressions." },
+      { label: "Spot-check on five live patients", correct: false, reason: "Never use live patient data for first-deploy validation. That's exactly why the frozen deceased-patient cohort exists." }
+    ]
+  }
+];
+
+function App() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+
+  const c = challenges[current];
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    if (c.options[selected]?.correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    setCurrent(cc => cc + 1);
+    setSelected(null);
+    setSubmitted(false);
+  };
+
+  if (current >= challenges.length) {
+    return (
+      <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Session 10 Synthesis — Complete!</h2>
+        <p style={{ fontSize: 20 }}>Score: {score} / {challenges.length}</p>
+        <div style={{ background: score >= 5 ? '#d4edda' : score >= 4 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8 }}>
+          {score >= 5 ? "You've internalized the chain. Build something." : score >= 4 ? "Strong synthesis. Review the cheat sheet and try the ER triage build." : "Re-walk through Lessons 1–7 before attempting the capstone."}
+        </div>
+        <button onClick={() => { setCurrent(0); setScore(0); setSelected(null); setSubmitted(false); }} style={{ marginTop: 16, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Try Again</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 750, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / challenges.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Scenario {current + 1} of {challenges.length}</p>
+
+      <h3 style={{ marginBottom: 8 }}>Clinical scenario:</h3>
+      <p style={{ background: '#f8f9fa', padding: 12, borderRadius: 6 }}>{c.scenario}</p>
+
+      <h4 style={{ marginTop: 16 }}>Pick the right Session-10 concept:</h4>
+      {c.options.map((opt, i) => (
+        <div key={i} onClick={() => !submitted && setSelected(i)} style={{
+          padding: 12, margin: '8px 0', borderRadius: 8, cursor: submitted ? 'default' : 'pointer',
+          border: `2px solid ${submitted ? (opt.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : i === selected ? '#0d6efd' : '#dee2e6'}`,
+          background: submitted ? (opt.correct ? '#d4edda' : i === selected && !opt.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>
+          <strong>{opt.label}</strong>
+          {submitted && (
+            <p style={{ marginTop: 8, marginBottom: 0, fontSize: 13, color: opt.correct ? '#198754' : '#666' }}>
+              {opt.correct ? '✅' : (i === selected ? '❌' : '○')} {opt.reason}
+            </p>
+          )}
+        </div>
+      ))}
+
+      {!submitted && selected !== null && (
+        <button onClick={handleSubmit} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#198754', color: '#fff', cursor: 'pointer' }}>Check Answer</button>
+      )}
+
+      {submitted && (
+        <button onClick={next} style={{ marginTop: 12, padding: '10px 24px', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>{current + 1 < challenges.length ? 'Next Scenario' : 'See Results'}</button>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
