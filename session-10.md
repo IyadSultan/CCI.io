@@ -302,7 +302,7 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_10/instructions/lesson1_prd/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_10/templates/skills/prd-builder/SKILL.md" target="_blank">
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_10/templates/skills/prd-builder/SKILL.html" target="_blank">
         <span class="s1-btn-icon">&#128209;</span> PRD-Builder Skill
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_10/practices/practice_lesson1_prd.html" target="_blank">
@@ -609,7 +609,7 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_10/quizzes/quiz_lesson10_cheat_sheet.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_10/claude_code_for_dummies/appendices/cheat_sheet.md" target="_blank">
+      <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_10/claude_code_for_dummies/appendices/cheat_sheet.html" target="_blank">
         <span class="s1-btn-icon">&#128218;</span> Printable Cheat Sheet
       </a>
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_10/data/notebooklm_sources/" target="_blank">
