@@ -14,6 +14,8 @@ permalink: /session_10/instructions/lesson1_prd/
 
 # Lesson 1 — Writing a PRD with the PRD-Builder Skill
 
+> 📽️ **Session slides:** [Claude Code presentation](https://docs.google.com/presentation/d/1p7xHIDY2fA2Gtxw_zD8IEJa6Rs9aCfTVuBdVcAk58ok/edit?usp=sharing) — overview of Claude Code before we dive into PRDs.
+
 A clinical team meets on Tuesday, decides to "build a triage tool," opens Claude Code on Thursday, and by Friday afternoon has a half-working app that nobody asked for, missing the one feature the charge nurse actually needed. The fix is not faster typing. The fix is a piece of paper before the typing starts. That piece of paper is called a **PRD** — a *Product Requirements Document* — and this lesson teaches you to write one in about twenty minutes using a Claude Code skill that Dr. Sultan built specifically for the AI Office.
 
 ## What a PRD is

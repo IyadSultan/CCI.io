@@ -230,6 +230,13 @@ permalink: /session-10/
   }
   .s1-btn-handout:hover { background: #B2EBF2; transform: translateY(-1px); }
 
+  .s1-btn-video {
+    background: #FCE4EC;
+    border-color: #F48FB1;
+    color: #C62828 !important;
+  }
+  .s1-btn-video:hover { background: #F8BBD9; transform: translateY(-1px); }
+
   .s1-btn-icon { font-size: 0.9rem; line-height: 1; }
 
   .s1-assignment {
@@ -279,7 +286,7 @@ permalink: /session-10/
 </div>
 
 <div class="s1-prereq">
-  <strong>Pre-session homework:</strong> Complete Session 9 (venv, git, .env/.gitignore). Install <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer">Claude Code</a> and authenticate with your Anthropic account. Bring a laptop with VS Code open and a terminal ready. &middot; <strong>Clinical anchor:</strong> Django ER triage app — nurse intake form, ESI-like acuity, oncologic-emergency extraction, doctor queue.
+  <strong>Pre-session homework:</strong> Complete Session 9 (venv, git, .env/.gitignore). Install <a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener noreferrer">Claude Code</a> and authenticate with your Anthropic account. Skim the <a href="https://docs.google.com/presentation/d/1p7xHIDY2fA2Gtxw_zD8IEJa6Rs9aCfTVuBdVcAk58ok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Claude Code presentation</a> before class. Bring a laptop with VS Code open and a terminal ready. &middot; <strong>Clinical anchor:</strong> Django ER triage app — nurse intake form, ESI-like acuity, oncologic-emergency extraction, doctor queue.
 </div>
 
 <!-- ─── Lesson 1 ─── -->
@@ -313,6 +320,9 @@ permalink: /session-10/
       </a>
       <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_10/claude_code_for_dummies/book.html" target="_blank">
         <span class="s1-btn-icon">&#128218;</span> Claude Code for Dummies
+      </a>
+      <a class="s1-btn s1-btn-video" href="https://docs.google.com/presentation/d/1p7xHIDY2fA2Gtxw_zD8IEJa6Rs9aCfTVuBdVcAk58ok/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Claude Code Slides
       </a>
     </div>
   </div>
