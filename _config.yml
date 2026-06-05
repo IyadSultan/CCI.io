@@ -33,4 +33,3 @@ exclude:
   - "session_10/practices/*.jsx"
   - "session_10/build_html_from_jsx.py"
   - "session_10/add_instruction_frontmatter.py"
-  - "session_10/books_references/**"
