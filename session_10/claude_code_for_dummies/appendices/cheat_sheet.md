@@ -1,4 +1,17 @@
-# Appendix A: The Claude Code Cheat Sheet
+---
+layout: page
+title: "Appendix A: The Claude Code Cheat Sheet"
+permalink: /session_10/claude_code_for_dummies/appendices/cheat_sheet/
+---
+
+<a class="back-btn" href="/CCI.io/session-10/" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#00838F;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #80DEEA;background:#E0F7FA;margin-bottom:1rem;">&#8249; Back to Session 10</a>
+
+<style>
+.site-nav{display:none!important}
+.site-header{border-top:5px solid #00838F!important}
+.site-title,.site-title:visited{color:#00838F!important;font-weight:800!important}
+.post-header{display:none!important}
+</style>
 
 *Print this. Tape it to your monitor.*
 

@@ -356,8 +356,19 @@ def classify_blockquotes(html: str) -> str:
     return re.sub(r"<blockquote>(.*?)</blockquote>", repl, html, flags=re.DOTALL)
 
 
+def strip_jekyll_chrome(text: str) -> str:
+    """Remove YAML front matter and HTML blocks added for the GitHub Pages site."""
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            text = text[end + 4 :]
+    text = re.sub(r"<a class=\"back-btn\".*?</a>\s*", "", text, flags=re.DOTALL)
+    text = re.sub(r"<style>.*?</style>\s*", "", text, flags=re.DOTALL)
+    return text.lstrip("\n")
+
+
 def render_md(path: Path) -> str:
-    text = path.read_text(encoding="utf-8")
+    text = strip_jekyll_chrome(path.read_text(encoding="utf-8"))
     # Strip duplicate H1 if first non-empty line is "# Chapter N: ..." — we'll
     # use the entry's title from BOOK instead. But for now keep it; the chapter
     # opener H1 carries the brand styling.
