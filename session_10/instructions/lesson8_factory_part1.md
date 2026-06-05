@@ -24,7 +24,7 @@ That sequence — *protocol*, *handoff*, *chart* — is what the first half of t
 
 ## What we are building
 
-A two-screen Django app, the ER Triage Extractor. Project #3 in your AI Office tour. It is the simplest illustration of a real KHCC pipeline that still ships a usable tool.
+A two-screen Django app, the ER Triage Extractor — the capstone project for this session. It is the simplest illustration of a real clinical software pipeline that still ships a usable tool.
 
 - **Nurse screen** (this lesson and the first half of Lesson 9). A form: chief complaint as free text, age, vitals (heart rate, blood pressure, respiratory rate, oxygen saturation, temperature), oncology context (known malignancy yes/no, on chemotherapy yes/no, days since last cycle, neutropenia known yes/no). On submit, the system computes an ESI-like acuity 1–5, runs the chief complaint through Azure OpenAI looking for four oncologic emergencies — neutropenic fever, tumor lysis syndrome, spinal cord compression, hypercalcemia of malignancy — and writes a row to the queue.
 - **Doctor screen** (the *Try This* at the end of Lesson 9). The live queue, color-coded by acuity, with the AI flags surfaced for the on-call attending.
@@ -61,15 +61,15 @@ Create `CLAUDE.md` at the project root:
 - htmx for the form, Tailwind CDN for styling, pytest for tests
 
 ## Conventions
-- All MRNs Optimus-encoded before storage or display.
-- All patient names Fernet-encrypted at rest. Never logged.
+- All patient identifiers are hashed before storage or display. Never log raw identifiers.
+- All patient names are encrypted at rest using application-level encryption. Never logged.
 - New Django code matches the existing app's structure: views in `triage/views.py`, services in `triage/services/`, templates under `triage/templates/triage/`.
 - Tests live in `triage/tests/` and use pytest-django.
 
 ## Eval gate
 - No prompt change to the oncologic emergency extractor ships without re-running
-  `aidi_catalog.dbo.eval_runs` against the frozen deceased-patient cohort.
-- For this capstone, eval-runs are simulated by `tests/test_acceptance.py`.
+  the automated eval suite against the held-out evaluation cohort.
+- For this capstone, eval runs are simulated by `tests/test_acceptance.py`.
 
 ## Boundaries
 - Do not invent ICD codes or KDIGO thresholds from memory.
@@ -120,7 +120,7 @@ tools: Read
 model: sonnet
 ---
 
-You are a story writer for clinical software at KHCC.
+You are a story writer for clinical software.
 
 You read the PRD section the user names, and you return:
 
@@ -169,7 +169,7 @@ Tell Claude what you want to build:
 
 > Use prd-builder for an ER triage app that lets a nurse submit chief complaint + vitals + oncology context and shows the doctor a queue sorted by acuity, flagging oncologic emergencies.
 
-The skill classifies the request — AIDI clinical — and pulls in `references/aidi-clinical-template.md`. It asks one or two focused questions before drafting. Expect something like:
+The skill classifies the request as clinical and pulls in `references/clinical-template.md`. It asks one or two focused questions before drafting. Expect something like:
 
 > *Which clinical service will use this? And what is the single success criterion you will judge the v1 against?*
 
@@ -181,7 +181,7 @@ The skill then drafts a PRD. Saved to `docs/ER-Triage-PRD.md`. The outline you s
 # ER Triage Extractor — PRD
 
 ## Problem
-KHCC's ER triage nurses see ~30 oncology patients per evening shift. Identifying
+ER triage nurses at a busy oncology center see ~30 oncology patients per evening shift. Identifying
 which presentations represent oncologic emergencies — neutropenic fever, TLS,
 cord compression, hypercalcemia of malignancy — currently relies on the nurse's
 recall of training. The on-call medical oncology attending sees the queue
@@ -209,20 +209,20 @@ as a flat list and must triage by reading every chart.
 - Integration with the EMR (v3).
 
 ## Data and PHI
-- MRN stored Optimus-encoded. Name Fernet-encrypted at rest.
+- Patient identifier stored as a one-way hash. Name encrypted at rest.
 - No PHI leaves the application server. No PHI in logs.
 
 ## Stack
 - Django 5 + Postgres. Azure OpenAI gpt-4.1-mini. Tailwind CDN. htmx.
 
 ## Eval gate
-- Pre-deployment: 200 deceased-patient cohort sample, sensitivity ≥ 90% per
+- Pre-deployment: held-out evaluation cohort (≥ 200 de-identified cases), sensitivity ≥ 90% per
   emergency category, no calibration drift > 5 percentage points.
 ```
 
 Read it. Edit anything that does not match the unit's actual workflow. Save it. This PRD is the source of truth for the rest of the pipeline.
 
-> 🔧 **Technical Stuff.** The PRD has eval-gate language because the AI Office requires it before any clinical AI feature ships. Even though our local capstone won't actually hit `aidi_catalog.dbo.eval_runs`, the PRD names the gate so the rest of the pipeline knows it exists. That is the convention you carry into real work.
+> 🔧 **Technical Stuff.** The PRD has eval-gate language because production clinical AI governance requires it before any feature ships. Even though our local capstone won't actually run a full production eval pipeline, the PRD names the gate so the rest of the pipeline knows it exists. That is the convention you carry into real work.
 
 ## Stage 1 — Codebase researcher (5 minutes)
 
@@ -308,8 +308,8 @@ within 3 seconds, with any oncologic emergencies flagged.**
    context through gpt-4.1-mini and returns a list of suspected oncologic
    emergencies from the closed set {neutropenic_fever, tumor_lysis,
    cord_compression, hypercalcemia_of_malignancy, none}.
-6. A TriageEvent row is created. Patient is upserted (Optimus-encoded MRN
-   is the key); name is Fernet-encrypted before storage.
+6. A TriageEvent row is created. Patient is upserted (hashed patient identifier
+   is the key); name is encrypted before storage.
 7. The nurse is redirected to a confirmation page showing the assigned
    acuity, the emergency flags (if any), and a "submit another" link.
 8. Median end-to-end submit→confirmation latency is < 3 seconds on the
@@ -358,8 +358,8 @@ Claude delegates to `spec-writer` (Sonnet, read-only). It reads the story, the P
 ## Data model
 
 ### Patient (triage/models.py)
-- mrn_encoded — CharField(40), unique, indexed. Optimus-encoded MRN.
-- name_encrypted — BinaryField. Fernet-encrypted patient name.
+- patient_id_hash — CharField(64), unique, indexed. One-way hash of the patient identifier.
+- name_encrypted — BinaryField. Application-level encrypted patient name.
 - age — IntegerField, 0–120 enforced at form layer.
 - sex — CharField(8), choices = M/F/Other.
 - created_at — DateTimeField(auto_now_add=True).
@@ -407,7 +407,7 @@ Claude delegates to `spec-writer` (Sonnet, read-only). It reads the story, the P
   1. Validate the form. On error, re-render with field errors.
   2. Compute acuity (deterministic).
   3. Call OncologicEmergencyExtractor.
-  4. Upsert Patient (by Optimus-encoded MRN).
+  4. Upsert Patient (by hashed patient identifier).
   5. Create TriageEvent.
   6. Write audit log row.
   7. Redirect to /triage/<id>/confirm.

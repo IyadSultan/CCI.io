@@ -149,10 +149,10 @@ Claude delegates to `backend-builder`. The skill fires automatically because the
 
 Expect to see, in order:
 
-1. **`requirements.txt`** — django==5.0, pytest==8, pytest-django==4.8, pydantic-ai==0.0.13, openai==1.40, cryptography==42 (Fernet lives there), python-dotenv==1.0.
-2. **`.env.example`** — `AZURE_OPENAI_ENDPOINT=`, `AZURE_OPENAI_API_KEY=`, `AZURE_OPENAI_DEPLOYMENT=gpt-4.1-mini`, `FERNET_KEY=`, `OPTIMUS_KEY=`.
+1. **`requirements.txt`** — django==5.0, pytest==8, pytest-django==4.8, pydantic-ai==0.0.13, openai==1.40, cryptography==42 (for field-level encryption), python-dotenv==1.0.
+2. **`.env.example`** — `AZURE_OPENAI_ENDPOINT=`, `AZURE_OPENAI_API_KEY=`, `AZURE_OPENAI_DEPLOYMENT=gpt-4.1-mini`, `PHI_ENCRYPTION_KEY=`, `PATIENT_ID_HASH_SALT=`.
 3. **`pytest.ini`** — points pytest-django at `er_triage.settings`.
-4. **`triage/models.py`** — `Patient` and `TriageEvent` as the brief specified. JSONField for vitals, BinaryField for the Fernet ciphertext, indexed `mrn_encoded`, indexed `timestamp`.
+4. **`triage/models.py`** — `Patient` and `TriageEvent` as the brief specified. JSONField for vitals, BinaryField for the encrypted name, indexed `patient_id_hash`, indexed `timestamp`.
 5. **`triage/services/acuity.py`** — pure-Python class. The rule table is exactly the brief's. No I/O.
 6. **`triage/services/oncologic_emergency.py`** — PydanticAI agent. System prompt names the four emergencies. Temperature 0. Returns the Pydantic `EmergencyExtraction` model. **Note: in the first pass, this file calls Azure OpenAI without wrapping the call in try/except.** (Hold that thought for Stage 7.)
 7. **`triage/forms.py`** — `NurseTriageForm` with the ten fields and the range validators.
@@ -299,8 +299,8 @@ Fix: set `label = "SpO₂"` in the form field definition.
 - Data model matches the brief.
 - AcuityCalculator is pure-Python with no I/O.
 - LLM does not compute acuity.
-- MRN is Optimus-encoded before storage.
-- Name is Fernet-encrypted before storage.
+- Patient identifier is hashed before storage.
+- Name is encrypted at rest before storage.
 - All six unit tests + the acceptance test pass.
 - No PHI in any log statement found by grep.
 ```
@@ -385,13 +385,13 @@ Add to `.claude/settings.json`:
 
 Now whenever any future agent edits a service file, the test suite runs automatically. If it fails, you see the failure in the next agent turn — before any other edit lands.
 
-> 🔧 **Technical Stuff.** In a real KHCC pipeline, this hook would run the full eval suite against `aidi_catalog.dbo.eval_runs` and the deceased-patient cohort. For the capstone, the local test suite is the eval stand-in. The shape is the same: change a prompt → automatically prove nothing regressed.
+> 🔧 **Technical Stuff.** In a production pipeline, this hook would run the full eval suite against a held-out evaluation cohort in your organization's eval database. For the capstone, the local test suite is the eval stand-in. The shape is the same: change a prompt → automatically prove nothing regressed.
 
 ### Optional appendix — Azure App Service deploy
 
 If you have time, deploy this app to Azure App Service. The deploy script lives at `templates/solutions/er_triage_app/deploy.sh`. Run it from the project root with your subscription ID and resource group. It provisions a Postgres server, sets the env vars from your `.env`, and pushes the code via the `az webapp up` command. Five minutes if you have the Azure CLI configured; thirty if you don't.
 
-We do not walk through it in this lesson because the deploy is the same as any Django app — and your AI Office has a checklist for it.
+We do not walk through it in this lesson because the deploy is the same as any Django app — and your organization likely has a deployment checklist for it.
 
 ## Checkpoint — what you shipped
 
@@ -468,10 +468,10 @@ By the time you finish, the app has both screens and the eval-suite hook protect
 
 The hardest lesson from this capstone is the one no agent can teach you.
 
-For the real KHCC version of this app — the one the ER actually uses — the LLM extractor needs the **eval cohort scaffold from the AI Office**. The frozen deceased-patient cohort. The per-category sensitivity baseline. The drift alert that fires when a model version change drops F1 by more than 5 points on any of the four emergencies. The on-call rota for whoever investigates a drift alert.
+For a production version of this app — the one the ER actually uses — the LLM extractor needs a **full eval governance layer**. A held-out evaluation cohort. Per-category sensitivity baselines. Drift alerts that fire when a model version change drops F1 by more than 5 points on any of the four emergencies. A clear on-call process for whoever investigates a drift alert.
 
 The capstone version uses a mocked extractor and a local pytest suite. That is fine for the curriculum. It is **not fine for a clinical deployment**. A neutropenic fever case missed by a drifted model is a patient dead by Friday.
 
-The Software Factory ships the *code*. The AI Office governance — eval cohorts, drift alerts, the human on call — ships the *clinical AI*. Both layers must be in place before any prompt that influences triage touches a real patient. If you remember nothing else from Session 10, remember that.
+The Software Factory ships the *code*. Production governance — eval cohorts, drift alerts, the human on call — ships the *clinical AI*. Both layers must be in place before any prompt that influences triage touches a real patient. If you remember nothing else from Session 10, remember that.
 
-You finished the capstone. You shipped a Django app the way the AI Office actually ships them. Next lesson is the cheat sheet — the one-page reference card you keep open the next time you sit down to build.
+You finished the capstone. You shipped a Django app using the same document-first pipeline professional teams use. Next lesson is the cheat sheet — the one-page reference card you keep open the next time you sit down to build.
