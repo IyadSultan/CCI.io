@@ -3,7 +3,7 @@
 **Title:** *Building Clinical AI Software with Claude Code — From PRD to Production*
 **Audience:** CCI students (clinicians who completed Session 9)
 **Format:** 10 lessons, ~3–3.5 hours of teaching content + a 2-lesson capstone build
-**Companion artifact:** the book *Claude Code for Doctors, Nurses, Pharmacists and Everyone Else* (Session 10 book, this folder) is the deep reference; Session 10 is the **applied** course
+**Companion artifact:** the book *Claude Code for Dummies* (`session_10/claude_code_for_dummies/`) is the deep reference; Session 10 is the **applied** course
 
 ---
 

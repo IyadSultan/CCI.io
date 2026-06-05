@@ -1,2 +1,5 @@
 # Local reference clone — keep on disk, do not track as a submodule
 session_10/books_references/claude-howto/
+
+# Clinicians book — removed from repo; use claude_code_for_dummies instead
+session_10/claude_code_for_clinicians/

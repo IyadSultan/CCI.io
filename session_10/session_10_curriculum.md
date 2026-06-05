@@ -5,7 +5,7 @@
 **Author:** Iyad Sultan, MD — Medical Director, AI Office, King Hussein Cancer Center
 **Audience:** CCI students who completed Session 9 (local development with VS Code)
 **Format:** 10 lessons, ~4.5 hours total. Lessons 1–7 + 9 are the core (~3 hr); Lessons 8a–8b are the capstone (~1.5 hr) and can be assigned as a graded lab if time is short.
-**Companion reference:** the book *Claude Code for Doctors, Nurses, Pharmacists and Everyone Else* (Session 10 book folder) is the deep reference. This curriculum is the applied course.
+**Companion reference:** the book *Claude Code for Dummies* (`session_10/claude_code_for_dummies/`) is the deep reference. This curriculum is the applied course.
 
 ---
 

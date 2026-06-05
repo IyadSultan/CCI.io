@@ -542,8 +542,8 @@ permalink: /session-10/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_10/quizzes/quiz_lesson8_factory_part1.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_10/claude_code_for_clinicians/book.html" target="_blank">
-        <span class="s1-btn-icon">&#128218;</span> Claude Code for Clinicians
+      <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_10/claude_code_for_dummies/book.html" target="_blank">
+        <span class="s1-btn-icon">&#128218;</span> Claude Code for Dummies
       </a>
     </div>
   </div>

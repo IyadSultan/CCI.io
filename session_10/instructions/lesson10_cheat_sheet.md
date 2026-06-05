@@ -192,7 +192,7 @@ The three subagents from Lesson 5 (codebase-researcher, story-writer, spec-write
 
 ## Reading list
 
-- *Claude Code for Doctors, Nurses, Pharmacists and Everyone Else* — the book that accompanies this session. Full reference for every concept here.
+- *Claude Code for Dummies* (`session_10/claude_code_for_dummies/`) — the companion book for this session. Full reference for every concept here.
 - The freeCodeCamp Software Factory article — origin of the seven-agent pipeline.
 - Anthropic's documentation on Skills, MCP, hooks — for the technical depth this session skipped.
 - Boris Cherny's tweet on stop hooks — the canonical Ralph-loop pattern.
