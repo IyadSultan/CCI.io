@@ -38,26 +38,25 @@ Three hours ago you knew Claude Code existed. Now you have shipped a clinical Dj
 |---|---|
 | `/init` | Draft a starter `CLAUDE.md` (then cut it in half) |
 | `/clear` | Reset the conversation |
-| `/compact <focus>` | Summarize the conversation so far, keep going |
+| `/compact [instructions]` | Summarize the conversation so far, keep going |
 | `/rewind` | Restore code or conversation to any prior point |
 | `/model` | Switch model mid-session (`haiku` / `sonnet` / `opus`) |
 | `/cost` | What this session has spent in dollars |
 | `/permissions` | Edit your allow/deny lists |
 | `/agents` | Create or pick a subagent |
-| `/config` | Output style: Explanatory / Concise / Technical |
+| `/config` | Open Settings (theme, model, output style, and more) |
 | `/statusline` | Install the live HUD at the bottom of the terminal |
 
 ### Keystrokes worth knowing
 
 | Key | What it does |
 |---|---|
-| `Shift+Tab` | Enter Plan Mode (Claude plans before editing) |
-| `Ctrl+G` | Edit Claude's plan in your editor |
+| `Shift+Tab` | Cycle permission mode (default → auto-approve → plan-before-edit) |
+| `Ctrl+G` | Open external editor for the current prompt |
 | `Esc` | Stop Claude mid-action |
-| `Esc Esc` | Open the `/rewind` menu |
 | `!cmd` | Run a bash command and feed the output into Claude's context |
 | `@path/to/file` | Reference a file directly in a prompt |
-| `Cmd+V` / `Ctrl+V` | Paste a screenshot |
+| `Cmd+V` / `Ctrl+V` | Paste an image or screenshot |
 
 ### File layout — your project after this session
 
