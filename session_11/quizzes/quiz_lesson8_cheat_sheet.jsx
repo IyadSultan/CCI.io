@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: 'The whole stack on one page: which layer is made of what?',
+    options: [
+      'Frontend = Python + Django; Backend = HTML/CSS/JS; Database = React',
+      'Frontend = HTML/CSS/JS (browser); Backend = Python + Django (server); Database = rows and tables',
+      'Frontend = rows and tables; Backend = HTML; Database = JavaScript',
+      'They are all the same layer with different names',
+    ],
+    correct: 1,
+    explanation: 'The frontend is HTML, CSS, and JavaScript running in the browser; the backend is Python and Django running on the server; the database is rows and tables. The one rule that organizes it all: display and interaction go in the frontend, while data and trusted logic go in the backend.',
+  },
+  {
+    question: 'What is "the one rule" that organizes the whole stack?',
+    options: [
+      'Always validate in the browser to save server time',
+      'Put secrets in the frontend so the page loads faster',
+      'Display and interaction in the frontend; data, trusted logic, and secrets in the backend — validate on the backend',
+      'Never use a database; keep everything in JavaScript',
+    ],
+    correct: 2,
+    explanation: 'Display and interaction go in the frontend; data, trusted logic, and secrets go in the backend. You validate on the backend and keep secrets on the backend — never let the browser be the law. A frontend check is a courtesy; the backend enforces it.',
+  },
+  {
+    question: 'What is the correct order of the feature loop for adding to a Django project?',
+    options: [
+      'startapp → INSTALLED_APPS → view → template → url',
+      'view → url → startapp → template → INSTALLED_APPS',
+      'INSTALLED_APPS → startapp → url → view → template',
+      'template → view → INSTALLED_APPS → startapp → url',
+    ],
+    correct: 0,
+    explanation: 'The feature loop is startapp (only if it is its own feature), add to INSTALLED_APPS (the step everyone forgets), write the view, write the template, then wire the URL (app urls.py plus project include). This is the rhythm you run for every feature you ever add.',
+  },
+  {
+    question: 'Your new feature "does nothing" — which of the two universal failure modes should you check first?',
+    options: [
+      'The Python version is wrong, or the venv is missing',
+      'You forgot INSTALLED_APPS, or the doubled-template-folder path is wrong',
+      'The database is corrupt, or gunicorn is not installed',
+      'DEBUG is False, or ALLOWED_HOSTS is empty',
+    ],
+    correct: 1,
+    explanation: 'When a new feature does nothing, it is almost always one of two things: you forgot to register the app in INSTALLED_APPS, or the doubled-template-folder path is wrong. (The other universal failure mode — breaks on Render but not locally — points to DEBUG, ALLOWED_HOSTS, a missing package, or a secret not set.) Check the loud, one-line fixes before debugging deeper.',
+  },
+  {
+    question: 'What is the single most important file to keep out of GitHub, and how does the course arc end?',
+    options: [
+      'requirements.txt — and Session 12 teaches you to delete it',
+      '.env (your secrets) — and the arc is S10 built software, S11 shipped it, S12 makes it safe',
+      'manage.py — and the course ends after shipping',
+      'settings.py — and Session 12 repeats Session 11',
+    ],
+    correct: 1,
+    explanation: 'The single most important file to keep out of GitHub is .env, because it holds your secrets and a committed secret stays in history forever. The course arc: Session 10 built software, Session 11 shipped it, and Session 12 makes it safe — adding the auth, PHI controls, and governance a real patient-data deployment needs.',
+  },
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You have the whole session at your fingertips — the stack, the one rule, the feature loop, the Render checklist, and the two universal failure modes. Go build something your unit needs." : score >= 3 ? "Good start. Review the cheat sheet: the one rule, the five-step feature loop, the deploy checklist, and the two universal failure modes." : "Review the lesson — the stack, the one rule (validate on the backend, secrets stay there), the feature loop, and keeping .env out of GitHub."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

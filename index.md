@@ -327,11 +327,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-11/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-11/">
     <div class="cci-num" style="background:#EF6C00;">11</div>
     <div class="cci-card-body">
-      <p class="title">Django &amp; FastAPI Deployment</p>
-      <p class="desc">Web frameworks, REST APIs, production hosting</p>
+      <p class="title">From a Web Page to a Deployed Clinical App <span class="cci-active-badge">Active</span></p>
+      <p class="desc">HTML &rarr; full stack &rarr; Django ER triage tour &rarr; dashboard extension &rarr; private GitHub &rarr; Render deploy</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

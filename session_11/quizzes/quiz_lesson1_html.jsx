@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "What is a web page, at its most fundamental?",
+    options: [
+      "A program that must be compiled before a browser can run it",
+      "A text file, written in HTML, that the browser knows how to draw",
+      "A live connection to a server that streams the page continuously",
+      "A database that the browser queries on every scroll"
+    ],
+    correct: 1,
+    explanation: "A web page is just a text file marked up with HTML tags. The browser reads the file and draws it. There is no compilation, no server required for a local file, and no database — when you save a file with a .html ending and double-click it, the browser renders it directly. 'View source' on any site shows you exactly this kind of file."
+  },
+  {
+    question: "Which line correctly creates a clickable link to the KHCC website?",
+    options: [
+      "<link>www.khcc.jo</link>",
+      "<a>www.khcc.jo</a>",
+      "<a href=\"https://www.khcc.jo\">KHCC</a>",
+      "<url=\"https://www.khcc.jo\">KHCC</url>"
+    ],
+    correct: 2,
+    explanation: "A link is an anchor tag, <a>. Where it goes is set by the href attribute — name=\"value\" inside the opening tag. The text between the tags (KHCC) is what the user clicks. Attributes are how a tag gets configured; href is the link's destination."
+  },
+  {
+    question: "In the page skeleton, what is the difference between <head> and <body>?",
+    options: [
+      "<head> is the top of the visible page; <body> is the bottom",
+      "<head> holds information about the page (like the title) that the visitor does not see in the content; <body> holds everything the visitor actually sees",
+      "They are interchangeable — either can hold any content",
+      "<head> is for images and <body> is for text"
+    ],
+    correct: 1,
+    explanation: "<head> carries information ABOUT the page — the <title> shown on the browser tab, links to styling — none of which appears in the content area. <body> is the visible content. Every web page on earth is this skeleton with more inside the body."
+  },
+  {
+    question: "You build an HTML form with inputs and a Submit button, open it in the browser, fill it in, and click Submit. Nothing happens. Why?",
+    options: [
+      "The form is broken and needs to be rewritten",
+      "HTML describes structure but has no behavior — making the button DO something requires a second language (JavaScript), or a backend to send the form to",
+      "You forgot to save the file as .html",
+      "Forms only work when the page is hosted on a real server"
+    ],
+    correct: 1,
+    explanation: "'Nothing happens' is not a bug — it is the exact boundary where HTML ends. HTML is a noun language: it names structure (this is a form, this is a button) but has no verbs. To react to the click you need JavaScript (Lesson 2) or a backend to receive the submission (Lesson 3+)."
+  },
+  {
+    question: "Your whole page suddenly renders as giant bold text. What is the most likely cause?",
+    options: [
+      "A virus in the browser",
+      "You opened a tag (like <h1>) and never wrote its closing tag (</h1>), so the browser treats everything after it as part of the heading",
+      "The CSS file is missing",
+      "The file is too large for the browser"
+    ],
+    correct: 1,
+    explanation: "HTML has no red error message — only a page that looks wrong. The most common cause is a missing closing tag. If you write <h1>Triage and never write </h1>, the browser keeps treating everything after it as heading content. When a page renders strangely, the first move is always: find the tag I opened and never closed."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent — you understand that a web page is a text file, how tags and attributes work, and where HTML stops." : score >= 3 ? "Good — review the page skeleton and why a plain form 'does nothing.'" : "Review the lesson — HTML is the floor of the entire web."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

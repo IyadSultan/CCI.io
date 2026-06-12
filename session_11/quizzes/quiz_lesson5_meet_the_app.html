@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: ER-Triage App</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #EF6C00; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #FFCC80; background: #FFF3E0; margin-bottom: 1rem; }
+    .back-link:hover { background: #FFE0B2; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-11/">&#8249; Back to Session 11</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+const questions = [
+  {
+    question: 'When reading an existing codebase, what is the realistic goal?',
+    options: [
+      'Understand every single line before you touch anything',
+      'Find your way around — know which file to open to change a given thing',
+      'Rewrite the app from scratch in your own style',
+      'Memorize the whole database schema',
+    ],
+    correct: 1,
+    explanation: 'You are not expected to understand every line. The goal is to find your way around — to know which file to open when you want to change something. Trying to understand everything first will make you drown; let the request be your guide instead.',
+  },
+  {
+    question: 'Why does the ER-triage app still run without an OpenAI key?',
+    options: [
+      'It computes the emergency flags locally with arithmetic',
+      'It refuses to save any triage until a key is added',
+      'The LLM extractor degrades gracefully — triages save with no flags and a status of "failed" instead of crashing',
+      'It uses a free backup AI model that needs no key',
+    ],
+    correct: 2,
+    explanation: 'The emergency-flag step degrades gracefully: with no key, triages save with no flags and a status of "failed" instead of crashing. This graceful degradation is exactly why the app runs without a key, and it is a deliberate design choice you can see in the extractor.',
+  },
+  {
+    question: 'What is the key design idea behind splitting services/ into acuity.py and oncologic_emergency.py?',
+    options: [
+      'acuity.py is pure deterministic Python (no LLM) while the LLM is fenced into a closed set — the architecture enforces that the LLM never computes acuity',
+      'Both files call the LLM, just with different prompts',
+      'acuity.py handles the database and oncologic_emergency.py handles styling',
+      'The split is cosmetic and has no effect on safety',
+    ],
+    correct: 0,
+    explanation: 'acuity.py is pure Python — no LLM, no network, just arithmetic and if-statements — so acuity is deterministic and testable. oncologic_emergency.py is the LLM call, restricted to a closed set of four labels and returning "failed" on any error. The code cannot hand acuity to the model because the model is never given that job; structure enforces safety.',
+  },
+  {
+    question: 'In the project’s er_triage/urls.py, what does include("triage.urls") do?',
+    options: [
+      'It copies every triage URL into the project file by hand',
+      'It delegates all the triage URLs to the triage app’s own urls.py',
+      'It disables the triage app’s routes',
+      'It renders the triage templates directly',
+    ],
+    correct: 1,
+    explanation: 'Instead of listing every URL in the project file, include("triage.urls") delegates all triage URLs to the app’s own urls.py. This is how real projects stay organized — each app owns its own URLs and the project just points at them.',
+  },
+  {
+    question: 'What is the recommended technique for tracing a feature in an unfamiliar codebase?',
+    options: [
+      'Read models.py first, then every service file in alphabetical order',
+      'Start from what the user does, find the URL, follow it to the view, and open only the files that view uses',
+      'Open every file in the project at once and skim them all',
+      'Start from the database tables and work backward to the browser',
+    ],
+    correct: 1,
+    explanation: 'The working method is to start from what the user does (clicks the queue), find the URL, follow it to the view, and only open the files that view actually uses. The five-file trace — project urls to app urls to view to template to browser — is the whole technique. Everything you do not need for this change, you may ignore for now.',
+  },
+];
+
+function App() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You can read a real clinical Django app — trace a click through five files and explain why the services/ split keeps the LLM from ever computing acuity." : score >= 3 ? "Good start. Review the five-file trace technique and the acuity.py vs oncologic_emergency.py split." : "Review the lesson — reading a codebase means finding your way around, following the request from URL to view to template."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

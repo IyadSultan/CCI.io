@@ -1,0 +1,220 @@
+import React, { useState } from 'react';
+
+const FILE_CHOICES = [
+  'triage/models.py',
+  'triage/views.py',
+  'triage/forms.py',
+  'triage/urls.py',
+  'triage/crypto.py',
+  'triage/services/acuity.py',
+  'triage/services/oncologic_emergency.py',
+  'triage/templates/triage/doctor_queue.html',
+  'er_triage/settings.py',
+  'er_triage/urls.py',
+];
+
+const TASKS = [
+  {
+    q: 'Where is the acuity for a septic-shock patient (systolic BP < 90) decided?',
+    answer: 'triage/services/acuity.py',
+    why: 'Acuity is a deterministic, testable number computed by the pure-Python AcuityCalculator. No LLM, no network — just arithmetic and if-statements live in services/acuity.py.',
+  },
+  {
+    q: 'Where are the four allowed oncologic-emergency labels listed?',
+    answer: 'triage/services/oncologic_emergency.py',
+    why: 'The LLM extractor only accepts answers from a closed set of four labels. That allow-list lives next to the OpenAI call in services/oncologic_emergency.py.',
+  },
+  {
+    q: "Where is the patient's name encrypted before it's saved?",
+    answer: 'triage/crypto.py',
+    why: 'PHI protection lives in crypto.py — Fernet encrypts the name and Optimus encodes the MRN, so raw PHI never sits in the database in the clear.',
+  },
+  {
+    q: 'Which file maps the URL /triage/new to a view?',
+    answer: 'triage/urls.py',
+    why: "The app's own routes live in triage/urls.py, where path('triage/new', views.nurse_form_view) connects the URL to its view.",
+  },
+  {
+    q: 'Which template draws the colored acuity badge in the queue?',
+    answer: 'triage/templates/triage/doctor_queue.html',
+    why: 'doctor_queue.html holds the {% for event in events %} loop that draws one colored row (and acuity badge) per patient.',
+  },
+  {
+    q: 'Where would you change the valid range for SpO2?',
+    answer: 'triage/forms.py',
+    why: 'NurseTriageForm in forms.py defines every field and its valid range (e.g. SpO2 50-100) and validates server-side, no matter what the browser did.',
+  },
+];
+
+export default function Practice() {
+  const [picks, setPicks] = useState(TASKS.map(() => ''));
+  const [checked, setChecked] = useState(false);
+
+  const setPick = (i, val) => {
+    if (checked) return;
+    const next = [...picks];
+    next[i] = val;
+    setPicks(next);
+  };
+
+  const reset = () => {
+    setPicks(TASKS.map(() => ''));
+    setChecked(false);
+  };
+
+  const score = TASKS.reduce(
+    (acc, t, i) => acc + (picks[i] === t.answer ? 1 : 0),
+    0
+  );
+  const allAnswered = picks.every((p) => p !== '');
+
+  return (
+    <div
+      style={{
+        maxWidth: 820,
+        margin: '40px auto',
+        fontFamily: 'system-ui',
+        padding: '0 16px',
+        color: '#212529',
+      }}
+    >
+      <h1 style={{ fontSize: 26 }}>Find the File — ER-Triage Code Scavenger Hunt</h1>
+
+      <p
+        style={{
+          background: '#f8f9fa',
+          padding: 16,
+          borderRadius: 8,
+          lineHeight: 1.5,
+        }}
+      >
+        Reading a codebase means knowing <strong>which file to open</strong> when
+        you want to change a given thing. Below are six things a developer might
+        need to change in the ER-Triage app. For each one, pick the file you would
+        open from the dropdown. The choices are the real files in the app. When you
+        are done, press <strong>Check</strong> to see how well you can navigate the
+        code.
+      </p>
+
+      {TASKS.map((t, i) => {
+        const correct = picks[i] === t.answer;
+        const border = !checked
+          ? '2px solid #dee2e6'
+          : correct
+          ? '2px solid #198754'
+          : '2px solid #dc3545';
+        const bg = !checked
+          ? '#ffffff'
+          : correct
+          ? '#d4edda'
+          : '#f8d7da';
+        return (
+          <div
+            key={i}
+            style={{
+              border,
+              background: bg,
+              borderRadius: 8,
+              padding: 16,
+              marginBottom: 14,
+            }}
+          >
+            <div style={{ fontWeight: 600, marginBottom: 10 }}>
+              {i + 1}. {t.q}
+            </div>
+            <select
+              value={picks[i]}
+              onChange={(e) => setPick(i, e.target.value)}
+              disabled={checked}
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                fontFamily: 'system-ui',
+                fontSize: 15,
+                borderRadius: 6,
+                border: '1px solid #adb5bd',
+              }}
+            >
+              <option value="">— choose a file to open —</option>
+              {FILE_CHOICES.map((f) => (
+                <option key={f} value={f}>
+                  {f}
+                </option>
+              ))}
+            </select>
+            {checked && (
+              <div style={{ marginTop: 10, fontSize: 14 }}>
+                <div>
+                  {correct ? (
+                    <span style={{ color: '#198754', fontWeight: 600 }}>
+                      Correct — {t.answer}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#dc3545', fontWeight: 600 }}>
+                      Not quite. The right file is {t.answer}.
+                    </span>
+                  )}
+                </div>
+                <div style={{ marginTop: 4 }}>{t.why}</div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <div style={{ marginTop: 8 }}>
+        {!checked ? (
+          <button
+            onClick={() => setChecked(true)}
+            disabled={!allAnswered}
+            style={{
+              background: allAnswered ? '#198754' : '#9bbfae',
+              color: '#fff',
+              border: 'none',
+              padding: '10px 22px',
+              borderRadius: 6,
+              fontSize: 16,
+              cursor: allAnswered ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Check
+          </button>
+        ) : (
+          <button
+            onClick={reset}
+            style={{
+              background: '#0d6efd',
+              color: '#fff',
+              border: 'none',
+              padding: '10px 22px',
+              borderRadius: 6,
+              fontSize: 16,
+              cursor: 'pointer',
+            }}
+          >
+            Try Again
+          </button>
+        )}
+      </div>
+
+      {checked && (
+        <div
+          style={{
+            marginTop: 20,
+            background: '#f0f4ff',
+            borderLeft: '4px solid #0d6efd',
+            padding: 16,
+            borderRadius: 6,
+          }}
+        >
+          <strong>
+            You found {score} of {TASKS.length} files.
+          </strong>{' '}
+          {score === TASKS.length
+            ? 'You can navigate this codebase — that is the whole skill. Let the request be your guide: user action → URL → view → the files that view uses.'
+            : 'Review the misses above. Remember the split: arithmetic and trusted logic live in services/, validation in forms.py, PHI protection in crypto.py, routes in urls.py, and what the user sees in templates/.'}
+        </div>
+      )}
+    </div>
+  );
+}

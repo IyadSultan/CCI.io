@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: Ship on Render</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #EF6C00; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #FFCC80; background: #FFF3E0; margin-bottom: 1rem; }
+    .back-link:hover { background: #FFE0B2; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-11/">&#8249; Back to Session 11</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+const questions = [
+  {
+    question: 'What does "deployment" actually mean?',
+    options: [
+      'Rewriting the app so the browser does all the work',
+      'Moving the backend onto an always-on, internet-reachable computer — the request/response cycle is unchanged, only the address changes',
+      'Converting the Django app into a React single-page app',
+      'Copying the database into the browser’s local storage',
+    ],
+    correct: 1,
+    explanation: 'Deployment is just moving the backend onto an always-on, internet-reachable computer. The request/response cycle from Lesson 3 does not change one bit — only the address does, as localhost becomes your-app.onrender.com. The path is GitHub first, then Render.',
+  },
+  {
+    question: 'Why does the course use Render instead of Azure for deployment?',
+    options: [
+      'Render is the only host that can run Django',
+      'Azure cannot serve static files',
+      'Render connects straight to a GitHub repo, has a free tier, and turns deployment into a few clicks',
+      'Render does not require any build step',
+    ],
+    correct: 2,
+    explanation: 'Render is chosen because it connects straight to a GitHub repo, has a free tier, and turns deployment into a few clicks instead of a cloud-console expedition. The underlying concepts — build step, start command, env vars, static files, database — are identical everywhere, so learning them on Render transfers to Azure, AWS, or Google Cloud.',
+  },
+  {
+    question: 'In production, what replaces runserver as the web server, and what gathers static files?',
+    options: [
+      'gunicorn replaces runserver; collectstatic (with whitenoise) handles static files',
+      'whitenoise replaces runserver; gunicorn gathers static files',
+      'migrate replaces runserver; pip gathers static files',
+      'render.yaml replaces runserver; build.sh gathers static files',
+    ],
+    correct: 0,
+    explanation: 'gunicorn is the production web server that replaces runserver, which is a development toy with a warning printed on it. collectstatic gathers CSS/JS into one folder and whitenoise serves them efficiently in production. The build.sh step runs pip install, then collectstatic, then migrate, every deploy.',
+  },
+  {
+    question: 'Which file must your .gitignore exclude to avoid leaking secrets, and why does it matter so much?',
+    options: [
+      'requirements.txt, because it lists package versions',
+      '.env, because a committed secret stays in git history even if you delete it later',
+      'render.yaml, because it contains the start command',
+      'build.sh, because it is executable',
+    ],
+    correct: 1,
+    explanation: 'The .gitignore must exclude .env (along with db.sqlite3 and .venv). A committed secret is a leaked secret even if you delete it later, because it stays in the git history. Secrets like OPENAI_API_KEY and FERNET_KEY are set as environment variables in the Render dashboard (sync:false), never written in the repo.',
+  },
+  {
+    question: 'Your first deploy on Render goes red. What is the right response?',
+    options: [
+      'Give up — the app cannot be deployed',
+      'Delete the repo and start over from scratch',
+      'Read the log — it explains the failure (e.g. ALLOWED_HOSTS, a missing package, or build.sh not executable)',
+      'Switch immediately to a paid instance',
+    ],
+    correct: 2,
+    explanation: 'A first deploy often goes red, and that is normal — the live log tells you why. Classic causes are an ALLOWED_HOSTS/400 error (confirm DEBUG=False is read), a missing package (add it to requirements.txt), or build.sh not being executable (chmod +x). Fix it, commit, and push — Render auto-redeploys on every push. Note the free tier also sleeps after inactivity and takes about 30 seconds to wake.',
+  },
+];
+
+function App() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent! You can ship to Render — GitHub then Render, build.sh and gunicorn, DEBUG=False and ALLOWED_HOSTS, secrets as env vars and never .env in the repo." : score >= 3 ? "Good start. Review the deploy checklist: requirements.txt, build.sh, gunicorn, the production settings, and keeping .env out of GitHub." : "Review the lesson — deployment moves the backend to an always-on computer; keep .env out of git and read the log when the first deploy fails."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
