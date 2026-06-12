@@ -22,6 +22,7 @@ PRACTICE_STYLE = """
 
 TITLES = {
     "quiz_lesson1_html": "Quiz: HTML from Scratch",
+    "quiz_lesson1_django_youtube": "Quiz: Django in 8 Minutes (Video)",
     "quiz_lesson2_javascript_frontends": "Quiz: JavaScript & Frontends",
     "quiz_lesson3_full_stack": "Quiz: The Full Stack",
     "quiz_lesson4_smallest_django": "Quiz: Smallest Django",

@@ -1,0 +1,184 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "In Django, what is an \"app\"?",
+    options: [
+      "A mobile application you publish to the App Store",
+      "A small, self-contained piece of a project (models, URLs, views) that represents one part of a website",
+      "The same thing as the entire Django project folder",
+      "A JavaScript framework that replaces templates"
+    ],
+    correct: 1,
+    explanation: "Dennis Ivy describes apps as small pieces of a project that make up an entire website — each app holds models, URLs, views, and logic for one area (e.g. users, posts, groups on a Facebook-like site). You register each app in settings.py so Django knows it exists."
+  },
+  {
+    question: "What is a Django view responsible for?",
+    options: [
+      "Storing rows in the database permanently",
+      "Processing a user's request when they visit a URL and returning a response (HTML template or JSON)",
+      "Styling the page with CSS only",
+      "Compiling Python into machine code before the server starts"
+    ],
+    correct: 1,
+    explanation: "Views are functions (or classes) tied to URLs. When a user hits an endpoint, the matching view runs backend logic and returns data — usually an HTML template or JSON for an API."
+  },
+  {
+    question: "For someone just starting with Django, which view style does the video recommend learning first?",
+    options: [
+      "Class-based views, because all documentation uses them",
+      "Function-based views, because they are easier to understand and most docs still use them",
+      "Async views only, because Django 5 requires them",
+      "No views — use the admin panel for everything"
+    ],
+    correct: 1,
+    explanation: "The video recommends function-based views first for beginners. Class-based views are still important later, but function-based views are simpler to read and match most introductory documentation."
+  },
+  {
+    question: "How does Django know which view to run when a user visits a URL?",
+    options: [
+      "It guesses from the filename of the template",
+      "URL patterns in urls.py map paths to views using functions like path()",
+      "The browser sends the view name in a hidden header",
+      "models.py automatically routes every request"
+    ],
+    correct: 1,
+    explanation: "You define a list of URL patterns and attach each path to a view. When a request arrives, Django matches the URL to a pattern and fires the associated view — the same URL → view → response loop you will build in Lesson 4."
+  },
+  {
+    question: "What are Django models?",
+    options: [
+      "Photographs of the database schema stored in static files",
+      "Class-based representations of database tables — class attributes map to columns",
+      "HTML templates with double-brace variables",
+      "Environment variables in settings.py"
+    ],
+    correct: 1,
+    explanation: "Models are Python classes that represent database tables. Each attribute on the class is a column. Designing models also means understanding relationships (one-to-many, many-to-many) between tables."
+  },
+  {
+    question: "Which pair of ORM methods does the video highlight for reading data from the database?",
+    options: [
+      "save() and delete()",
+      "get() and filter()",
+      "migrate() and makemigrations()",
+      "login() and logout()"
+    ],
+    correct: 1,
+    explanation: "get() and filter() are the everyday read methods. save() and delete() are for writing changes; migrate/makemigrations are for schema changes — not for querying rows."
+  },
+  {
+    question: "What does CRUD stand for in web development?",
+    options: [
+      "Compile, Run, Upload, Deploy",
+      "Create, Read, Update, Delete",
+      "Cache, Route, User, Domain",
+      "Connect, Render, Undo, Debug"
+    ],
+    correct: 1,
+    explanation: "CRUD is the four basic database operations every app needs. Django's admin panel can do much of this, but you should also know how to build CRUD yourself — with model forms, class-based views, or save()/delete() on model instances."
+  },
+  {
+    question: "Which five Django management commands does the video list as essentials for any new project?",
+    options: [
+      "runserver, test, shell, collectstatic, flush",
+      "startproject, startapp, makemigrations, migrate, createsuperuser",
+      "pip install, git init, npm start, build, deploy",
+      "login, logout, register, reset, verify"
+    ],
+    correct: 1,
+    explanation: "startproject scaffolds the site, startapp scaffolds an app, makemigrations prepares schema changes, migrate applies them, and createsuperuser makes an admin user. You will use all five in this session's ER-triage lab."
+  },
+  {
+    question: "What are static files in a Django project?",
+    options: [
+      "Secret API keys stored in .env",
+      "Non-changing assets like CSS, JavaScript, and images that add the visual layer to your site",
+      "Database backup files only",
+      "User passwords hashed with bcrypt"
+    ],
+    correct: 1,
+    explanation: "Static files are assets the browser downloads as-is — CSS, JS, images. You also need to handle user-uploaded content (profile pictures, etc.) separately. In production, collectstatic gathers these for a server like WhiteNoise or a CDN."
+  },
+  {
+    question: "According to the video, why should beginners learn to deploy a Django app (not just run it locally)?",
+    options: [
+      "Deployment is optional — localhost is enough for clinical tools",
+      "A real app must run on a platform that hosts the code, database, and static assets so others can reach it — familiarity with hosts like Render, Heroku, or AWS is essential",
+      "Deploying automatically fixes all security bugs",
+      "You cannot use Django REST Framework until the app is deployed"
+    ],
+    correct: 1,
+    explanation: "The video closes by saying every beginner should be able to deploy — knowing a host, connecting a production database, and serving static assets. Session 11 Lesson 7 does exactly this on Render."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 8 ? '#d4edda' : score >= 6 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 8
+            ? "Excellent — you absorbed the core Django map from the video. Lessons 4–7 will feel familiar."
+            : score >= 6
+              ? "Good — rewatch the sections on apps, views, URLs, models, and deploy before Lesson 4."
+              : "Review the video — these 15 concepts are the backbone of every Django app in this course."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#EF6C00', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <p style={{ color: '#666', fontSize: 14, marginBottom: 8 }}>
+        Based on <em>Python Django Explained In 8 Minutes</em> (Dennis Ivy)
+      </p>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#EF6C00', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#EF6C00' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#FFF3E0', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #EF6C00' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#EF6C00', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

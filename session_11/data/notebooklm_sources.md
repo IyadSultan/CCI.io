@@ -6,9 +6,26 @@ permalink: /session_11/data/notebooklm_sources/
 
 <a class="back-btn" href="/CCI.io/session-11/" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#EF6C00;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #FFCC80;background:#FFF3E0;margin-bottom:1rem;">&#8249; Back to Session 11</a>
 
-# Session 11 NotebookLM Sources — Ready to Paste
+# Session 11 NotebookLM Sources
 
-Create 8 notebooks in [NotebookLM](https://notebooklm.google.com), then paste each source text below — one notebook per lesson.
+Eight class notebooks are live on NotebookLM — one per lesson. Open them from the [Session 11 hub](/CCI.io/session-11/) or use the links below.
+
+| # | Notebook | Open in NotebookLM |
+|---|----------|-------------------|
+| 1 | The Blueprint of the Web: HTML Structure and Syntax | [Open](https://notebooklm.google.com/notebook/929a48d9-224b-45ef-b6a5-ce8181ee058f) |
+| 2 | The Logic of Interactivity: JavaScript and Frontend Architecture | [Open](https://notebooklm.google.com/notebook/494f5bba-1441-4cf2-bcbf-81b1dde836a1) |
+| 3 | Django and the Mechanics of Full Stack Architecture | [Open](https://notebooklm.google.com/notebook/ac11b573-8eec-4dfd-9285-618692c5ea1b) |
+| 4 | Django Foundations: From Skeleton to Server-Side Rendering | [Open](https://notebooklm.google.com/notebook/427b265a-81fa-4903-86b9-1d062d610e63) |
+| 5 | Architecting the ER Triage Django App | [Open](https://notebooklm.google.com/notebook/40d43bbc-1e18-4791-ba13-c0056ae531c9) |
+| 6 | The Five-Step Rhythm of Django Feature Integration | [Open](https://notebooklm.google.com/notebook/5e73bbe9-5b95-4699-b96d-35484a083457) |
+| 7 | Ship It: Deploying Django Apps from Localhost to Render | [Open](https://notebooklm.google.com/notebook/d2437f48-a71d-4e9d-852e-a173775aa073) |
+| 8 | Django Master Reference and Development Roadmap | [Open](https://notebooklm.google.com/notebook/c53151d4-6050-46d5-a1a4-b23fff832734) |
+
+---
+
+## Paste-ready source text (optional)
+
+If you are building your own notebooks, paste each block below into [NotebookLM](https://notebooklm.google.com) as a source.
 
 ---
 

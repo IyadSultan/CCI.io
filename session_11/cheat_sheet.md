@@ -6,6 +6,13 @@ permalink: /session_11/cheat_sheet/
 
 <a class="back-btn" href="/CCI.io/session-11/" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.8rem;font-weight:600;color:#EF6C00;text-decoration:none;padding:.35rem .65rem;border-radius:.4rem;border:1px solid #FFCC80;background:#FFF3E0;margin-bottom:1rem;">&#8249; Back to Session 11</a>
 
+<style>
+.site-nav{display:none!important}
+.site-header{border-top:5px solid #EF6C00!important}
+.site-title,.site-title:visited{color:#EF6C00!important;font-weight:800!important}
+.post-header{display:none!important}
+</style>
+
 # CCI Session 11 — Cheat Sheet
 
 *From a web page to a deployed clinical app. Keep this open the next time you build.*

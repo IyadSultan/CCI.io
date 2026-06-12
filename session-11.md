@@ -230,6 +230,13 @@ permalink: /session-11/
   }
   .s1-btn-handout:hover { background: #FFE0B2; transform: translateY(-1px); }
 
+  .s1-btn-video {
+    background: #FCE4EC;
+    border-color: #F48FB1;
+    color: #C62828 !important;
+  }
+  .s1-btn-video:hover { background: #F8BBD9; transform: translateY(-1px); }
+
   .s1-btn-icon { font-size: 0.9rem; line-height: 1; }
 
   .s1-assignment {
@@ -302,14 +309,23 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_11/instructions/lesson1_html/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/929a48d9-224b-45ef-b6a5-ce8181ee058f" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson1_html.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Spot the Broken HTML
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_11/quizzes/quiz_lesson1_html.html" target="_blank">
-        <span class="s1-btn-icon">&#10004;</span> Quiz
+        <span class="s1-btn-icon">&#10004;</span> Quiz: HTML
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://claudemarketplaces.com/skills/jeffallan/claude-skills/django-expert" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9889;</span> Django Expert Skill
+      </a>
+      <a class="s1-btn s1-btn-video" href="https://youtu.be/0sMtoedWaf0?si=Ppn6T8Hc4rgIzCJ_" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Django in 8 Min (video)
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_11/quizzes/quiz_lesson1_django_youtube.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz: Django Video (10 Q)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> MDN HTML docs
@@ -338,8 +354,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_11/instructions/lesson2_javascript_frontends/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/494f5bba-1441-4cf2-bcbf-81b1dde836a1" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson2_javascript_frontends.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Frontend or Backend?
@@ -374,8 +390,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_11/instructions/lesson3_full_stack/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/ac11b573-8eec-4dfd-9285-618692c5ea1b" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson3_full_stack.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Frontend, Backend, or Database?
@@ -410,8 +426,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_11/instructions/lesson4_smallest_django/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/427b265a-81fa-4903-86b9-1d062d610e63" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson4_smallest_django.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Build the Smallest Django
@@ -452,8 +468,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_11/templates/solutions/er_triage_app/" target="_blank">
         <span class="s1-btn-icon">&#128209;</span> Reference App (solution)
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/40d43bbc-1e18-4791-ba13-c0056ae531c9" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson5_meet_the_app.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Code Scavenger Hunt
@@ -491,8 +507,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_11/templates/solutions/er_triage_app_with_dashboard/" target="_blank">
         <span class="s1-btn-icon">&#9989;</span> Solution (with dashboard)
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/5e73bbe9-5b95-4699-b96d-35484a083457" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson6_extend_it.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Add App in Order
@@ -524,8 +540,8 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_11/instructions/lesson7_ship_on_render/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
-        <span class="s1-btn-icon">&#128214;</span> NotebookLM Source
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/d2437f48-a71d-4e9d-852e-a173775aa073" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson7_ship_on_render.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Render Deploy Checklist
@@ -564,7 +580,10 @@ permalink: /session-11/
       <a class="s1-btn s1-btn-handout" href="{{ site.baseurl }}/session_11/cheat_sheet/" target="_blank">
         <span class="s1-btn-icon">&#128218;</span> Printable Cheat Sheet
       </a>
-      <a class="s1-btn s1-btn-notebook" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/c53151d4-6050-46d5-a1a4-b23fff832734" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_11/data/notebooklm_sources/" target="_blank">
         <span class="s1-btn-icon">&#128214;</span> NotebookLM Sources
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_11/practices/practice_lesson8_cheat_sheet.html" target="_blank">

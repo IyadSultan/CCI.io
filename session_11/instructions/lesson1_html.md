@@ -125,6 +125,13 @@ Click the button. **Nothing happens.** Type in the boxes, click Submit — nothi
 > ```
 > That is **CSS** — the language of *appearance* (fonts, colors, spacing), as distinct from HTML, the language of *structure*. We will lean on a styling toolkit called Tailwind later so you never have to write much CSS by hand. For now, just know the division of labor: HTML = structure, CSS = looks.
 
+## Django preview (optional — watch before Lesson 4)
+
+This lesson is HTML, but Session 11 ends with a deployed **Django** app. Two resources to bookmark now:
+
+- **[Django Expert skill](https://claudemarketplaces.com/skills/jeffallan/claude-skills/django-expert)** — a Claude Code skill for Django/DRF: ORM optimization (`select_related` / `prefetch_related`), serializers, migrations, and JWT auth. Install when you start the ER-triage project in Lesson 5.
+- **[Python Django Explained In 8 Minutes](https://youtu.be/0sMtoedWaf0?si=Ppn6T8Hc4rgIzCJ_)** (Dennis Ivy) — a map of 15 concepts every Django developer should know: apps, views, URLs, models, CRUD, static files, auth, management commands, signals, REST framework, and deployment. Take the [10-question video quiz]({{ site.baseurl }}/session_11/quizzes/quiz_lesson1_django_youtube.html) after watching.
+
 ## Try This
 
 Extend your intake page:
