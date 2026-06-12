@@ -90,6 +90,7 @@ HTML = structure · CSS = looks · JavaScript = behavior. A page that "does noth
 
 ## Template tags
 
+{% raw %}
 ```django
 {{ variable }}                              fill a slot
 {% for x in items %} ... {% endfor %}        loop
@@ -98,6 +99,7 @@ HTML = structure · CSS = looks · JavaScript = behavior. A page that "does noth
 {% extends "triage/base.html" %}             inherit a frame
 {% block content %} ... {% endblock %}        fill a block
 ```
+{% endraw %}
 
 ---
 

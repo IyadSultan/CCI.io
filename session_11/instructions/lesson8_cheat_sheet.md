@@ -85,6 +85,7 @@ python manage.py test                # run the tests
 
 ## Template syntax you'll see
 
+{% raw %}
 ```django
 {{ variable }}                      slot filled by the backend
 {% for x in items %}...{% endfor %} loop
@@ -93,6 +94,7 @@ python manage.py test                # run the tests
 {% extends "triage/base.html" %}    inherit a shared frame
 {% block content %}...{% endblock %} fill a block in the parent
 ```
+{% endraw %}
 
 ## Deploy to Render — the checklist
 

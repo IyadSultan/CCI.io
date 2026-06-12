@@ -117,6 +117,7 @@ Save everything, run `python manage.py runserver`, and refresh `http://127.0.0.1
 
 Returning HTML as a Python string gets ugly fast. The right way is a **template**: an HTML file with slots for data. Make the folder and file `pages/templates/pages/home.html`:
 
+{% raw %}
 ```html
 <!DOCTYPE html>
 <html>
@@ -127,6 +128,7 @@ Returning HTML as a Python string gets ugly fast. The right way is a **template*
 </body>
 </html>
 ```
+{% endraw %}
 
 That `{{ name }}` is a **template variable** — a slot the backend fills in. Now change the view to render the template and pass it a value:
 
@@ -161,7 +163,9 @@ That table *is* the ER-triage app, only larger. When you open it next lesson, yo
 
 1. Add a second page. Write a new view `about(request)` that renders a template saying something about your unit, and wire it to `path("about/", about)` in `urls.py`. Visit `/about/`.
 2. In your `home.html`, add a link to the about page: `<a href="/about/">About</a>`. Click between them. You have a two-page site.
+{% raw %}
 3. Pass a list to a template: `render(request, "pages/home.html", {"vitals": ["HR", "BP", "Temp"]})`, and in the template loop over it with `{% for v in vitals %}<li>{{ v }}</li>{% endfor %}`. This `{% for %}` tag is exactly how the doctor queue lists patients.
+{% endraw %}
 
 ## Watch Out
 

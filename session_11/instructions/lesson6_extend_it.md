@@ -94,6 +94,7 @@ The one new idea is `from triage.models import TriageEvent` — your dashboard a
 
 Make the file `dashboard/templates/dashboard/dashboard.html` (the doubled-folder pattern from Lesson 4). It `extends` the triage app's `base.html` so it inherits the same header and styling — another example of apps sharing:
 
+{% raw %}
 ```html
 {% extends "triage/base.html" %}
 {% block title %}Dashboard{% endblock %}
@@ -126,8 +127,11 @@ Make the file `dashboard/templates/dashboard/dashboard.html` (the doubled-folder
 </div>
 {% endblock %}
 ```
+{% endraw %}
 
+{% raw %}
 `{% extends %}` and `{% block %}` are how templates share a frame: the base file defines the header and a `content` block; this file fills that block in. `{% for row in by_acuity %}` is the loop you already know. `{% widthratio %}` is a small Django helper that turns a count into a bar width. (The full solution adds a styled emergencies list too — see `templates/solutions/er_triage_app_with_dashboard/`.)
+{% endraw %}
 
 ## Step 5 — connect the URL
 
@@ -158,11 +162,13 @@ Now `/dashboard/` routes into your app. Save everything, run `python manage.py r
 
 **There it is** — your dashboard, counting the seeded patients by acuity, built as an app you created, registered, and wired yourself.
 
+{% raw %}
 > 💡 **Tip.** Add a link to it so people can find it. Open `triage/templates/triage/base.html` and add one line to the nav:
 > ```html
 > <a href="{% url 'dashboard' %}" class="hover:underline">Dashboard</a>
 > ```
 > `{% url 'dashboard' %}` looks up the URL by the `name=` you gave it — never hardcode the path.
+{% endraw %}
 
 ## What you just practiced
 

@@ -112,13 +112,17 @@ A model is a Python class that Django turns into a database table. You define fi
 
 **`triage/views.py` — the logic.** Open `nurse_form_view` and read it top to bottom. On a POST it: validates the form, computes acuity (deterministic), calls the extractor (LLM), upserts the patient (PHI-protected), creates the `TriageEvent`, and redirects to the confirmation page. That is the server walkthrough diagram from Lesson 3, written out in Python you can now read.
 
+{% raw %}
 **`triage/templates/triage/` — the screens.** `base.html` is the shared frame (the header, the Tailwind styling link); the others — `nurse_form.html`, `doctor_queue.html`, `triage_confirmation.html`, `patient_detail.html` — fill in the content. Open `doctor_queue.html` and find the `{% for event in events %}` loop building the table rows. That is the exact `{% for %}` you used in Lesson 4's *Try This*, now drawing a clinical queue.
+{% endraw %}
 
 ## Trace one click
 
 Reading clicks into the right files end to end is the skill. Do this one out loud:
 
+{% raw %}
 > A doctor opens the queue. The browser requests `/`. → `er_triage/urls.py` sends it to `triage.urls`. → `triage/urls.py` maps `""` to `doctor_queue_view`. → That view (in `views.py`) reads all `TriageEvent` rows, ordered by acuity, and renders `doctor_queue.html`. → The template's `{% for %}` loop draws one colored row per patient. → The finished HTML goes back to the browser.
+{% endraw %}
 
 Five files, one request. If you can narrate that, you can read this codebase — and most others.
 
