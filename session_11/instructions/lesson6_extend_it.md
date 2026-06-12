@@ -24,7 +24,7 @@ Our X: a **dashboard**. The doctor queue shows individual patients. The unit man
 
 ## Start from the ready-made app
 
-Work from your running copy of `er_triage_app` from Lesson 5 (or copy `templates/student/er_triage_app/` fresh and run `migrate`, `seed_demo`). Make sure it runs and you can see the queue before you change anything. **Always start a change from a working state** — so that when something breaks, you know your change caused it.
+Work from your running copy of `er_triage` from Lesson 5 (or clone it fresh with `git clone https://github.com/IyadSultan/er_triage.git` and run `migrate`, `seed_demo`). Make sure it runs and you can see the queue before you change anything. **Always start a change from a working state** — so that when something breaks, you know your change caused it.
 
 ## Step 1 — create the app
 

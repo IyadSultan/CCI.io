@@ -51,18 +51,17 @@ python manage.py migrate                  # set up / update the database
 
 ## Step 1 — push to GitHub
 
-You learned git in Session 9. From inside the app folder:
+You learned git in Session 9. The app folder is already a git repository — you cloned it in Lesson 5 — so commit any changes you have made:
 
 ```bash
-git init
 git add .
 git commit -m "ER triage app, ready to deploy"
 ```
 
-Then create a new **empty** repository on github.com (no README, since you have files), and follow GitHub's "push an existing repository" lines:
+Now create a new **empty** repository on github.com (no README, since you have files). The clone still points at the original repo, so repoint it at *your* repository and push:
 
 ```bash
-git remote add origin https://github.com/<you>/er-triage.git
+git remote set-url origin https://github.com/<you>/er-triage.git
 git branch -M main
 git push -u origin main
 ```

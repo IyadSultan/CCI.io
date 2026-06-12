@@ -24,10 +24,11 @@ The app is the **ER Triage Extractor**. A triage nurse submits a patient's vital
 
 ## Get it running (5 minutes)
 
-The app lives in `templates/solutions/er_triage_app/`. Copy that folder somewhere you like to work, open a terminal in it, and run the same dance from Lesson 4:
+Clone the app from GitHub into a folder you like to work in, open a terminal in it, and run the same dance from Lesson 4:
 
 ```bash
-cd er_triage_app
+git clone https://github.com/IyadSultan/er_triage.git
+cd er_triage
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
