@@ -320,6 +320,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson1_what_is_a_network/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/81998c1e-5f2c-4af1-9ca8-3ecabdf6d4dc" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson1_what_is_a_network.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Open to the Street, or Shut?
       </a>
@@ -352,6 +355,9 @@ permalink: /session-12/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson2_encryption_basics/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/eb4510ac-c07f-4496-b6ca-a48c242e5b91" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson2_encryption_basics.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Postcard or Sealed Envelope?
@@ -386,6 +392,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson3_encryption_types/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/a968f869-fa9f-4cdd-b608-802c4fd153c7" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson3_encryption_types.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: At Rest or In Transit?
       </a>
@@ -418,6 +427,9 @@ permalink: /session-12/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson4_how_attacks_work/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/8d97ac67-e086-4bea-bf1a-e7c4da0b3832" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson4_how_attacks_work.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Order the Ransomware Chain
@@ -452,6 +464,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson5_passwords_and_mfa/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/764227af-325b-4075-b11d-5c1b732bca65" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson5_passwords_and_mfa.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Passphrase + Would MFA Stop It?
       </a>
@@ -484,6 +499,9 @@ permalink: /session-12/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson6_canary_tokens/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/91dad1f4-6975-45aa-aa0c-627a4d3e46e5" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson6_canary_tokens.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Good Practice or Mistake?
@@ -518,6 +536,9 @@ permalink: /session-12/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson7_phi_and_hipaa/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/68918cf7-967b-4b53-b599-168fd6e2b165" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson7_phi_and_hipaa.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Spot the PHI
@@ -559,6 +580,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson8_synthetic_data_pipeline/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Lab
       </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/c26a86c6-aa8a-4af1-bec9-b1070c636c8f" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
+      </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson8_synthetic_data_pipeline.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Build a Safe Record
       </a>
@@ -595,6 +619,9 @@ permalink: /session-12/
     <div class="s1-actions">
       <a class="s1-btn s1-btn-instructions" href="{{ site.baseurl }}/session_12/instructions/lesson9_cloud_hardened_azure/" target="_blank">
         <span class="s1-btn-icon">&#128196;</span> Instructions &amp; Runbook
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://notebooklm.google.com/notebook/b066a8c8-31c0-46a7-8663-4dfd8a7f9180" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128214;</span> NotebookLM
       </a>
       <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/practices/practice_lesson9_cloud_hardened_azure.html" target="_blank">
         <span class="s1-btn-icon">&#9997;</span> Practice: Sequence the az Commands + Audit the NSG
