@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 2 practice — "Postcard or sealed envelope?"
       // Sort each message into HTTP (a postcard anyone can read) or HTTPS (a sealed
       // envelope). Flip the eavesdropper toggle to see which ones a man-in-the-middle
@@ -102,122 +101,96 @@
             background: '#f8d7da'
           };
         };
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "Postcard or sealed envelope?"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 16
-            },
-            children: ["Tap each message to sort it into ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "HTTP (postcard)"
-            }), " or", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: " HTTPS (sealed envelope)"
-            }), ", then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), "."]
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("label", {
-            style: {
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              marginBottom: 16,
-              cursor: 'pointer'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("input", {
-              type: "checkbox",
-              checked: mitm,
-              onChange: e => setMitm(e.target.checked)
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              children: "👁 Show what a man-in-the-middle eavesdropper can read"
-            })]
-          }), ITEMS.map((it, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: cardStyle(i),
-            onClick: () => cycle(i),
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              children: [it.item, " ", readable(i) && /*#__PURE__*/_reactJsxRuntime.jsx("em", {
-                style: {
-                  color: '#dc3545'
-                },
-                children: "— eavesdropper can read this"
-              })]
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              style: {
-                minWidth: 190,
-                textAlign: 'center',
-                padding: '6px 10px',
-                borderRadius: 6,
-                fontSize: 14,
-                color: '#fff',
-                background: picked(i) ? COLORS[picked(i)] : '#adb5bd'
-              },
-              children: picked(i) || 'tap to choose'
-            })]
-          }, i)), checked && /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 8
-            },
-            children: ITEMS.map((it, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                margin: '6px 0',
-                color: isCorrect(i) ? '#198754' : '#dc3545'
-              },
-              children: [isCorrect(i) ? '✓' : '✗', " ", it.answer, ". ", it.reason]
-            }, i))
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              disabled: !allAnswered,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: allAnswered ? '#0d6efd' : '#adb5bd',
-                color: '#fff',
-                cursor: allAnswered ? 'pointer' : 'not-allowed'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: ["Score: ", score, " / ", ITEMS.length, "."]
-            }), " The padlock (HTTPS) means the contents are encrypted in transit — a sealed envelope. It does ", /*#__PURE__*/_reactJsxRuntime.jsx("em", {
-              children: "not"
-            }), " prove the site is trustworthy. Anything carrying patient data must be the envelope, never the postcard."]
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Postcard or sealed envelope?"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 16
+          }
+        }, "Tap each message to sort it into ", /*#__PURE__*/React.createElement("strong", null, "HTTP (postcard)"), " or", /*#__PURE__*/React.createElement("strong", null, " HTTPS (sealed envelope)"), ", then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), "."), /*#__PURE__*/React.createElement("label", {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 16,
+            cursor: 'pointer'
+          }
+        }, /*#__PURE__*/React.createElement("input", {
+          type: "checkbox",
+          checked: mitm,
+          onChange: e => setMitm(e.target.checked)
+        }), /*#__PURE__*/React.createElement("span", null, "👁 Show what a man-in-the-middle eavesdropper can read")), ITEMS.map((it, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          style: cardStyle(i),
+          onClick: () => cycle(i)
+        }, /*#__PURE__*/React.createElement("span", null, it.item, " ", readable(i) && /*#__PURE__*/React.createElement("em", {
+          style: {
+            color: '#dc3545'
+          }
+        }, "— eavesdropper can read this")), /*#__PURE__*/React.createElement("span", {
+          style: {
+            minWidth: 190,
+            textAlign: 'center',
+            padding: '6px 10px',
+            borderRadius: 6,
+            fontSize: 14,
+            color: '#fff',
+            background: picked(i) ? COLORS[picked(i)] : '#adb5bd'
+          }
+        }, picked(i) || 'tap to choose'))), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 8
+          }
+        }, ITEMS.map((it, i) => /*#__PURE__*/React.createElement("p", {
+          key: i,
+          style: {
+            margin: '6px 0',
+            color: isCorrect(i) ? '#198754' : '#dc3545'
+          }
+        }, isCorrect(i) ? '✓' : '✗', " ", it.answer, ". ", it.reason))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          disabled: !allAnswered,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: allAnswered ? '#0d6efd' : '#adb5bd',
+            color: '#fff',
+            cursor: allAnswered ? 'pointer' : 'not-allowed'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", ITEMS.length, "."), " The padlock (HTTPS) means the contents are encrypted in transit — a sealed envelope. It does ", /*#__PURE__*/React.createElement("em", null, "not"), " prove the site is trustworthy. Anything carrying patient data must be the envelope, never the postcard."));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

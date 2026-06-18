@@ -131,10 +131,19 @@ function buildFolder(Babel, folder, kind) {
     const jsx = fs.readFileSync(path.join(srcDir, file), 'utf8');
     const normalized = normalizeJsx(jsx);
     const out = Babel.transform(normalized, {
-      presets: ['react'],
+      // CLASSIC runtime -> React.createElement(...), provided by the vendored
+      // global React. The default 'automatic' runtime emits
+      // require("react/jsx-runtime"), which throws "require is not defined" in a
+      // plain browser and leaves the page blank.
+      presets: [['react', { runtime: 'classic' }]],
       // keep it as a script we can inline; no module wrapping
       sourceType: 'script',
     }).code;
+    // Guard: a browser has no module loader. If any require()/import survives,
+    // fail loudly instead of shipping a page that renders blank.
+    if (/\brequire\s*\(/.test(out) || /\bimport\s/.test(out)) {
+      throw new Error(`${stem}: compiled output still contains require()/import — would blank in a browser.`);
+    }
     // indent the compiled body two spaces for readability inside the IIFE
     const indented = out.split('\n').map((l) => (l ? '      ' + l : l)).join('\n');
     const html = wrapHtml(kind, stem, indented);

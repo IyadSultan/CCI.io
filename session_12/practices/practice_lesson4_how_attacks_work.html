@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 4 practice — "Order the ransomware chain, then name the defense."
       // Put the eight stages of the attack chain in order using the up/down buttons.
       // On Check, each correctly-placed stage reveals the defense that breaks it.
@@ -98,107 +97,87 @@
           background: disabled ? '#e9ecef' : '#fff',
           cursor: disabled ? 'not-allowed' : 'pointer'
         });
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "Order the attack chain"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 20
-            },
-            children: ["Use the ▲ / ▼ buttons to put the eight stages in the order an attack actually unfolds — from an unknown flaw to the ransom demand. Then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), " to see the defense that breaks the chain at each correctly-placed stage."]
-          }), order.map((itemIdx, pos) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: rowStyle(pos),
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                fontWeight: 'bold',
-                width: 22
-              },
-              children: [pos + 1, "."]
-            }), /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                flex: 1
-              },
-              children: [CHAIN[itemIdx].stage, checked && /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-                style: {
-                  display: 'block',
-                  fontSize: 13,
-                  color: '#495057',
-                  marginTop: 4
-                },
-                children: [correctPos(pos) ? '✓ correct — ' : `✗ this position should be: ${CHAIN[pos].stage}. `, correctPos(pos) && /*#__PURE__*/_reactJsxRuntime.jsxs("em", {
-                  children: ["Defense: ", CHAIN[itemIdx].defense]
-                })]
-              })]
-            }), !checked && /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                display: 'flex',
-                gap: 6
-              },
-              children: [/*#__PURE__*/_reactJsxRuntime.jsx("button", {
-                style: btn(pos === 0),
-                disabled: pos === 0,
-                onClick: () => swap(pos, pos - 1),
-                children: "▲"
-              }), /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-                style: btn(pos === order.length - 1),
-                disabled: pos === order.length - 1,
-                onClick: () => swap(pos, pos + 1),
-                children: "▼"
-              })]
-            })]
-          }, pos)), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#0d6efd',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: [score, " / ", CHAIN.length, " stages in the right place."]
-            }), " The point isn't the exact sequence — it's that patching, least privilege, segmentation, and tested backups each break the chain at a different link. Most breaches use old, unpatched holes and a human click."]
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Order the attack chain"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "Use the ▲ / ▼ buttons to put the eight stages in the order an attack actually unfolds — from an unknown flaw to the ransom demand. Then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), " to see the defense that breaks the chain at each correctly-placed stage."), order.map((itemIdx, pos) => /*#__PURE__*/React.createElement("div", {
+          key: pos,
+          style: rowStyle(pos)
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            fontWeight: 'bold',
+            width: 22
+          }
+        }, pos + 1, "."), /*#__PURE__*/React.createElement("span", {
+          style: {
+            flex: 1
+          }
+        }, CHAIN[itemIdx].stage, checked && /*#__PURE__*/React.createElement("span", {
+          style: {
+            display: 'block',
+            fontSize: 13,
+            color: '#495057',
+            marginTop: 4
+          }
+        }, correctPos(pos) ? '✓ correct — ' : `✗ this position should be: ${CHAIN[pos].stage}. `, correctPos(pos) && /*#__PURE__*/React.createElement("em", null, "Defense: ", CHAIN[itemIdx].defense))), !checked && /*#__PURE__*/React.createElement("span", {
+          style: {
+            display: 'flex',
+            gap: 6
+          }
+        }, /*#__PURE__*/React.createElement("button", {
+          style: btn(pos === 0),
+          disabled: pos === 0,
+          onClick: () => swap(pos, pos - 1)
+        }, "▲"), /*#__PURE__*/React.createElement("button", {
+          style: btn(pos === order.length - 1),
+          disabled: pos === order.length - 1,
+          onClick: () => swap(pos, pos + 1)
+        }, "▼")))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#0d6efd',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, score, " / ", CHAIN.length, " stages in the right place."), " The point isn't the exact sequence — it's that patching, least privilege, segmentation, and tested backups each break the chain at a different link. Most breaches use old, unpatched holes and a human click."));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

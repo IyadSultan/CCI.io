@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 6 practice — "Good practice or mistake?"
       // Sort each canary-token decision. Tap to choose, then Check.
 
@@ -98,99 +97,84 @@
             background: '#f8d7da'
           };
         };
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "Canary tokens: good practice or mistake?"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 20
-            },
-            children: ["A canary token is a burglar alarm in your own house — detection on your own property, ethically. Tap each decision to sort it, then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), "."]
-          }), ITEMS.map((it, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: cardStyle(i),
-            onClick: () => cycle(i),
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              style: {
-                flex: 1
-              },
-              children: it.item
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              style: {
-                minWidth: 140,
-                textAlign: 'center',
-                padding: '6px 10px',
-                borderRadius: 6,
-                fontSize: 14,
-                color: '#fff',
-                background: picked(i) ? COLORS[picked(i)] : '#adb5bd'
-              },
-              children: picked(i) || 'tap to choose'
-            })]
-          }, i)), checked && /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 8
-            },
-            children: ITEMS.map((it, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                margin: '6px 0',
-                color: isCorrect(i) ? '#198754' : '#dc3545'
-              },
-              children: [isCorrect(i) ? '✓' : '✗', " ", it.answer, ". ", it.reason]
-            }, i))
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              disabled: !allAnswered,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: allAnswered ? '#0d6efd' : '#adb5bd',
-                color: '#fff',
-                cursor: allAnswered ? 'pointer' : 'not-allowed'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: ["Score: ", score, " / ", ITEMS.length, "."]
-            }), " Keep it pointed inward: your assets, your email, your authority, fake bait, low-traffic placement — and read the IP as a lead, never as identity."]
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Canary tokens: good practice or mistake?"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "A canary token is a burglar alarm in your own house — detection on your own property, ethically. Tap each decision to sort it, then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), "."), ITEMS.map((it, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          style: cardStyle(i),
+          onClick: () => cycle(i)
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            flex: 1
+          }
+        }, it.item), /*#__PURE__*/React.createElement("span", {
+          style: {
+            minWidth: 140,
+            textAlign: 'center',
+            padding: '6px 10px',
+            borderRadius: 6,
+            fontSize: 14,
+            color: '#fff',
+            background: picked(i) ? COLORS[picked(i)] : '#adb5bd'
+          }
+        }, picked(i) || 'tap to choose'))), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 8
+          }
+        }, ITEMS.map((it, i) => /*#__PURE__*/React.createElement("p", {
+          key: i,
+          style: {
+            margin: '6px 0',
+            color: isCorrect(i) ? '#198754' : '#dc3545'
+          }
+        }, isCorrect(i) ? '✓' : '✗', " ", it.answer, ". ", it.reason))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          disabled: !allAnswered,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: allAnswered ? '#0d6efd' : '#adb5bd',
+            color: '#fff',
+            cursor: allAnswered ? 'pointer' : 'not-allowed'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", ITEMS.length, "."), " Keep it pointed inward: your assets, your email, your authority, fake bait, low-traffic placement — and read the IP as a lead, never as identity."));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

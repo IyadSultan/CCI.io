@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 9 practice — two parts in one board:
       //  A) Put the Azure VM lifecycle in order (up/down buttons).
       //  B) Audit the NSG rules: which are OK, which are dangerous?
@@ -112,149 +111,126 @@
           background: disabled ? '#e9ecef' : '#fff',
           cursor: disabled ? 'not-allowed' : 'pointer'
         });
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "The cloud, hardened"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 20
-            },
-            children: ["Part A: order the VM lifecycle with ▲ / ▼. Part B: mark each firewall rule OK or Dangerous. Then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), "."]
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("h3", {
-            style: {
-              color: '#0d6efd'
-            },
-            children: "A — Order the lifecycle"
-          }), order.map((itemIdx, pos) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: rowStyle(posCorrect(pos)),
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                fontWeight: 'bold',
-                width: 22
-              },
-              children: [pos + 1, "."]
-            }), /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                flex: 1
-              },
-              children: [LIFECYCLE[itemIdx], checked && !posCorrect(pos) && /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-                style: {
-                  display: 'block',
-                  fontSize: 13,
-                  color: '#dc3545'
-                },
-                children: ["should be: ", LIFECYCLE[pos]]
-              })]
-            }), !checked && /*#__PURE__*/_reactJsxRuntime.jsxs("span", {
-              style: {
-                display: 'flex',
-                gap: 6
-              },
-              children: [/*#__PURE__*/_reactJsxRuntime.jsx("button", {
-                style: btn(pos === 0),
-                disabled: pos === 0,
-                onClick: () => swap(pos, pos - 1),
-                children: "▲"
-              }), /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-                style: btn(pos === order.length - 1),
-                disabled: pos === order.length - 1,
-                onClick: () => swap(pos, pos + 1),
-                children: "▼"
-              })]
-            })]
-          }, pos)), /*#__PURE__*/_reactJsxRuntime.jsx("h3", {
-            style: {
-              color: '#0d6efd',
-              marginTop: 24
-            },
-            children: "B — Audit the NSG rules"
-          }), RULES.map((r, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: rowStyle(ruleCorrect(i)),
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              style: {
-                flex: 1,
-                fontFamily: 'monospace'
-              },
-              children: r.rule
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              onClick: () => cycleRule(i),
-              style: {
-                minWidth: 110,
-                textAlign: 'center',
-                padding: '6px 10px',
-                borderRadius: 6,
-                fontSize: 14,
-                color: '#fff',
-                cursor: checked ? 'default' : 'pointer',
-                background: ruleChoice[i] ? RULE_COLORS[ruleChoice[i]] : '#adb5bd'
-              },
-              children: ruleChoice[i] || 'tap'
-            })]
-          }, i)), checked && /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 8
-            },
-            children: RULES.map((r, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                margin: '4px 0',
-                color: ruleCorrect(i) ? '#198754' : '#dc3545'
-              },
-              children: [ruleCorrect(i) ? '✓' : '✗', " ", r.answer, ". ", r.reason]
-            }, i))
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              disabled: !allRulesAnswered,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: allRulesAnswered ? '#0d6efd' : '#adb5bd',
-                color: '#fff',
-                cursor: allRulesAnswered ? 'pointer' : 'not-allowed'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: ["Score: ", score, " / ", total, "."]
-            }), " Open the minimum, log in with keys not passwords, and always end with teardown. A login or database port open to the whole internet is a fire — and a running VM you forgot is a bill and an attack surface at once."]
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "The cloud, hardened"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "Part A: order the VM lifecycle with ▲ / ▼. Part B: mark each firewall rule OK or Dangerous. Then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), "."), /*#__PURE__*/React.createElement("h3", {
+          style: {
+            color: '#0d6efd'
+          }
+        }, "A — Order the lifecycle"), order.map((itemIdx, pos) => /*#__PURE__*/React.createElement("div", {
+          key: pos,
+          style: rowStyle(posCorrect(pos))
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            fontWeight: 'bold',
+            width: 22
+          }
+        }, pos + 1, "."), /*#__PURE__*/React.createElement("span", {
+          style: {
+            flex: 1
+          }
+        }, LIFECYCLE[itemIdx], checked && !posCorrect(pos) && /*#__PURE__*/React.createElement("span", {
+          style: {
+            display: 'block',
+            fontSize: 13,
+            color: '#dc3545'
+          }
+        }, "should be: ", LIFECYCLE[pos])), !checked && /*#__PURE__*/React.createElement("span", {
+          style: {
+            display: 'flex',
+            gap: 6
+          }
+        }, /*#__PURE__*/React.createElement("button", {
+          style: btn(pos === 0),
+          disabled: pos === 0,
+          onClick: () => swap(pos, pos - 1)
+        }, "▲"), /*#__PURE__*/React.createElement("button", {
+          style: btn(pos === order.length - 1),
+          disabled: pos === order.length - 1,
+          onClick: () => swap(pos, pos + 1)
+        }, "▼")))), /*#__PURE__*/React.createElement("h3", {
+          style: {
+            color: '#0d6efd',
+            marginTop: 24
+          }
+        }, "B — Audit the NSG rules"), RULES.map((r, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          style: rowStyle(ruleCorrect(i))
+        }, /*#__PURE__*/React.createElement("span", {
+          style: {
+            flex: 1,
+            fontFamily: 'monospace'
+          }
+        }, r.rule), /*#__PURE__*/React.createElement("span", {
+          onClick: () => cycleRule(i),
+          style: {
+            minWidth: 110,
+            textAlign: 'center',
+            padding: '6px 10px',
+            borderRadius: 6,
+            fontSize: 14,
+            color: '#fff',
+            cursor: checked ? 'default' : 'pointer',
+            background: ruleChoice[i] ? RULE_COLORS[ruleChoice[i]] : '#adb5bd'
+          }
+        }, ruleChoice[i] || 'tap'))), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 8
+          }
+        }, RULES.map((r, i) => /*#__PURE__*/React.createElement("p", {
+          key: i,
+          style: {
+            margin: '4px 0',
+            color: ruleCorrect(i) ? '#198754' : '#dc3545'
+          }
+        }, ruleCorrect(i) ? '✓' : '✗', " ", r.answer, ". ", r.reason))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          disabled: !allRulesAnswered,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: allRulesAnswered ? '#0d6efd' : '#adb5bd',
+            color: '#fff',
+            cursor: allRulesAnswered ? 'pointer' : 'not-allowed'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", total, "."), " Open the minimum, log in with keys not passwords, and always end with teardown. A login or database port open to the whole internet is a fire — and a running VM you forgot is a bill and an attack surface at once."));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

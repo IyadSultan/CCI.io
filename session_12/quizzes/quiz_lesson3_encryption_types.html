@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       const questions = [{
         question: "What is the key difference between symmetric and asymmetric encryption?",
         options: ["Symmetric is older and no longer used; asymmetric replaced it entirely", "Symmetric uses one shared key for both locking and unlocking; asymmetric uses a public/private key pair", "Symmetric works only at rest; asymmetric works only in transit", "Symmetric is illegal for medical data; asymmetric is required"],
@@ -75,103 +74,27 @@
           setFinished(false);
         };
         if (finished) {
-          return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+          return /*#__PURE__*/React.createElement("div", {
             style: {
               maxWidth: 700,
               margin: '40px auto',
               fontFamily: 'system-ui',
               textAlign: 'center'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("h2", {
-              children: "Quiz Complete!"
-            }), /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                fontSize: 24
-              },
-              children: ["Score: ", score, " / ", questions.length]
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-              style: {
-                background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da',
-                padding: 20,
-                borderRadius: 8,
-                margin: 20
-              },
-              children: score >= 4 ? "Excellent — symmetric vs asymmetric, at-rest vs in-transit, and why you never roll your own crypto." : score >= 3 ? "Good — revisit the TLS handshake (asymmetric setting up a symmetric session) and the Session 11 example." : "Review the lesson — protect data both in transit AND at rest, with vetted standards."
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: restart,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                cursor: 'pointer',
-                borderRadius: 6,
-                border: 'none',
-                background: '#0d6efd',
-                color: '#fff'
-              },
-              children: "Retry Quiz"
-            })]
-          });
-        }
-        const q = questions[current];
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-          style: {
-            maxWidth: 700,
-            margin: '40px auto',
-            fontFamily: 'system-ui'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("div", {
+            }
+          }, /*#__PURE__*/React.createElement("h2", null, "Quiz Complete!"), /*#__PURE__*/React.createElement("p", {
             style: {
-              background: '#e9ecef',
+              fontSize: 24
+            }
+          }, "Score: ", score, " / ", questions.length), /*#__PURE__*/React.createElement("div", {
+            style: {
+              background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da',
+              padding: 20,
               borderRadius: 8,
-              height: 8,
-              marginBottom: 20
-            },
-            children: /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-              style: {
-                background: '#0d6efd',
-                borderRadius: 8,
-                height: 8,
-                width: `${(current + 1) / questions.length * 100}%`,
-                transition: 'width 0.3s'
-              }
-            })
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
+              margin: 20
+            }
+          }, score >= 4 ? "Excellent — symmetric vs asymmetric, at-rest vs in-transit, and why you never roll your own crypto." : score >= 3 ? "Good — revisit the TLS handshake (asymmetric setting up a symmetric session) and the Session 11 example." : "Review the lesson — protect data both in transit AND at rest, with vetted standards."), /*#__PURE__*/React.createElement("button", {
+            onClick: restart,
             style: {
-              color: '#666',
-              marginBottom: 4
-            },
-            children: ["Question ", current + 1, " of ", questions.length]
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("h3", {
-            style: {
-              marginBottom: 16
-            },
-            children: q.question
-          }), q.options.map((opt, i) => /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            onClick: () => handleSelect(i),
-            style: {
-              padding: '12px 16px',
-              margin: '8px 0',
-              borderRadius: 8,
-              cursor: showExplanation ? 'default' : 'pointer',
-              border: `2px solid ${showExplanation ? i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6' : selected === i ? '#0d6efd' : '#dee2e6'}`,
-              background: showExplanation ? i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff' : '#fff'
-            },
-            children: opt
-          }, i)), showExplanation && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 12,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Explanation:"
-            }), " ", q.explanation]
-          }), showExplanation && /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-            onClick: next,
-            style: {
-              marginTop: 16,
               padding: '10px 24px',
               fontSize: 16,
               cursor: 'pointer',
@@ -179,10 +102,72 @@
               border: 'none',
               background: '#0d6efd',
               color: '#fff'
-            },
-            children: current + 1 < questions.length ? 'Next Question' : 'See Results'
-          })]
-        });
+            }
+          }, "Retry Quiz"));
+        }
+        const q = questions[current];
+        return /*#__PURE__*/React.createElement("div", {
+          style: {
+            maxWidth: 700,
+            margin: '40px auto',
+            fontFamily: 'system-ui'
+          }
+        }, /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#e9ecef',
+            borderRadius: 8,
+            height: 8,
+            marginBottom: 20
+          }
+        }, /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#0d6efd',
+            borderRadius: 8,
+            height: 8,
+            width: `${(current + 1) / questions.length * 100}%`,
+            transition: 'width 0.3s'
+          }
+        })), /*#__PURE__*/React.createElement("p", {
+          style: {
+            color: '#666',
+            marginBottom: 4
+          }
+        }, "Question ", current + 1, " of ", questions.length), /*#__PURE__*/React.createElement("h3", {
+          style: {
+            marginBottom: 16
+          }
+        }, q.question), q.options.map((opt, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          onClick: () => handleSelect(i),
+          style: {
+            padding: '12px 16px',
+            margin: '8px 0',
+            borderRadius: 8,
+            cursor: showExplanation ? 'default' : 'pointer',
+            border: `2px solid ${showExplanation ? i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6' : selected === i ? '#0d6efd' : '#dee2e6'}`,
+            background: showExplanation ? i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff' : '#fff'
+          }
+        }, opt)), showExplanation && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 12,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Explanation:"), " ", q.explanation), showExplanation && /*#__PURE__*/React.createElement("button", {
+          onClick: next,
+          style: {
+            marginTop: 16,
+            padding: '10px 24px',
+            fontSize: 16,
+            cursor: 'pointer',
+            borderRadius: 6,
+            border: 'none',
+            background: '#0d6efd',
+            color: '#fff'
+          }
+        }, current + 1 < questions.length ? 'Next Question' : 'See Results'));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

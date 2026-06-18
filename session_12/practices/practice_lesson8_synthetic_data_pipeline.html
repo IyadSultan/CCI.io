@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 8 practice — "Build a safe record."
       // For each field, pick the choice that is safe by design. Then Check whether the
       // assembled record honours the doctrine.
@@ -127,96 +126,79 @@
             background: '#f8d7da'
           };
         };
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "Build a safe record"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 20
-            },
-            children: ["Assemble a record that is ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "safe by design"
-            }), ". For each field, pick the safe choice, then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), "."]
-          }), FIELDS.map((f, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              margin: '14px 0'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsx("div", {
-              style: {
-                fontWeight: 'bold',
-                marginBottom: 4
-              },
-              children: f.field
-            }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-              style: {
-                display: 'flex'
-              },
-              children: f.options.map((o, j) => /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-                style: optStyle(i, j),
-                onClick: () => select(i, j),
-                children: o.label
-              }, j))
-            }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                margin: '4px',
-                color: isCorrect(i) ? '#198754' : '#dc3545'
-              },
-              children: [isCorrect(i) ? '✓ safe' : '✗ not safe', " — ", f.reason]
-            })]
-          }, i)), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              disabled: !allAnswered,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: allAnswered ? '#0d6efd' : '#adb5bd',
-                color: '#fff',
-                cursor: allAnswered ? 'pointer' : 'not-allowed'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: allSafe ? '#d4edda' : '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: `4px solid ${allSafe ? '#198754' : '#0d6efd'}`
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: ["Score: ", score, " / ", FIELDS.length, "."]
-            }), ' ', allSafe ? 'Safe by design — scan the output of a generator built this way and you get zero findings. There is nothing to leak.' : 'Not yet safe by design. Every identifier must be encoded/encrypted, keys kept in a vault, dates and ages generalised, and the data generated fresh.']
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Build a safe record"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "Assemble a record that is ", /*#__PURE__*/React.createElement("strong", null, "safe by design"), ". For each field, pick the safe choice, then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), "."), FIELDS.map((f, i) => /*#__PURE__*/React.createElement("div", {
+          key: i,
+          style: {
+            margin: '14px 0'
+          }
+        }, /*#__PURE__*/React.createElement("div", {
+          style: {
+            fontWeight: 'bold',
+            marginBottom: 4
+          }
+        }, f.field), /*#__PURE__*/React.createElement("div", {
+          style: {
+            display: 'flex'
+          }
+        }, f.options.map((o, j) => /*#__PURE__*/React.createElement("div", {
+          key: j,
+          style: optStyle(i, j),
+          onClick: () => select(i, j)
+        }, o.label))), checked && /*#__PURE__*/React.createElement("p", {
+          style: {
+            margin: '4px',
+            color: isCorrect(i) ? '#198754' : '#dc3545'
+          }
+        }, isCorrect(i) ? '✓ safe' : '✗ not safe', " — ", f.reason))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          disabled: !allAnswered,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: allAnswered ? '#0d6efd' : '#adb5bd',
+            color: '#fff',
+            cursor: allAnswered ? 'pointer' : 'not-allowed'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: allSafe ? '#d4edda' : '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: `4px solid ${allSafe ? '#198754' : '#0d6efd'}`
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", FIELDS.length, "."), ' ', allSafe ? 'Safe by design — scan the output of a generator built this way and you get zero findings. There is nothing to leak.' : 'Not yet safe by design. Every identifier must be encoded/encrypted, keys kept in a vault, dates and ages generalised, and the data generated fresh.'));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));

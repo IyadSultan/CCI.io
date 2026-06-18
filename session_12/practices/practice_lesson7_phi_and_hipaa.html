@@ -19,7 +19,6 @@
   <script>
     (function () {
       var useState = React.useState;
-      var _reactJsxRuntime = require("react/jsx-runtime");
       // Lesson 7 practice — "Spot the PHI."
       // Below is a synthetic note, broken into spans. Click the spans that are HIPAA
       // identifiers (leave the generic clinical facts alone). Then Check.
@@ -110,94 +109,74 @@
             background: '#f8d7da'
           };
         };
-        return /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
+        return /*#__PURE__*/React.createElement("div", {
           style: {
             maxWidth: 820,
             margin: '40px auto',
             fontFamily: 'system-ui',
             color: '#212529'
-          },
-          children: [/*#__PURE__*/_reactJsxRuntime.jsx("h1", {
-            children: "Spot the PHI"
-          }), /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f8f9fa',
-              padding: 16,
-              borderRadius: 8,
-              marginBottom: 20
-            },
-            children: ["This is a ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "synthetic"
-            }), " note. Click every span that is a HIPAA identifier — and leave the generic clinical facts alone. Remember: PHI = health information ", /*#__PURE__*/_reactJsxRuntime.jsx("em", {
-              children: "plus"
-            }), " an identifier. Then press ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-              children: "Check"
-            }), "."]
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              lineHeight: 2.4,
-              fontSize: 17
-            },
-            children: SPANS.map((s, i) => /*#__PURE__*/_reactJsxRuntime.jsx("span", {
-              style: chipStyle(i),
-              onClick: () => toggle(i),
-              children: s.text
-            }, i))
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: SPANS.map((s, i) => /*#__PURE__*/_reactJsxRuntime.jsxs("p", {
-              style: {
-                margin: '6px 0',
-                color: isCorrect(i) ? '#198754' : '#dc3545'
-              },
-              children: [isCorrect(i) ? '✓' : '✗', " ", /*#__PURE__*/_reactJsxRuntime.jsx("strong", {
-                children: s.text
-              }), " — ", s.phi ? 'IDENTIFIER. ' : 'not an identifier. ', s.note]
-            }, i))
-          }), /*#__PURE__*/_reactJsxRuntime.jsx("div", {
-            style: {
-              marginTop: 16
-            },
-            children: !checked ? /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: () => setChecked(true),
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#0d6efd',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Check"
-            }) : /*#__PURE__*/_reactJsxRuntime.jsx("button", {
-              onClick: reset,
-              style: {
-                padding: '10px 24px',
-                fontSize: 16,
-                borderRadius: 6,
-                border: 'none',
-                background: '#6c757d',
-                color: '#fff',
-                cursor: 'pointer'
-              },
-              children: "Try Again"
-            })
-          }), checked && /*#__PURE__*/_reactJsxRuntime.jsxs("div", {
-            style: {
-              background: '#f0f4ff',
-              padding: 16,
-              borderRadius: 8,
-              marginTop: 16,
-              borderLeft: '4px solid #0d6efd'
-            },
-            children: [/*#__PURE__*/_reactJsxRuntime.jsxs("strong", {
-              children: ["Score: ", score, " / ", SPANS.length, "."]
-            }), " The hard part is free text: an unlabelled name or an indirect location (\"the camp near Irbid\") hides mid-sentence. A rules pass catches the shaped identifiers; an AI pass catches the rest — and a human still signs off."]
-          })]
-        });
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Spot the PHI"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f8f9fa',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "This is a ", /*#__PURE__*/React.createElement("strong", null, "synthetic"), " note. Click every span that is a HIPAA identifier — and leave the generic clinical facts alone. Remember: PHI = health information ", /*#__PURE__*/React.createElement("em", null, "plus"), " an identifier. Then press ", /*#__PURE__*/React.createElement("strong", null, "Check"), "."), /*#__PURE__*/React.createElement("div", {
+          style: {
+            lineHeight: 2.4,
+            fontSize: 17
+          }
+        }, SPANS.map((s, i) => /*#__PURE__*/React.createElement("span", {
+          key: i,
+          style: chipStyle(i),
+          onClick: () => toggle(i)
+        }, s.text))), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, SPANS.map((s, i) => /*#__PURE__*/React.createElement("p", {
+          key: i,
+          style: {
+            margin: '6px 0',
+            color: isCorrect(i) ? '#198754' : '#dc3545'
+          }
+        }, isCorrect(i) ? '✓' : '✗', " ", /*#__PURE__*/React.createElement("strong", null, s.text), " — ", s.phi ? 'IDENTIFIER. ' : 'not an identifier. ', s.note))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#0d6efd',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#f0f4ff',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #0d6efd'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", SPANS.length, "."), " The hard part is free text: an unlabelled name or an indirect location (\"the camp near Irbid\") hides mid-sentence. A rules pass catches the shaped identifiers; an AI pass catches the rest — and a human still signs off."));
       }
       var root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(React.createElement(App));
