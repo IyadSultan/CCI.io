@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Order the Ransomware Chain</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #6A1B9A; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #CE93D8; background: #F3E5F5; margin-bottom: 1rem; }
+    .back-link:hover { background: #E1BEE7; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-12/">&#8249; Back to Session 12</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// Lesson 4 practice — "Order the ransomware chain, then name the defense."
+// Put the eight stages of the attack chain in order using the up/down buttons.
+// On Check, each correctly-placed stage reveals the defense that breaks it.
+
+// CORRECT order, with the defense that breaks the chain at that stage.
+const CHAIN = [
+  { stage: 'Zero-day — an unknown software flaw exists', defense: 'Defense in depth: assume something is always unpatched; do not rely on one wall.' },
+  { stage: 'Exploit — the flaw is used to get a foothold', defense: 'Patching: most exploited holes were fixed months ago but never updated.' },
+  { stage: 'Backdoor / RAT — remote access is installed', defense: 'Least privilege + endpoint detection: limit what the foothold can do.' },
+  { stage: 'Persistence — the access survives reboots', defense: 'Monitoring & detection (e.g. canary tokens, Lesson 6).' },
+  { stage: 'Lateral movement — spreading to other machines', defense: 'Network segmentation: compartments stop free roaming.' },
+  { stage: 'Data exfiltration — data is copied out', defense: 'Least privilege + watching for unusual outbound transfers.' },
+  { stage: 'Encryption-as-weapon — the victim’s files are locked', defense: 'Tested, offline backups the attacker could not also encrypt.' },
+  { stage: 'Ransomware / extortion — payment is demanded', defense: 'Tested backups + an incident plan: restore and refuse to pay.' },
+];
+
+// A fixed (deterministic) starting scramble — indices into CHAIN.
+const START = [3, 0, 6, 1, 7, 4, 2, 5];
+
+function App() {
+  const [order, setOrder] = useState([...START]);
+  const [checked, setChecked] = useState(false);
+
+  const swap = (a, b) => {
+    if (checked || b < 0 || b >= order.length) return;
+    setOrder((prev) => {
+      const next = [...prev];
+      [next[a], next[b]] = [next[b], next[a]];
+      return next;
+    });
+  };
+
+  const reset = () => { setOrder([...START]); setChecked(false); };
+  const correctPos = (pos) => order[pos] === pos;
+  const score = order.reduce((n, _, pos) => n + (correctPos(pos) ? 1 : 0), 0);
+
+  const rowStyle = (pos) => {
+    const base = { border: '2px solid #ced4da', borderRadius: 8, padding: '10px 14px', margin: '8px 0',
+      display: 'flex', alignItems: 'center', gap: 12 };
+    if (!checked) return base;
+    return correctPos(pos)
+      ? { ...base, border: '2px solid #198754', background: '#d4edda' }
+      : { ...base, border: '2px solid #dc3545', background: '#f8d7da' };
+  };
+
+  const btn = (disabled) => ({
+    padding: '4px 10px', borderRadius: 6, border: '1px solid #adb5bd',
+    background: disabled ? '#e9ecef' : '#fff', cursor: disabled ? 'not-allowed' : 'pointer',
+  });
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui', color: '#212529' }}>
+      <h1>Order the attack chain</h1>
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, marginBottom: 20 }}>
+        Use the ▲ / ▼ buttons to put the eight stages in the order an attack actually unfolds —
+        from an unknown flaw to the ransom demand. Then press <strong>Check</strong> to see the
+        defense that breaks the chain at each correctly-placed stage.
+      </div>
+
+      {order.map((itemIdx, pos) => (
+        <div key={pos} style={rowStyle(pos)}>
+          <span style={{ fontWeight: 'bold', width: 22 }}>{pos + 1}.</span>
+          <span style={{ flex: 1 }}>
+            {CHAIN[itemIdx].stage}
+            {checked && (
+              <span style={{ display: 'block', fontSize: 13, color: '#495057', marginTop: 4 }}>
+                {correctPos(pos) ? '✓ correct — ' : `✗ this position should be: ${CHAIN[pos].stage}. `}
+                {correctPos(pos) && <em>Defense: {CHAIN[itemIdx].defense}</em>}
+              </span>
+            )}
+          </span>
+          {!checked && (
+            <span style={{ display: 'flex', gap: 6 }}>
+              <button style={btn(pos === 0)} disabled={pos === 0} onClick={() => swap(pos, pos - 1)}>▲</button>
+              <button style={btn(pos === order.length - 1)} disabled={pos === order.length - 1} onClick={() => swap(pos, pos + 1)}>▼</button>
+            </span>
+          )}
+        </div>
+      ))}
+
+      <div style={{ marginTop: 16 }}>
+        {!checked
+          ? <button onClick={() => setChecked(true)}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff', cursor: 'pointer' }}>Check</button>
+          : <button onClick={reset}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none', background: '#6c757d', color: '#fff', cursor: 'pointer' }}>Try Again</button>}
+      </div>
+
+      {checked && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 16, borderLeft: '4px solid #0d6efd' }}>
+          <strong>{score} / {CHAIN.length} stages in the right place.</strong> The point isn't the exact
+          sequence — it's that patching, least privilege, segmentation, and tested backups each break the
+          chain at a different link. Most breaches use old, unpatched holes and a human click.
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

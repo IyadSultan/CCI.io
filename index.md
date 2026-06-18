@@ -336,11 +336,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-12/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-12/">
     <div class="cci-num" style="background:#AD1457;">12</div>
     <div class="cci-card-body">
-      <p class="title">PHI, Cybersecurity &amp; Governance</p>
-      <p class="desc">HIPAA, data protection, security best practices</p>
+      <p class="title">Locking the Front Door — PHI, Cybersecurity &amp; Cloud Governance <span class="cci-active-badge">Active</span></p>
+      <p class="desc">Networks &amp; ports &rarr; encryption (in transit / at rest) &rarr; attacks &amp; defenses &rarr; MFA &rarr; canary tokens &rarr; HIPAA &amp; PHI scanner &rarr; synthetic data &rarr; hardened Azure VM</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

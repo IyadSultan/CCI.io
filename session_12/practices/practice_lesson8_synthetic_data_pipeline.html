@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Build a Safe Record</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #6A1B9A; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #CE93D8; background: #F3E5F5; margin-bottom: 1rem; }
+    .back-link:hover { background: #E1BEE7; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-12/">&#8249; Back to Session 12</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// Lesson 8 practice — "Build a safe record."
+// For each field, pick the choice that is safe by design. Then Check whether the
+// assembled record honours the doctrine.
+
+const FIELDS = [
+  { field: 'Medical record number',
+    options: [{ label: 'Store the raw MRN: 4415567', safe: false }, { label: 'Store encode_mrn(4415567)', safe: true }],
+    reason: 'Rule 1: every MRN is encoded before storage or output — the raw number never sits in the clear.' },
+  { field: 'Patient name',
+    options: [{ label: 'Store the plaintext name: Omar Haddad', safe: false }, { label: 'Store the Fernet-encrypted name token', safe: true }],
+    reason: 'Rule 2: every name is encrypted before any output, and never logged.' },
+  { field: 'Encryption key',
+    options: [{ label: 'Hard-code the key in the source file', safe: false }, { label: 'Read the key from a secret vault', safe: true }],
+    reason: 'Rule 3: keys live in a managed vault, never in code, never committed.' },
+  { field: 'Where the data came from',
+    options: [{ label: 'A real chart with only the name swapped', safe: false }, { label: 'Generated fresh from distributions', safe: true }],
+    reason: 'A "leaky generator" that edits real records can be re-identified. Genuinely synthetic data is built fresh, so nothing real survives.' },
+  { field: 'Admission date',
+    options: [{ label: 'Keep the exact date: 03/06/2026', safe: false }, { label: 'Reduce to the year: 2026', safe: true }],
+    reason: 'The Lesson 7 rule: dates finer than a year are identifiers — reduce them to the year.' },
+  { field: 'Age',
+    options: [{ label: 'Record "92 years old"', safe: false }, { label: 'Record the band "90+"', safe: true }],
+    reason: 'Ages over 89 are rare enough to identify — bundle them into a single "90+" category.' },
+];
+
+function App() {
+  const [choice, setChoice] = useState({});
+  const [checked, setChecked] = useState(false);
+
+  const select = (i, j) => { if (!checked) setChoice((prev) => ({ ...prev, [i]: j })); };
+  const reset = () => { setChoice({}); setChecked(false); };
+  const chosen = (i) => choice[i];
+  const isCorrect = (i) => chosen(i) !== undefined && FIELDS[i].options[chosen(i)].safe;
+  const allAnswered = FIELDS.every((_, i) => chosen(i) !== undefined);
+  const score = FIELDS.reduce((n, _, i) => n + (isCorrect(i) ? 1 : 0), 0);
+  const allSafe = score === FIELDS.length;
+
+  const optStyle = (i, j) => {
+    const selected = chosen(i) === j;
+    const base = { flex: 1, padding: '10px 12px', borderRadius: 8, margin: 4, fontSize: 14,
+      cursor: checked ? 'default' : 'pointer', textAlign: 'center',
+      border: selected ? '2px solid #0d6efd' : '2px solid #ced4da', background: selected ? '#e7f1ff' : '#fff' };
+    if (!checked || !selected) return base;
+    return FIELDS[i].options[j].safe
+      ? { ...base, border: '2px solid #198754', background: '#d4edda' }
+      : { ...base, border: '2px solid #dc3545', background: '#f8d7da' };
+  };
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui', color: '#212529' }}>
+      <h1>Build a safe record</h1>
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, marginBottom: 20 }}>
+        Assemble a record that is <strong>safe by design</strong>. For each field, pick the safe choice,
+        then press <strong>Check</strong>.
+      </div>
+
+      {FIELDS.map((f, i) => (
+        <div key={i} style={{ margin: '14px 0' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{f.field}</div>
+          <div style={{ display: 'flex' }}>
+            {f.options.map((o, j) => (
+              <div key={j} style={optStyle(i, j)} onClick={() => select(i, j)}>{o.label}</div>
+            ))}
+          </div>
+          {checked && (
+            <p style={{ margin: '4px', color: isCorrect(i) ? '#198754' : '#dc3545' }}>
+              {isCorrect(i) ? '✓ safe' : '✗ not safe'} — {f.reason}
+            </p>
+          )}
+        </div>
+      ))}
+
+      <div style={{ marginTop: 16 }}>
+        {!checked
+          ? <button onClick={() => setChecked(true)} disabled={!allAnswered}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none',
+                background: allAnswered ? '#0d6efd' : '#adb5bd', color: '#fff',
+                cursor: allAnswered ? 'pointer' : 'not-allowed' }}>Check</button>
+          : <button onClick={reset}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none', background: '#6c757d', color: '#fff', cursor: 'pointer' }}>Try Again</button>}
+      </div>
+
+      {checked && (
+        <div style={{ background: allSafe ? '#d4edda' : '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 16,
+          borderLeft: `4px solid ${allSafe ? '#198754' : '#0d6efd'}` }}>
+          <strong>Score: {score} / {FIELDS.length}.</strong>{' '}
+          {allSafe
+            ? 'Safe by design — scan the output of a generator built this way and you get zero findings. There is nothing to leak.'
+            : 'Not yet safe by design. Every identifier must be encoded/encrypted, keys kept in a vault, dates and ages generalised, and the data generated fresh.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

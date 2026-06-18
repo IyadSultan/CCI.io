@@ -1,0 +1,7 @@
+# PHI tools — minimal dependencies.
+# The RULES pass needs nothing but the Python standard library.
+# Everything below is optional, for the AI pass and the synthetic generator.
+
+python-dotenv==1.0.1      # load a local .env so OPENAI_API_KEY is picked up
+openai==1.59.6            # optional AI pass (scanner degrades gracefully without it)
+cryptography==44.0.0      # Fernet, used by synthetic/crypto.py (same as Session 11)

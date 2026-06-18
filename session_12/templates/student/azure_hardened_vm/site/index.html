@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCI hardened server</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0C4A6E; color: #F8FAFC;
+           display: flex; min-height: 100vh; margin: 0; align-items: center; justify-content: center; }
+    .card { max-width: 640px; padding: 2.5rem; text-align: center; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .accent { color: #38BDF8; }
+    p { color: #CBD5E1; line-height: 1.6; }
+    code { background: #0F172A; color: #E2E8F0; padding: 0.15rem 0.4rem; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CCI hardened server — <span class="accent">and soon, gone.</span></h1>
+    <p>
+      This one page is served by nginx on an Azure VM that logs in with an
+      <strong>SSH key</strong> (not a password), exposes only the
+      <strong>minimum doors</strong> through its network security group, and
+      will be <strong>deleted</strong> the moment the lab is over.
+    </p>
+    <p>
+      Open the minimum. Log in with keys. Delete what you don't need.<br>
+      <code>Session 12 · Locking the Front Door</code>
+    </p>
+  </div>
+</body>
+</html>

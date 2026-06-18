@@ -1,0 +1,20 @@
+*** SYNTHETIC TEACHING NOTE — NO REAL PATIENT. For CCI Session 12 only. ***
+
+Oncology ER Triage Note
+
+Patient: Mr. Omar Haddad
+MRN: 4415567
+National ID: 9581012345
+DOB: 12/03/1958
+Phone: +962 79 555 1234
+Email: o.haddad@example.com
+
+92-year-old gentleman with known AML, day 9 post-induction chemotherapy, brought
+to the ER on 03/06/2026 with fever to 38.7C, rigors, and profound fatigue.
+Accompanied by his daughter Salma, who mentioned the family recently moved from
+the camp near Irbid. Reports reduced urine output over the last day.
+
+Neutropenic precautions started. On-call heme-onc paged. Patient portal record at
+https://portal.example-hospital.jo/p/4415567 was reviewed. Follow-up labs pending.
+
+Triage acuity: 1.

@@ -1,0 +1,17 @@
+*** SYNTHETIC TEACHING NOTE — de-identified by hand. For CCI Session 12 only. ***
+
+Oncology ER Triage Note (de-identified)
+
+A patient in their 50s with known AML, day 9 post-induction chemotherapy,
+presented this year with fever to 38.7C, rigors, and profound fatigue.
+Accompanied by a family member. Reports reduced urine output over the last day,
+and the family recently relocated within the country.
+
+Neutropenic precautions started; on-call heme-onc paged. Prior records reviewed.
+Follow-up labs pending.
+
+Triage acuity: 1.
+
+(Compare this with note_dirty.txt: same clinical story, but the name, MRN,
+national ID, dates, phone, email, exact age, and portal link have all been
+removed or generalised. The clinical meaning survives; the identifiers do not.)

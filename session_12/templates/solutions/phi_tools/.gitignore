@@ -1,0 +1,10 @@
+# Never commit secrets or generated data.
+.env
+*.key
+synthetic/out/
+out/
+
+# Python
+.venv/
+__pycache__/
+*.pyc

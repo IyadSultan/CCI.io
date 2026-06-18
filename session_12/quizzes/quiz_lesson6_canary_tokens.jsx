@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+
+const questions = [
+  {
+    question: "A canary token is an example of which layer of security?",
+    options: [
+      "Prevention — it keeps intruders out",
+      "Detection — it tells you the moment someone gets in",
+      "Encryption — it scrambles your data",
+      "Access control — it decides who may log in"
+    ],
+    correct: 1,
+    explanation: "Prevention (locks, walls, encryption) keeps people out; detection tells you when prevention failed. A canary token is pure detection: a planted decoy that does nothing useful except scream the instant it is touched. Mature security runs both layers, because you cannot prevent every breach."
+  },
+  {
+    question: "What must a canary decoy file contain?",
+    options: [
+      "A real patient list, to make it convincing",
+      "Nothing real — it is empty or filled with obvious placeholder text",
+      "A copy of the hospital's encryption keys",
+      "Your own login credentials"
+    ],
+    correct: 1,
+    explanation: "The bait stays fake, always. The whole point is that the file is worthless if opened — its only value is as an alarm. Putting real PHI inside a decoy would turn a safety tool into the exact breach you were trying to detect. That is the unforgivable mistake."
+  },
+  {
+    question: "A canary alert arrives: 'Token opened 14:03, source IP 203.0.113.9.' What can you legitimately conclude?",
+    options: [
+      "The exact identity of the person who opened it",
+      "That something opened your decoy at a specific time — a reason to investigate, not courtroom proof of who did it",
+      "That the building at that IP address is guilty",
+      "Nothing useful at all"
+    ],
+    correct: 1,
+    explanation: "The alert gives you a real event (a timestamp) and a lead (a source IP). But an IP can be a VPN, proxy, or shared office connection — it is a signal, not an identity. Treat the alert as smoke that tells you to go look for the fire, then gather real evidence through proper channels."
+  },
+  {
+    question: "Where should you plant a canary token?",
+    options: [
+      "On a busy, frequently-opened shared folder so it triggers often",
+      "On someone else's computer to monitor them",
+      "On your own assets, in a low-traffic place a snoop would find tempting — with IT and security in the loop",
+      "Anywhere, as long as it looks important"
+    ],
+    correct: 2,
+    explanation: "Plant it where touches are rare and meaningful (a high-traffic spot causes false alarms you will learn to ignore), only on assets you are responsible for, with your security team informed. A canary is a burglar alarm in your own house — detection on your own property, never a tool pointed at others."
+  },
+  {
+    question: "What free service was described for creating canary tokens?",
+    options: [
+      "A paid enterprise platform requiring a contract",
+      "canarytokens.org — free, no login, run by Thinkst",
+      "A tool you must build yourself in Python",
+      "A feature built into the hospital EHR"
+    ],
+    correct: 1,
+    explanation: "canarytokens.org (by Thinkst) is completely free with no account: generate a token, enter your own email and a memo of where you will plant it, download the file, and place it. When someone trips it, you get an email — typically with the date, time, and source IP."
+  }
+];
+
+export default function Quiz() {
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+
+  const handleSelect = (idx) => {
+    if (showExplanation) return;
+    setSelected(idx);
+    setShowExplanation(true);
+    if (idx === questions[current].correct) setScore(s => s + 1);
+  };
+
+  const next = () => {
+    if (current + 1 >= questions.length) { setFinished(true); return; }
+    setCurrent(c => c + 1);
+    setSelected(null);
+    setShowExplanation(false);
+  };
+
+  const restart = () => {
+    setCurrent(0); setSelected(null); setShowExplanation(false); setScore(0); setFinished(false);
+  };
+
+  if (finished) {
+    return (
+      <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui', textAlign: 'center' }}>
+        <h2>Quiz Complete!</h2>
+        <p style={{ fontSize: 24 }}>Score: {score} / {questions.length}</p>
+        <div style={{ background: score >= 4 ? '#d4edda' : score >= 3 ? '#fff3cd' : '#f8d7da', padding: 20, borderRadius: 8, margin: 20 }}>
+          {score >= 4 ? "Excellent — detection vs prevention, fake bait only, your own assets, and an IP is a lead not an identity." : score >= 3 ? "Good — revisit the ethics line: own email, own assets, never real PHI in the bait." : "Review the lesson — a canary token is a tripwire that tells you the instant someone snoops."}
+        </div>
+        <button onClick={restart} style={{ padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>Retry Quiz</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 700, margin: '40px auto', fontFamily: 'system-ui' }}>
+      <div style={{ background: '#e9ecef', borderRadius: 8, height: 8, marginBottom: 20 }}>
+        <div style={{ background: '#0d6efd', borderRadius: 8, height: 8, width: `${((current + 1) / questions.length) * 100}%`, transition: 'width 0.3s' }} />
+      </div>
+      <p style={{ color: '#666', marginBottom: 4 }}>Question {current + 1} of {questions.length}</p>
+      <h3 style={{ marginBottom: 16 }}>{q.question}</h3>
+      {q.options.map((opt, i) => (
+        <div key={i} onClick={() => handleSelect(i)} style={{
+          padding: '12px 16px', margin: '8px 0', borderRadius: 8, cursor: showExplanation ? 'default' : 'pointer',
+          border: `2px solid ${showExplanation ? (i === q.correct ? '#198754' : i === selected ? '#dc3545' : '#dee2e6') : selected === i ? '#0d6efd' : '#dee2e6'}`,
+          background: showExplanation ? (i === q.correct ? '#d4edda' : i === selected && i !== q.correct ? '#f8d7da' : '#fff') : '#fff'
+        }}>{opt}</div>
+      ))}
+      {showExplanation && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 12, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Explanation:</strong> {q.explanation}
+        </div>
+      )}
+      {showExplanation && <button onClick={next} style={{ marginTop: 16, padding: '10px 24px', fontSize: 16, cursor: 'pointer', borderRadius: 6, border: 'none', background: '#0d6efd', color: '#fff' }}>{current + 1 < questions.length ? 'Next Question' : 'See Results'}</button>}
+    </div>
+  );
+}

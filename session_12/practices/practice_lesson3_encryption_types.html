@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: At Rest or In Transit?</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #6A1B9A; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #CE93D8; background: #F3E5F5; margin-bottom: 1rem; }
+    .back-link:hover { background: #E1BEE7; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-12/">&#8249; Back to Session 12</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// Lesson 3 practice — "At rest or in transit?"
+// Each item is protected by encryption. Decide whether it is encryption AT REST
+// (data sitting in storage) or IN TRANSIT (data moving over the network).
+
+const BUCKETS = ['Encryption at rest', 'Encryption in transit'];
+const COLORS = { 'Encryption at rest': '#fd7e14', 'Encryption in transit': '#0d6efd' };
+
+const ITEMS = [
+  { item: 'Fernet-encrypting the patient name before saving it to the database', answer: 'Encryption at rest',
+    reason: 'The name is protected while it sits stored on disk — at rest. Fernet is symmetric (one key).' },
+  { item: 'HTTPS protecting the triage form as it travels to the server', answer: 'Encryption in transit',
+    reason: 'The data is protected while it moves across the network — in transit (the sealed envelope).' },
+  { item: 'The TLS handshake at the start of an HTTPS connection', answer: 'Encryption in transit',
+    reason: 'TLS sets up the encrypted channel for data on the move — in transit. (Asymmetric setting up a symmetric session.)' },
+  { item: "The stored SQLite database file on the server's disk", answer: 'Encryption at rest',
+    reason: 'A file sitting in storage is protected at rest. Encrypt it and a stolen disk is unreadable.' },
+  { item: 'A nightly backup copy sitting in cloud storage', answer: 'Encryption at rest',
+    reason: 'A backup is data at rest — it must be encrypted too, or it becomes the easy way in.' },
+];
+
+function App() {
+  const [choice, setChoice] = useState({});
+  const [checked, setChecked] = useState(false);
+
+  const cycle = (i) => {
+    if (checked) return;
+    setChoice((prev) => {
+      const cur = prev[i];
+      const nextIdx = cur === undefined ? 0 : (BUCKETS.indexOf(cur) + 1) % BUCKETS.length;
+      return { ...prev, [i]: BUCKETS[nextIdx] };
+    });
+  };
+
+  const reset = () => { setChoice({}); setChecked(false); };
+  const picked = (i) => choice[i];
+  const isCorrect = (i) => picked(i) === ITEMS[i].answer;
+  const allAnswered = ITEMS.every((_, i) => picked(i) !== undefined);
+  const score = ITEMS.reduce((n, _, i) => n + (isCorrect(i) ? 1 : 0), 0);
+
+  const cardStyle = (i) => {
+    const base = { border: '2px solid #ced4da', borderRadius: 8, padding: '12px 16px', margin: '10px 0',
+      cursor: checked ? 'default' : 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' };
+    if (!checked) return base;
+    return isCorrect(i)
+      ? { ...base, border: '2px solid #198754', background: '#d4edda' }
+      : { ...base, border: '2px solid #dc3545', background: '#f8d7da' };
+  };
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui', color: '#212529' }}>
+      <h1>At rest or in transit?</h1>
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, marginBottom: 20 }}>
+        Both kinds of encryption matter — a system can protect data perfectly on the wire and still
+        leave the stored database readable. Tap each item to sort it, then press <strong>Check</strong>.
+      </div>
+
+      {ITEMS.map((it, i) => (
+        <div key={i} style={cardStyle(i)} onClick={() => cycle(i)}>
+          <span>{it.item}</span>
+          <span style={{
+            minWidth: 175, textAlign: 'center', padding: '6px 10px', borderRadius: 6, fontSize: 14,
+            color: '#fff', background: picked(i) ? COLORS[picked(i)] : '#adb5bd',
+          }}>
+            {picked(i) || 'tap to choose'}
+          </span>
+        </div>
+      ))}
+
+      {checked && (
+        <div style={{ marginTop: 8 }}>
+          {ITEMS.map((it, i) => (
+            <p key={i} style={{ margin: '6px 0', color: isCorrect(i) ? '#198754' : '#dc3545' }}>
+              {isCorrect(i) ? '✓' : '✗'} {it.answer}. {it.reason}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: 16 }}>
+        {!checked
+          ? <button onClick={() => setChecked(true)} disabled={!allAnswered}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none',
+                background: allAnswered ? '#0d6efd' : '#adb5bd', color: '#fff',
+                cursor: allAnswered ? 'pointer' : 'not-allowed' }}>Check</button>
+          : <button onClick={reset}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none', background: '#6c757d', color: '#fff', cursor: 'pointer' }}>Try Again</button>}
+      </div>
+
+      {checked && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 16, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Score: {score} / {ITEMS.length}.</strong> Your Session 11 app did both: Fernet protected
+          the name <em>at rest</em>, HTTPS protected it <em>in transit</em>. Protect data in both states —
+          and never roll your own crypto; use vetted standards.
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

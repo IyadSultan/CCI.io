@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Sequence the Azure Commands + Audit the NSG</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #6A1B9A; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #CE93D8; background: #F3E5F5; margin-bottom: 1rem; }
+    .back-link:hover { background: #E1BEE7; }
+</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-12/">&#8249; Back to Session 12</a>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+// Lesson 9 practice — two parts in one board:
+//  A) Put the Azure VM lifecycle in order (up/down buttons).
+//  B) Audit the NSG rules: which are OK, which are dangerous?
+
+// Part A — correct lifecycle order.
+const LIFECYCLE = [
+  'Create the resource group (the box that holds everything)',
+  'Create the hardened VM (SSH-key login, non-root, patched image)',
+  'Lock the NSG (open only 443 to public, 22 to you)',
+  'Install nginx and serve the page',
+  'Verify from outside (page loads; audit the open doors)',
+  'Delete everything (erase the whole box)',
+];
+const START = [2, 0, 4, 1, 5, 3]; // deterministic scramble of indices
+
+// Part B — NSG rules to audit.
+const RULES = [
+  { rule: '443 (HTTPS) — source: Any', answer: 'OK',
+    reason: 'A public website door belongs open to anyone. Correct.' },
+  { rule: '22 (SSH) — source: 0.0.0.0/0 (the whole internet)', answer: 'Dangerous',
+    reason: 'The #1 cloud breach: a login door open to every address on earth. Restrict it to your IP.' },
+  { rule: '22 (SSH) — source: your-IP/32', answer: 'OK',
+    reason: 'The staff entrance reachable only from where you work. Correct — open the minimum.' },
+  { rule: '3389 (RDP) — source: Any', answer: 'Dangerous',
+    reason: 'A remote-desktop door open to the world. This web server does not need 3389 at all.' },
+];
+const RULE_BUCKETS = ['OK', 'Dangerous'];
+const RULE_COLORS = { 'OK': '#198754', 'Dangerous': '#dc3545' };
+
+function App() {
+  const [order, setOrder] = useState([...START]);
+  const [ruleChoice, setRuleChoice] = useState({});
+  const [checked, setChecked] = useState(false);
+
+  const swap = (a, b) => {
+    if (checked || b < 0 || b >= order.length) return;
+    setOrder((prev) => { const n = [...prev]; [n[a], n[b]] = [n[b], n[a]]; return n; });
+  };
+  const cycleRule = (i) => {
+    if (checked) return;
+    setRuleChoice((prev) => {
+      const cur = prev[i];
+      const idx = cur === undefined ? 0 : (RULE_BUCKETS.indexOf(cur) + 1) % RULE_BUCKETS.length;
+      return { ...prev, [i]: RULE_BUCKETS[idx] };
+    });
+  };
+
+  const reset = () => { setOrder([...START]); setRuleChoice({}); setChecked(false); };
+  const posCorrect = (pos) => order[pos] === pos;
+  const ruleCorrect = (i) => ruleChoice[i] === RULES[i].answer;
+  const allRulesAnswered = RULES.every((_, i) => ruleChoice[i] !== undefined);
+  const score = order.reduce((n, _, p) => n + (posCorrect(p) ? 1 : 0), 0)
+    + RULES.reduce((n, _, i) => n + (ruleCorrect(i) ? 1 : 0), 0);
+  const total = LIFECYCLE.length + RULES.length;
+
+  const rowStyle = (good) => {
+    const base = { border: '2px solid #ced4da', borderRadius: 8, padding: '10px 14px', margin: '8px 0',
+      display: 'flex', alignItems: 'center', gap: 10 };
+    if (!checked) return base;
+    return good
+      ? { ...base, border: '2px solid #198754', background: '#d4edda' }
+      : { ...base, border: '2px solid #dc3545', background: '#f8d7da' };
+  };
+  const btn = (disabled) => ({ padding: '4px 10px', borderRadius: 6, border: '1px solid #adb5bd',
+    background: disabled ? '#e9ecef' : '#fff', cursor: disabled ? 'not-allowed' : 'pointer' });
+
+  return (
+    <div style={{ maxWidth: 820, margin: '40px auto', fontFamily: 'system-ui', color: '#212529' }}>
+      <h1>The cloud, hardened</h1>
+      <div style={{ background: '#f8f9fa', padding: 16, borderRadius: 8, marginBottom: 20 }}>
+        Part A: order the VM lifecycle with ▲ / ▼. Part B: mark each firewall rule OK or Dangerous.
+        Then press <strong>Check</strong>.
+      </div>
+
+      <h3 style={{ color: '#0d6efd' }}>A — Order the lifecycle</h3>
+      {order.map((itemIdx, pos) => (
+        <div key={pos} style={rowStyle(posCorrect(pos))}>
+          <span style={{ fontWeight: 'bold', width: 22 }}>{pos + 1}.</span>
+          <span style={{ flex: 1 }}>
+            {LIFECYCLE[itemIdx]}
+            {checked && !posCorrect(pos) &&
+              <span style={{ display: 'block', fontSize: 13, color: '#dc3545' }}>should be: {LIFECYCLE[pos]}</span>}
+          </span>
+          {!checked && (
+            <span style={{ display: 'flex', gap: 6 }}>
+              <button style={btn(pos === 0)} disabled={pos === 0} onClick={() => swap(pos, pos - 1)}>▲</button>
+              <button style={btn(pos === order.length - 1)} disabled={pos === order.length - 1} onClick={() => swap(pos, pos + 1)}>▼</button>
+            </span>
+          )}
+        </div>
+      ))}
+
+      <h3 style={{ color: '#0d6efd', marginTop: 24 }}>B — Audit the NSG rules</h3>
+      {RULES.map((r, i) => (
+        <div key={i} style={rowStyle(ruleCorrect(i))}>
+          <span style={{ flex: 1, fontFamily: 'monospace' }}>{r.rule}</span>
+          <span onClick={() => cycleRule(i)} style={{
+            minWidth: 110, textAlign: 'center', padding: '6px 10px', borderRadius: 6, fontSize: 14,
+            color: '#fff', cursor: checked ? 'default' : 'pointer',
+            background: ruleChoice[i] ? RULE_COLORS[ruleChoice[i]] : '#adb5bd',
+          }}>
+            {ruleChoice[i] || 'tap'}
+          </span>
+        </div>
+      ))}
+      {checked && (
+        <div style={{ marginTop: 8 }}>
+          {RULES.map((r, i) => (
+            <p key={i} style={{ margin: '4px 0', color: ruleCorrect(i) ? '#198754' : '#dc3545' }}>
+              {ruleCorrect(i) ? '✓' : '✗'} {r.answer}. {r.reason}
+            </p>
+          ))}
+        </div>
+      )}
+
+      <div style={{ marginTop: 16 }}>
+        {!checked
+          ? <button onClick={() => setChecked(true)} disabled={!allRulesAnswered}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none',
+                background: allRulesAnswered ? '#0d6efd' : '#adb5bd', color: '#fff',
+                cursor: allRulesAnswered ? 'pointer' : 'not-allowed' }}>Check</button>
+          : <button onClick={reset}
+              style={{ padding: '10px 24px', fontSize: 16, borderRadius: 6, border: 'none', background: '#6c757d', color: '#fff', cursor: 'pointer' }}>Try Again</button>}
+      </div>
+
+      {checked && (
+        <div style={{ background: '#f0f4ff', padding: 16, borderRadius: 8, marginTop: 16, borderLeft: '4px solid #0d6efd' }}>
+          <strong>Score: {score} / {total}.</strong> Open the minimum, log in with keys not passwords, and
+          always end with teardown. A login or database port open to the whole internet is a fire — and a
+          running VM you forgot is a bill and an attack surface at once.
+        </div>
+      )}
+    </div>
+  );
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
