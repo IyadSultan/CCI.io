@@ -96,6 +96,10 @@ Which leads to the single most important practical rule in this whole lesson:
 
 > ⚠️ **Watch Out.** **Never roll your own crypto.** Inventing your own encryption is how data gets leaked by people who felt clever. Always use vetted, standard libraries — exactly what your app did by using Fernet instead of some hand-written scramble. The professionals have spent decades finding the flaws so you do not have to rediscover them with real patients' data.
 
+## Supplementary video (optional — watch after Lesson 2)
+
+**[What Is Encryption and How Does It Work?](https://www.youtube.com/watch?v=xHaxAYDt75Q)** (Tarmeez Academy, ~9 min, Arabic with visual explanations) walks through the same arc as this lesson: man-in-the-middle risk, Caesar cipher, symmetric encryption (AES), the key-sharing problem, asymmetric encryption (RSA), and how HTTPS combines both. After watching, take the [10-question English video quiz]({{ site.baseurl }}/session_12/quizzes/quiz_lesson3_encryption_youtube.html).
+
 ## Try This
 
 1. Open `crypto.py` from your Session 11 app and find the two pairs of functions. Say out loud which protects data *at rest* and which is the reversible MRN obfuscation. You wrote security-relevant code without realising it.

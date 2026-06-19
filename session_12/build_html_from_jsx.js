@@ -61,6 +61,7 @@ const TITLES = {
   quiz_lesson1_what_is_a_network: 'Quiz: What Is a Network?',
   quiz_lesson2_encryption_basics: 'Quiz: Encryption, Plainly',
   quiz_lesson3_encryption_types: 'Quiz: Two Kinds of Keys',
+  quiz_lesson3_encryption_youtube: 'Quiz: Encryption Video (10 Q, English)',
   quiz_lesson4_how_attacks_work: 'Quiz: How Attacks Actually Work',
   quiz_lesson5_passwords_and_mfa: 'Quiz: Passwords, MFA & Least Privilege',
   quiz_lesson6_canary_tokens: 'Quiz: Canary Tokens',

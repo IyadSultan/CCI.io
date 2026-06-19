@@ -237,6 +237,13 @@ permalink: /session-12/
   }
   .s1-btn-notebook:hover { background: #FFECB3; transform: translateY(-1px); }
 
+  .s1-btn-video {
+    background: #FCE4EC;
+    border-color: #F48FB1;
+    color: #C62828 !important;
+  }
+  .s1-btn-video:hover { background: #F8BBD9; transform: translateY(-1px); }
+
   .s1-btn-icon { font-size: 0.9rem; line-height: 1; }
 
   .s1-kit {
@@ -297,7 +304,7 @@ permalink: /session-12/
 </div>
 
 <div class="s1-prereq">
-  <strong>Pre-session homework:</strong> Complete Session 11 (built &amp; deployed the ER-triage Django app). No new accounts required — the Azure VM lab is demonstrated live by the instructor and you keep a numbered runbook to replay later. &middot; <strong>Clinical anchor:</strong> the same ER-triage app you shipped, now examined through the lens of encryption at rest/in transit, PHI, and a hardened cloud server. &middot; <strong>Safety rule:</strong> run the PHI scanner <em>only</em> on the provided synthetic notes — never real charts on a personal laptop.</p>
+  <strong>Pre-session homework:</strong> Complete Session 11 (built &amp; deployed the ER-triage Django app). Skim the <a href="https://docs.google.com/presentation/d/1WiaGj8seS48YkoS3jkZ3XjGpDKD5voEMws4ZNcsGiE8/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Cybersecurity overview slides</a> for a bird's-eye view before Lesson 1. No new accounts required — the Azure VM lab is demonstrated live by the instructor and you keep a numbered runbook to replay later. &middot; <strong>Clinical anchor:</strong> the same ER-triage app you shipped, now examined through the lens of encryption at rest/in transit, PHI, and a hardened cloud server. &middot; <strong>Safety rule:</strong> run the PHI scanner <em>only</em> on the provided synthetic notes — never real charts on a personal laptop.</p>
 </div>
 
 <!-- ─── Lesson 1 ─── -->
@@ -328,6 +335,9 @@ permalink: /session-12/
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson1_what_is_a_network.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-video" href="https://docs.google.com/presentation/d/1WiaGj8seS48YkoS3jkZ3XjGpDKD5voEMws4ZNcsGiE8/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128202;</span> Cybersecurity Slides
       </a>
       <a class="s1-btn s1-btn-resource" href="https://www.cloudflare.com/learning/network-layer/what-is-a-computer-port/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Cloudflare: What is a port?
@@ -401,6 +411,12 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson3_encryption_types.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
+      <a class="s1-btn s1-btn-video" href="https://www.youtube.com/watch?v=xHaxAYDt75Q" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Encryption Video
+      </a>
+      <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson3_encryption_youtube.html" target="_blank">
+        <span class="s1-btn-icon">&#10004;</span> Quiz: Video (10 Q, English)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://www.cloudflare.com/learning/ssl/what-is-asymmetric-encryption/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Cloudflare: Asymmetric encryption
       </a>
@@ -436,6 +452,9 @@ permalink: /session-12/
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson4_how_attacks_work.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
+      </a>
+      <a class="s1-btn s1-btn-video" href="https://docs.google.com/presentation/d/1G_2LsrCgoclnE3mmlic-IFf-ABOyBaUBVw6aEqWBHf4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128202;</span> 10 Phishing Examples (Slides)
       </a>
       <a class="s1-btn s1-btn-resource" href="https://www.cisa.gov/stopransomware" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> CISA: StopRansomware
@@ -551,6 +570,12 @@ permalink: /session-12/
       </a>
       <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/solutions/phi_tools/" target="_blank">
         <span class="s1-btn-icon">&#9989;</span> Solution
+      </a>
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> PHI Detection Notebook
+      </a>
+      <a class="s1-btn s1-btn-notebook" href="https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128640;</span> Open in Colab
       </a>
       <a class="s1-btn s1-btn-resource" href="https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> HHS: De-identification &amp; the 18 identifiers

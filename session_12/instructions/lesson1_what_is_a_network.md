@@ -18,6 +18,8 @@ permalink: /session_12/instructions/lesson1_what_is_a_network/
 
 Last session you took an app off your laptop and put it on the public internet. You typed `git push`, watched Render build it, and got a URL — `your-app.onrender.com` — that anyone on earth could open. That was the victory. This session is about the bill that comes with it: the moment your app became reachable from anywhere, it also became reachable *by* anyone. Before we can lock the front door, you need to know what the door is, where it is, and what is on the other side. That is the whole job of this first lesson — to build the mental picture every later lesson will lean on.
 
+> **Optional overview:** Skim the **[Cybersecurity slides](https://docs.google.com/presentation/d/1WiaGj8seS48YkoS3jkZ3XjGpDKD5voEMws4ZNcsGiE8/edit?usp=sharing)** for a session-wide map before you dive into ports and firewalls.
+
 So let's build it slowly, with one analogy we will keep all session: **the hospital is a network.** Hold that picture and the jargon stops being jargon.
 
 ## A network is just rooms passing notes

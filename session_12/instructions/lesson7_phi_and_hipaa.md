@@ -88,6 +88,10 @@ The scanner you will run combines them: the rules pass always runs (free, offlin
 
 > ⚠️ **Watch Out.** No scanner is perfect. A rules pass alone will miss an unlabelled name; an AI pass can miss an oddly-formatted number or hallucinate a match. A PHI scanner is a power tool that makes a human reviewer faster and more thorough — it is **not** a licence to stop reading. For anything leaving the hospital, a human still signs off.
 
+## Hugging Face PHI detection lab (optional)
+
+For a deeper hands-on pass, open the **[PHI Detection with Hugging Face](https://github.com/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb)** notebook ([run in Colab](https://colab.research.google.com/github/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb)). It loads [`mkocher/hipaa-phi-detector`](https://huggingface.co/mkocher/hipaa-phi-detector) from the Hugging Face Hub, runs NER over **synthetic** clinical notes, redacts detected spans, and audits findings across a small corpus — the same detect → redact → review loop, using a ready-made model instead of regex rules. **Synthetic notes only.** Never paste real PHI into Colab or a public LLM.
+
 ## Try This
 
 1. Take the synthetic note in the Lesson 7 kit (`phi_tools/sample_notes/note_dirty.txt`) and, by eye, circle every identifier and label each with its number from the table above. Then run the scanner and compare — what did you miss, what did it miss?
