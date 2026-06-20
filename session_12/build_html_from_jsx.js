@@ -57,7 +57,13 @@ const PRACTICE_STYLE = `
     .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #6A1B9A; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #CE93D8; background: #F3E5F5; margin-bottom: 1rem; }
     .back-link:hover { background: #E1BEE7; }`;
 
+const ARTIFACT_STYLE = `
+    body { margin: 0; padding: 16px 20px 0; font-family: system-ui, -apple-system, sans-serif; background: #faf8f4; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #AD1457; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #F8BBD0; background: #FCE4EC; margin-bottom: 1rem; }
+    .back-link:hover { background: #F8BBD0; }`;
+
 const TITLES = {
+  'aidi-security-interactive': 'AIDI Unified Security — Interactive Guide',
   quiz_lesson1_what_is_a_network: 'Quiz: What Is a Network?',
   quiz_lesson2_encryption_basics: 'Quiz: Encryption, Plainly',
   quiz_lesson3_encryption_types: 'Quiz: Two Kinds of Keys',
@@ -87,14 +93,16 @@ function titleCase(stem) {
 // transpiled output can be dropped straight into a plain <script>.
 function normalizeJsx(source) {
   let body = source.trim();
+  // Remove any React import form: `import React ...` or `import { useState } from "react"`.
   body = body.replace(/^import\s+React.*?;\s*$/m, '');
+  body = body.replace(/^import\s+\{[^}]*\}\s+from\s+["']react["'];\s*$/m, '');
   body = body.replace(/export\s+default\s+function\s+\w+\s*\(\s*\)\s*\{/, 'function App() {');
   return body.trim();
 }
 
 function wrapHtml(kind, stem, compiledJs) {
   const title = TITLES[stem] || titleCase(stem);
-  const style = kind === 'quiz' ? QUIZ_STYLE : PRACTICE_STYLE;
+  const style = kind === 'quiz' ? QUIZ_STYLE : kind === 'artifact' ? ARTIFACT_STYLE : PRACTICE_STYLE;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -142,7 +150,10 @@ function buildFolder(Babel, folder, kind) {
     }).code;
     // Guard: a browser has no module loader. If any require()/import survives,
     // fail loudly instead of shipping a page that renders blank.
-    if (/\brequire\s*\(/.test(out) || /\bimport\s/.test(out)) {
+    // Only flag real ES `import` statements (at line start). This avoids false
+    // positives on CSS `@import url(...)` or `!important` living inside a style
+    // string in the compiled output.
+    if (/\brequire\s*\(/.test(out) || /^\s*import\s/m.test(out)) {
       throw new Error(`${stem}: compiled output still contains require()/import — would blank in a browser.`);
     }
     // indent the compiled body two spaces for readability inside the IIFE
@@ -160,7 +171,11 @@ function main() {
   if (!Babel || !Babel.transform) throw new Error('Babel failed to load.');
   const q = buildFolder(Babel, 'quizzes', 'quiz');
   const p = buildFolder(Babel, 'practices', 'practice');
-  console.log(`Done: ${q} quizzes, ${p} practices (self-contained, no CDN/Babel at runtime).`);
+  let a = 0;
+  if (fs.existsSync(path.join(ROOT, 'artifact'))) {
+    a = buildFolder(Babel, 'artifact', 'artifact');
+  }
+  console.log(`Done: ${q} quizzes, ${p} practices, ${a} artifact(s) (self-contained, no CDN/Babel at runtime).`);
 }
 
 main();

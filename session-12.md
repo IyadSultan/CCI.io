@@ -342,6 +342,12 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-resource" href="https://www.cloudflare.com/learning/network-layer/what-is-a-computer-port/" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Cloudflare: What is a port?
       </a>
+      <a class="s1-btn s1-btn-practice" href="{{ site.baseurl }}/session_12/artifact/aidi-security-interactive.html" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#129504;</span> AIDI Security Guide (interactive)
+      </a>
+      <a class="s1-btn s1-btn-resource" href="{{ site.baseurl }}/session_12/skills/aidi-unified-security.skill" download>
+        <span class="s1-btn-icon">&#11015;</span> Download Security Skill (.skill)
+      </a>
     </div>
   </div>
 </div>
@@ -456,6 +462,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-video" href="https://docs.google.com/presentation/d/1G_2LsrCgoclnE3mmlic-IFf-ABOyBaUBVw6aEqWBHf4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128202;</span> 10 Phishing Examples (Slides)
       </a>
+      <a class="s1-btn s1-btn-video" href="https://www.youtube.com/watch?v=uvKTMgWRPw4&t=5s" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#9654;</span> Social Engineering (video)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://www.cisa.gov/stopransomware" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> CISA: StopRansomware
       </a>
@@ -565,12 +574,6 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson7_phi_and_hipaa.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/student/phi_tools/" target="_blank">
-        <span class="s1-btn-icon">&#128209;</span> PHI Scanner Kit (student)
-      </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/solutions/phi_tools/" target="_blank">
-        <span class="s1-btn-icon">&#9989;</span> Solution
-      </a>
       <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> PHI Detection Notebook
       </a>
@@ -614,11 +617,8 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson8_synthetic_data_pipeline.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/student/phi_tools/synthetic/" target="_blank">
-        <span class="s1-btn-icon">&#128209;</span> Generator Kit (student)
-      </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/solutions/phi_tools/synthetic/" target="_blank">
-        <span class="s1-btn-icon">&#9989;</span> Solution
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/phi_tools/" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> phi_tools (GitHub)
       </a>
     </div>
   </div>
@@ -653,12 +653,6 @@ permalink: /session-12/
       </a>
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson9_cloud_hardened_azure.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
-      </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/student/azure_hardened_vm/" target="_blank">
-        <span class="s1-btn-icon">&#128209;</span> Azure Kit (student)
-      </a>
-      <a class="s1-btn s1-btn-template" href="{{ site.baseurl }}/session_12/templates/solutions/azure_hardened_vm/" target="_blank">
-        <span class="s1-btn-icon">&#9989;</span> Solution
       </a>
       <a class="s1-btn s1-btn-resource" href="https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128218;</span> Azure: Network Security Groups

@@ -111,6 +111,8 @@ And the single most common *first* row in real breaches isn't on the technical l
 
 Before the lab, skim **[10 Phishing Email Examples](https://docs.google.com/presentation/d/1G_2LsrCgoclnE3mmlic-IFf-ABOyBaUBVw6aEqWBHf4/edit?usp=sharing)** (Google Slides). For each slide, ask: *What is this email trying to make me do?* *What detail looks almost right but isn't?* *Would I pause before clicking if I were tired at the end of a shift?* Recognition practice is the brake at the first link of the chain.
 
+Then watch **[What is Social Engineering?](https://www.youtube.com/watch?v=uvKTMgWRPw4&t=5s)** (Kaspersky, ~4 min, English). Phishing is one type of social engineering — manipulation that plays on **heightened emotions**, **urgency**, and **false trust**. The three traits in the video are exactly what the phishing slides are trying to trigger.
+
 ## Try This
 
 1. **Match the term.** For each scenario, name the stage: (a) "An email looked exactly like our IT helpdesk and asked me to reset my password." (b) "One infected clinic PC let the attacker reach the file server two networks away." (c) "All our scheduling files now open as gibberish and a note demands payment." *(Answers: a — phishing; b — lateral movement; c — ransomware / encryption as a weapon.)*

@@ -20,6 +20,8 @@ Last session you took an app off your laptop and put it on the public internet. 
 
 > **Optional overview:** Skim the **[Cybersecurity slides](https://docs.google.com/presentation/d/1WiaGj8seS48YkoS3jkZ3XjGpDKD5voEMws4ZNcsGiE8/edit?usp=sharing)** for a session-wide map before you dive into ports and firewalls.
 
+> 🧰 **AIDI Unified Security toolkit.** Everything in this session is summarised in one place. Open the **[interactive security guide](/CCI.io/session_12/artifact/aidi-security-interactive.html)** for a tabbed walkthrough (secrets, input, API, PHI, pipelines), and **[download the AIDI Unified Security skill](/CCI.io/session_12/skills/aidi-unified-security.skill)** to load these guardrails straight into your AI coding assistant.
+
 So let's build it slowly, with one analogy we will keep all session: **the hospital is a network.** Hold that picture and the jargon stops being jargon.
 
 ## A network is just rooms passing notes
