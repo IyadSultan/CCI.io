@@ -574,6 +574,9 @@ permalink: /session-12/
       <a class="s1-btn s1-btn-quiz" href="{{ site.baseurl }}/session_12/quizzes/quiz_lesson7_phi_and_hipaa.html" target="_blank">
         <span class="s1-btn-icon">&#10004;</span> Quiz
       </a>
+      <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/phi_tools/" target="_blank" rel="noopener noreferrer">
+        <span class="s1-btn-icon">&#128209;</span> phi_tools (GitHub)
+      </a>
       <a class="s1-btn s1-btn-resource" href="https://github.com/IyadSultan/CCI/blob/main/session12/PHI_Detection_HuggingFace.ipynb" target="_blank" rel="noopener noreferrer">
         <span class="s1-btn-icon">&#128209;</span> PHI Detection Notebook
       </a>
