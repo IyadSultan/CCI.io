@@ -345,29 +345,29 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-13/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-13/">
     <div class="cci-num" style="background:#1565C0;">13</div>
     <div class="cci-card-body">
-      <p class="title">Ethics, Pitfalls &amp; Responsible Clinical AI</p>
-      <p class="desc">Bias, fairness, transparency, accountability</p>
+      <p class="title">Ethics, Governance &amp; MLOps for Clinical AI <span class="cci-active-badge">Active</span></p>
+      <p class="desc">2024 healthcare-AI ethics guidelines &rarr; six pillars &amp; governance gates &rarr; clinical MLOps lifecycle &rarr; monitoring, versioning &amp; rollback &mdash; no code</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-14/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-14/">
     <div class="cci-num" style="background:#2E7D32;">14</div>
     <div class="cci-card-body">
-      <p class="title">Capstone Project 1</p>
-      <p class="desc">Design and build your clinical AI solution</p>
+      <p class="title">Capstone Project 1 — Clinical Extraction System <span class="cci-active-badge">Active</span></p>
+      <p class="desc">Structured extraction from oncology documents &middot; PRD + GitHub &middot; due 1 Sep 2026 &middot; submit on CCI Academy</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-15/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-15/">
     <div class="cci-num" style="background:#4E342E;">15</div>
     <div class="cci-card-body">
-      <p class="title">Capstone Project 2</p>
-      <p class="desc">Present, evaluate, and refine</p>
+      <p class="title">Capstone Project 2 — CDSS or Reporting Pipeline <span class="cci-active-badge">Active</span></p>
+      <p class="desc">RAG/agents for decision support or report generation &middot; PRD + GitHub &middot; due 1 Sep 2026 &middot; submit on CCI Academy</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>

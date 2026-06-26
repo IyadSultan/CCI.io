@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Practice: Order the MLOps Lifecycle</title>
+  <script src="../vendor/react.production.min.js"></script>
+  <script src="../vendor/react-dom.production.min.js"></script>
+  <style>
+    body { margin: 0; padding: 20px; font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 600; color: #0D47A1; text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 0.4rem; border: 1px solid #64B5F6; background: #E1F5FE; margin-bottom: 1rem; }
+    .back-link:hover { background: #B3E5FC; }</style>
+</head>
+<body>
+  <a class="back-link" href="/CCI.io/session-13/">&#8249; Back to Session 13</a>
+  <div id="root"></div>
+  <script>
+    (function () {
+      var useState = React.useState;
+      // Lesson 2 practice — order the MLOps lifecycle steps (drag-free: tap to cycle position).
+
+      const CORRECT_ORDER = ['Define scope & clinical question', 'Curate data with lineage & PHI controls', 'Train with frozen splits & model card', 'Validate (technical + clinical + operational)', 'Deploy with version pin & feature parity', 'Monitor drift & incidents', 'Retrain or retire with change control'];
+      const SHUFFLED = ['Monitor drift & incidents', 'Define scope & clinical question', 'Deploy with version pin & feature parity', 'Train with frozen splits & model card', 'Retrain or retire with change control', 'Validate (technical + clinical + operational)', 'Curate data with lineage & PHI controls'];
+      function App() {
+        const [order, setOrder] = useState(() => [...SHUFFLED]);
+        const [checked, setChecked] = useState(false);
+        const moveUp = i => {
+          if (checked || i === 0) return;
+          setOrder(prev => {
+            const next = [...prev];
+            [next[i - 1], next[i]] = [next[i], next[i - 1]];
+            return next;
+          });
+        };
+        const moveDown = i => {
+          if (checked || i === order.length - 1) return;
+          setOrder(prev => {
+            const next = [...prev];
+            [next[i], next[i + 1]] = [next[i + 1], next[i]];
+            return next;
+          });
+        };
+        const reset = () => {
+          setOrder([...SHUFFLED]);
+          setChecked(false);
+        };
+        const isCorrect = order.every((step, i) => step === CORRECT_ORDER[i]);
+        const score = order.filter((step, i) => step === CORRECT_ORDER[i]).length;
+        return /*#__PURE__*/React.createElement("div", {
+          style: {
+            maxWidth: 820,
+            margin: '40px auto',
+            fontFamily: 'system-ui',
+            color: '#212529'
+          }
+        }, /*#__PURE__*/React.createElement("h1", null, "Order the clinical MLOps lifecycle"), /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#E3F2FD',
+            padding: 16,
+            borderRadius: 8,
+            marginBottom: 20
+          }
+        }, "Use ", /*#__PURE__*/React.createElement("strong", null, "↑ / ↓"), " to sort the seven phases from first to last. Skipping", /*#__PURE__*/React.createElement("strong", null, " Monitor"), " is how models fail quietly. Press ", /*#__PURE__*/React.createElement("strong", null, "Check"), " when done."), order.map((step, i) => {
+          const ok = checked && step === CORRECT_ORDER[i];
+          const bad = checked && step !== CORRECT_ORDER[i];
+          return /*#__PURE__*/React.createElement("div", {
+            key: step,
+            style: {
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '10px 12px',
+              margin: '8px 0',
+              borderRadius: 8,
+              border: `2px solid ${bad ? '#dc3545' : ok ? '#198754' : '#ced4da'}`,
+              background: bad ? '#f8d7da' : ok ? '#d4edda' : '#fff'
+            }
+          }, /*#__PURE__*/React.createElement("span", {
+            style: {
+              width: 28,
+              fontWeight: 700,
+              color: '#1565C0'
+            }
+          }, i + 1, "."), /*#__PURE__*/React.createElement("span", {
+            style: {
+              flex: 1
+            }
+          }, step), !checked && /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("button", {
+            onClick: () => moveUp(i),
+            style: {
+              marginRight: 4,
+              padding: '4px 10px',
+              cursor: 'pointer'
+            }
+          }, "↑"), /*#__PURE__*/React.createElement("button", {
+            onClick: () => moveDown(i),
+            style: {
+              padding: '4px 10px',
+              cursor: 'pointer'
+            }
+          }, "↓")));
+        }), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 12,
+            fontSize: 14,
+            color: '#455A64'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Correct sequence:"), " ", CORRECT_ORDER.map((s, i) => /*#__PURE__*/React.createElement("span", {
+          key: s
+        }, i > 0 ? ' → ' : '', s))), /*#__PURE__*/React.createElement("div", {
+          style: {
+            marginTop: 16
+          }
+        }, !checked ? /*#__PURE__*/React.createElement("button", {
+          onClick: () => setChecked(true),
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#1565C0',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Check") : /*#__PURE__*/React.createElement("button", {
+          onClick: reset,
+          style: {
+            padding: '10px 24px',
+            fontSize: 16,
+            borderRadius: 6,
+            border: 'none',
+            background: '#6c757d',
+            color: '#fff',
+            cursor: 'pointer'
+          }
+        }, "Try Again")), checked && /*#__PURE__*/React.createElement("div", {
+          style: {
+            background: '#E3F2FD',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+            borderLeft: '4px solid #1565C0'
+          }
+        }, /*#__PURE__*/React.createElement("strong", null, "Score: ", score, " / ", CORRECT_ORDER.length, "."), ' ', isCorrect ? 'Perfect — validate before deploy, monitor before you trust, retire when drift wins.' : 'Review Lesson 2: Deploy without monitor is the most common silent-failure pattern.'));
+      }
+      var root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(React.createElement(App));
+    })();
+  </script>
+</body>
+</html>
