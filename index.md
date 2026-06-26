@@ -300,11 +300,11 @@ title: CCI.io
     <span class="arrow">&#8250;</span>
   </a>
 
-  <a class="cci-card" href="{{ site.baseurl }}/session-08/">
+  <a class="cci-card cci-card-active" href="{{ site.baseurl }}/session-08/">
     <div class="cci-num" style="background:#F4511E;">8</div>
     <div class="cci-card-body">
-      <p class="title">Mid-term Presentations</p>
-      <p class="desc">Journal club, evaluation critiques, peer feedback on clinical AI projects</p>
+      <p class="title">Mid-term Presentations <span class="cci-active-badge">Active</span></p>
+      <p class="desc">Journal club &amp; evaluation critiques &middot; student talks archived (RAG in medicine, more coming)</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
