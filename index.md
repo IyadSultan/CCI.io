@@ -304,7 +304,7 @@ title: CCI.io
     <div class="cci-num" style="background:#F4511E;">8</div>
     <div class="cci-card-body">
       <p class="title">Mid-term Presentations <span class="cci-active-badge">Active</span></p>
-      <p class="desc">Journal club &amp; evaluation critiques &middot; student talks archived (RAG in medicine, more coming)</p>
+      <p class="desc">Journal club &amp; evaluation critiques &middot; 7 archived talks: RAG, evaluation illusion, SCT, VeriFact, EHR extraction, AI-SCE, MedAgentBench</p>
     </div>
     <span class="arrow">&#8250;</span>
   </a>
